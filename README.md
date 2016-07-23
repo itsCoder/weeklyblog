@@ -50,4 +50,5 @@
 #### 项目成员
 - 写代码的猴子 [@Jaeger](https://github.com/laobie)
 - Brucezz [@Brucezz](https://github.com/brucezz)
+- Melodyxxx [@Melodyxxx](https://github.com/melodyxxx)
 
