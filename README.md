@@ -48,3 +48,4 @@
 	- 完成审阅后合并到 dev 分支，每期结束时 dev 分支合并到 master 分支
 
 #### 项目成员
+- 写代码的猴子 [@Jaeger](https://github.com/laobie)
