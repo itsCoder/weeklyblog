@@ -26,7 +26,7 @@
 - 分支说明
   - master: 主分支
   - dev: 每期进行中分支，每期结束后合并到 master 分支
-  - br_id: 成员分支，每个成员的单独分支
+  - member/id: 成员分支，每个成员的单独分支
 
 - Pull requests 规范
   - 每个 pr 的标题明确本次 pr 主要内容
