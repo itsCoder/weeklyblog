@@ -64,4 +64,10 @@
 
 - 用语 [@yongyu](https://github.com/yongyu0102)
 
+- 千百度 [@fq050766](https://github.com/fq050766)
+
+- Melo [@Melo](https://github.com/itsMelo)
+
 - 写代码的香港记者 [@Manjusaka](https://github.com/Zheaoli)
+
+
