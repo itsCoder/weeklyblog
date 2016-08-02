@@ -68,3 +68,5 @@
 
 - Melo [@Melo](https://github.com/itsMelo)
 
+- 写代码的香港记者 [@Manjusaka](https://github.com/Zheaoli)
+
