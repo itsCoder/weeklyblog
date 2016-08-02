@@ -70,3 +70,5 @@
 
 - shadow [@shaDowZwy](https://github.com/shaDowZwy)
 
+- 写代码的香港记者 [@Manjusaka](https://github.com/Zheaoli)
+
