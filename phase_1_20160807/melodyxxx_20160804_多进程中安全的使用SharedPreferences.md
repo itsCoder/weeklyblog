@@ -23,13 +23,13 @@ SharedPreferences是Android中一种轻量级的存储解决方案，底层采�
 
 所以需要用到跨进程传递数据了，Android中的跨进程通信(IPC)的解决方案也有很多，例如使用AIDL、Messenger、ContentProvider、文件共享机制、Socket通信等。AIDL使用起来相对其他的方案比较麻烦。。
 
-**解决方案：
-使用ContentProvider封装SharedPreferences的所有操作,ContentProvider的底层使用就是AIDL，只不过ContentProvider已经为我们做了很好的封装了
-**
-<div align=center>
-![](http://i.imgur.com/yuV0Gbl.png)
-实现流程图
-</div>
+**解决方案：**
+**使用ContentProvider封装SharedPreferences的所有操作,ContentProvider的底层使用就是AIDL，只不过ContentProvider已经为我们做了很好的封装了**
+
+下面是大致的实现流程图：
+
+![流程图](http://i.imgur.com/yuV0Gbl.png)
+
 
 ### 三、具体实现
 
