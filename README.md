@@ -26,7 +26,7 @@
 - 分支说明
   - master: 主分支
   - dev: 每期进行中分支，每期结束后合并到 master 分支
-  - br_id: 成员分支，每个成员的单独分支
+  - member/id: 成员分支，每个成员的单独分支
 
 - Pull requests 规范
   - 每个 pr 的标题明确本次 pr 主要内容
@@ -64,3 +64,8 @@
 
 - 用语 [@yongyu](https://github.com/yongyu0102)
 
+- 千百度 [@fq050766](https://github.com/fq050766)
+
+- Melo [@Melo](https://github.com/itsMelo)
+
+- 写代码的香港记者 [@Manjusaka](https://github.com/Zheaoli)
