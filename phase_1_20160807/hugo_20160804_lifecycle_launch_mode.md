@@ -25,56 +25,74 @@ Activity / Fragment 的生命周期是每个 Android 开发者最最基础的知
 ![22:39:52.jpg](http://ww2.sinaimg.cn/large/006tKfTcgw1f6i3dzl70yj30fj0j2q41.jpg)
 
 1. 针对一个特定的 Activity ，第一次启动，回调如下：`onCreate` —-> `onStart` —-> `onResume`
->Log 日志
->D/KLog: (MainActivity.java:19) onCreate
->D/KLog: (MainActivity.java:44) onStart
->D/KLog: (MainActivity.java:62) onResume
 
-1. 切换回到桌面的时候，回调如下：`onPause` —-> `onStop`
-> Log 日志
-> D/KLog: (MainActivity.java:50) onPause
-> D/KLog: (MainActivity.java:68) onStop
+```
+Log 日志
+D/KLog: (MainActivity.java:19) onCreate
+D/KLog: (MainActivity.java:44) onStart
+D/KLog: (MainActivity.java:62) onResume
+```
 
-1. Back 键退出的话，最后会 `onDestroy`
+2. 切换回到桌面的时候，回调如下：`onPause` —-> `onStop`
 
-2. 启动一个新的 Activity , 我们看看两个 Activity 的生命周期：
-> Log 日志
-> D/KLog: (MainActivity.java:50) onPause
-> D/KLog: (OtherActivity.java:25) onCreate
-> D/KLog: (OtherActivity.java:31) onStart
-> D/KLog: (OtherActivity.java:49) onResume
-> D/KLog: (MainActivity.java:68) onStop
-> 可以得到顺序是：`onPause(A)` —-> `onCreate(B)` —-> `onStart(B)` —->  `onResume(B)` —-> `onStop(A)`
+```
+Log 日志
+D/KLog: (MainActivity.java:50) onPause
+D/KLog: (MainActivity.java:68) onStop
+```
 
-1. 这个时候我们 Back 回到第一个 Activity 时发生的回调：
-> Log 日志
-> D/KLog: (OtherActivity.java:37) onPause
-> D/KLog: (MainActivity.java:56) onRestart
-> D/KLog: (MainActivity.java:44) onStart
-> D/KLog: (MainActivity.java:62) onResume
-> D/KLog: (OtherActivity.java:55) onStop
-> D/KLog: (OtherActivity.java:61) onDestroy
-> 可以得到顺序是： `onPause(B)` —-> `onRestart(A)` —-> `onStart(A)` —-> `onResume(A)` —-> `onStop(B)` —-> `onDestroy(B)`
+3. Back 键退出的话，最后会 `onDestroy`
 
-1. 如果我在 B Activity 中的 `onCreate` 回调中直接 `finish()`：
-> Log 日志
-> D/KLog: (MainActivity.java:50) onPause
-> D/KLog: (OtherActivity.java:25) onCreate
-> D/KLog: (MainActivity.java:62) onResume
-> D/KLog: (OtherActivity.java:62) onDestroy
-> 我们发现 B Activity 只会执行 `onCreate` 和 `onDestroy`。
+4. 启动一个新的 Activity , 我们看看两个 Activity 的生命周期：
 
-1. 接下来我们启动一个特殊的 Activity （半透明或者对话框样式）到关闭它：
-> Log 日志
-> D/MainActivity: onPause
-> D/DialogActivity: onCreate
-> D/DialogActivity: onStart
-> D/DialogActivity: onResume
-> D/DialogActivity: onPause
-> D/MainActivity: onResume
-> D/DialogActivity: onStop
-> D/DialogActivity: onDestroy
+```
+Log 日志
+D/KLog: (MainActivity.java:50) onPause
+D/KLog: (OtherActivity.java:25) onCreate
+D/KLog: (OtherActivity.java:31) onStart
+D/KLog: (OtherActivity.java:49) onResume
+D/KLog: (MainActivity.java:68) onStop
+可以得到顺序是：`onPause(A)` —-> `onCreate(B)` —-> `onStart(B)` —->  `onResume(B)` —-> `onStop(A)`
+```
 
+5. 这个时候我们 Back 回到第一个 Activity 时发生的回调：
+
+```
+Log 日志
+D/KLog: (OtherActivity.java:37) onPause
+D/KLog: (MainActivity.java:56) onRestart
+D/KLog: (MainActivity.java:44) onStart
+D/KLog: (MainActivity.java:62) onResume
+D/KLog: (OtherActivity.java:55) onStop
+D/KLog: (OtherActivity.java:61) onDestroy
+可以得到顺序是： `onPause(B)` —-> `onRestart(A)` —-> `onStart(A)` —-> `onResume(A)` —-> `onStop(B)` —-> `onDestroy(B)`
+
+```
+
+6. 如果我在 B Activity 中的 `onCreate` 回调中直接 `finish()`：
+
+```
+Log 日志
+D/KLog: (MainActivity.java:50) onPause
+D/KLog: (OtherActivity.java:25) onCreate
+D/KLog: (MainActivity.java:62) onResume
+D/KLog: (OtherActivity.java:62) onDestroy
+我们发现 B Activity 只会执行 `onCreate` 和 `onDestroy`。
+```
+
+7. 接下来我们启动一个特殊的 Activity （半透明或者对话框样式）到关闭它：
+
+```
+Log 日志
+D/MainActivity: onPause
+D/DialogActivity: onCreate
+D/DialogActivity: onStart
+D/DialogActivity: onResume
+D/DialogActivity: onPause
+D/MainActivity: onResume
+D/DialogActivity: onStop
+D/DialogActivity: onDestroy
+```
 
 
 在正常使用应用的过程中，前台 Activity 有时会被其他导致 Activity 暂停的可视组件阻挡。 例如，当半透明 Activity 打开时（比如对话框样式中的 Activity ），上一个 Activity 会暂停。 只要 Activity 仍然部分可见但目前又未处于焦点之中，它会一直暂停。
