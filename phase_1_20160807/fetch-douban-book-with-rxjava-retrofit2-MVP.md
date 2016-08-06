@@ -5,9 +5,13 @@ categories: Android
 tags: [Android ,MVP ,Retrofit2, Rxjava]
 ---
 刚接触rxjava和retrofit，加上自己对MVP架构的一点理解，就结合起来实践一下。豆瓣图书api个人版是免费试用的，不过有访问限制，你可以去[这里](https://developers.douban.com/wiki/?title=api_v2)了解更多。本文将展示的是一个小项目的开始工作，而不仅仅是一个小demo(什么意思？)，这意味着图书列表的UI不会仅用一个TextView来示意一下(⊙o⊙)…，那样就太demo了。
+
 ![book item](https://raw.githubusercontent.com/itsCoder/weeklyblog/member/hymane/images/phase_1_book_item.png)
+
 最终效果图：
+
 ![demo](https://raw.githubusercontent.com/itsCoder/weeklyblog/member/hymane/images/phase_1_demo1.png)
+
 ## 一 .  准备工作
 第一步不急着写代码，先把项目目录整理一下，当然对于rxjava和retrofit的实践可以把所有代码全写在一个文件里面，但是这样就很不清真了。项目目录如下：
 ```
@@ -50,7 +54,9 @@ tags: [Android ,MVP ,Retrofit2, Rxjava]
     compile 'com.google.code.gson:gson:2.7'
 ```
 ！整个目录结构如下图：
+
 ![project tree](https://raw.githubusercontent.com/itsCoder/weeklyblog/member/hymane/images/phase_1_project_tree.png)
+
 ！你可以直接去github主页[**查看源码**](https://github.com/Hymanme/MaterialHome)
 ##二.  分析豆瓣图书接口
 通过豆瓣图书开发者文档可以得到图书列表接口
