@@ -4,7 +4,10 @@ date: 2016-08-05 20:14:19
 categories: Android
 tags: [Android ,MVP ,Retrofit2, Rxjava]
 ---
-刚接触rxjava和retrofit，加上自己对MVP架构的一点理解，就结合起来实践一下。豆瓣图书api个人版是免费试用的，不过有访问限制，你可以去[这里](https://developers.douban.com/wiki/?title=api_v2)了解更多。
+刚接触rxjava和retrofit，加上自己对MVP架构的一点理解，就结合起来实践一下。豆瓣图书api个人版是免费试用的，不过有访问限制，你可以去[这里](https://developers.douban.com/wiki/?title=api_v2)了解更多。本文将展示的是一个小项目的开始工作，而不仅仅是一个小demo(什么意思？)，这意味着图书列表的UI不会仅用一个TextView来示意一下(⊙o⊙)…，那样就太demo了。
+![book item](https://raw.githubusercontent.com/itsCoder/weeklyblog/member/hymane/images/phase_1_book_item.png)
+最终效果图：
+![demo](https://raw.githubusercontent.com/itsCoder/weeklyblog/member/hymane/images/phase_1_demo1.png)
 ## 一 .  准备工作
 第一步不急着写代码，先把项目目录整理一下，当然对于rxjava和retrofit的实践可以把所有代码全写在一个文件里面，但是这样就很不清真了。项目目录如下：
 ```
@@ -46,7 +49,10 @@ tags: [Android ,MVP ,Retrofit2, Rxjava]
     //gson
     compile 'com.google.code.gson:gson:2.7'
 ```
-##二.  分析图书接口
+！整个目录结构如下图：
+![project tree](https://raw.githubusercontent.com/itsCoder/weeklyblog/member/hymane/images/phase_1_project_tree.png)
+！你可以直接去github主页[**查看源码**](https://github.com/Hymanme/MaterialHome)
+##二.  分析豆瓣图书接口
 通过豆瓣图书开发者文档可以得到图书列表接口
 Url：`https://api.douban.com/v2/book/search?tag=热门&start=0&count=20&fields=`
 我们写一个公共类URL.java存放这些url常量。
@@ -181,6 +187,156 @@ IBookService iBookService = ServiceFactory.createService(URL.HOST_URL_DOUBAN, IB
 
 ##五.  配合MVP实现逻辑清晰易维护的代码
 MVP模型分3块Model，View，Presenter，相互配合分工明确。
-1.  Model主要处理数据部分，*比如执行网络请求，获取网络数据*；
-2.  View主要用来更新视图，*比如数据请求完成了页面数据需要刷新*，就是通过view来控制的；
-3.  Presenter主要用来处理逻辑的，协调配合Model层和View层，*比如让model区请求数据，让view更新视图，处理网络异常等逻辑*。
+1.  Model主要处理数据部分，**比如执行网络请求，获取网络数据**；
+2.  View主要用来更新视图，**比如数据请求完成了页面数据需要刷新**，就是通过view来控制的；
+3.  Presenter主要用来处理逻辑的，协调配合Model层和View层，**比如让model区请求数据，让view更新视图，处理网络异常等逻辑**。
+
+####1. View层 由activity或者fragment继承，来更新视图
+
+```java
+    public interface IBookListView {
+        void showMessage(String msg);
+
+        void showProgress();
+
+        void hideProgress();
+
+        void refreshData(Object result);
+
+        void addData(Object result);
+    }
+```
+
+####2. Presenter层 先定义好presenter的接口然后创建实现类，负责逻辑的处理工作
+
+```java
+    public interface IBookListPresenter {
+        void loadBooks(String q, String tag, int start, int count, String fields);
+
+        void cancelLoading();
+    }
+```
+
+```java
+public class BookListPresenterImpl implements IBookListPresenter, ApiCompleteListener {
+    private IBookListView mBookListView;
+    private IBookListModel mBookListModel;
+
+    public BookListPresenterImpl(IBookListView view) {
+        mBookListView = view;
+        mBookListModel = new BookListModelImpl();
+    }
+
+    /**
+     * 加载数据
+     */
+    @Override
+    public void loadBooks(String q, String tag, int start, int count, String fields) {
+        if (!NetworkUtils.isConnected(BaseApplication.getApplication())) {
+            mBookListView.showMessage(BaseApplication.getApplication().getString(R.string.poor_network));
+            mBookListView.hideProgress();
+//            return;
+        }
+        mBookListView.showProgress();
+        mBookListModel.loadBookList(q, tag, start, count, fields, this);
+    }
+
+    @Override
+    public void cancelLoading() {
+        mBookListModel.cancelLoading();
+    }
+
+    /**
+     * 访问接口成功
+     *
+     * @param result 返回结果
+     */
+    @Override
+    public void onComplected(Object result) {
+        if (result instanceof BookListResponse) {
+            int index = ((BookListResponse) result).getStart();
+            if (index == 0) {
+                mBookListView.refreshData(result);
+            } else {
+                mBookListView.addData(result);
+            }
+            mBookListView.hideProgress();
+        }
+    }
+
+    /**
+     * 请求失败
+     *
+     * @param msg 错误信息
+     */
+    @Override
+    public void onFailed(BaseResponse msg) {
+        mBookListView.hideProgress();
+        mBookListView.showMessage(msg.getMsg());
+    }
+}
+```
+
+####3. Model层 现在到了具体数据访问的地方了，model接口以及其实现类
+
+```java
+    public interface IBookListModel {
+    /**
+     * 获取图书接口
+     */
+    void loadBookList(String q, String tag, int start, int count, String fields, ApiCompleteListener listener);
+
+    /**
+     * 取消加载数据
+     */
+    void cancelLoading();
+}
+```
+
+在实现类中进行网络访问，这里配合retrofit和rxjava进行数据访问，同创建service执行网络请求
+```java
+public class BookListModelImpl implements IBookListModel {
+
+/**
+ + 获取图书列表
+ */
+@Override
+public void loadBookList(String q, final String tag, int start, int count, String fields, final ApiCompleteListener listener) {
+    IBookService iBookService = ServiceFactory.createService(URL.HOST_URL_DOUBAN, IBookService.class);
+    iBookService.getBookList(q, tag, start, count, fields)
+            .subscribeOn(Schedulers.newThread())    //请求在新的线程中执行
+            .observeOn(AndroidSchedulers.mainThread())//最后在主线程中执行
+            .subscribe(new Subscriber<Response<BookListResponse>>() {
+                @Override
+                public void onCompleted() {
+
+                }
+
+                @Override
+                public void onError(Throwable e) {
+                    listener.onFailed(new BaseResponse(404, e.getMessage()));
+                }
+
+                @Override
+                public void onNext(Response<BookListResponse> bookListResponse) {
+                    if (bookListResponse.isSuccessful()) {
+                        listener.onComplected(bookListResponse.body());
+                    } else {
+                        listener.onFailed(new BaseResponse(bookListResponse.code(), bookListResponse.message()));
+                    }
+
+                }
+            });
+}
+
+@Override
+public void cancelLoading() {
+
+}
+}
+```
+
+##总结
+到此为止已经基本完成，但是在使用缓存的时候还遇到一点问题，豆瓣接口响应头默认不允许缓存`Pragma: no-cache` `Cache-Control: must-revalidate, no-cache, private`,在缓存拦截器里面修改这些值达到强制缓存，结果还是无效。有知道解决方法的还望不吝赐教。
+**谢谢阅读**
+>来自github项目[weeklyblog](https://github.com/itsCoder/weeklyblog)。
