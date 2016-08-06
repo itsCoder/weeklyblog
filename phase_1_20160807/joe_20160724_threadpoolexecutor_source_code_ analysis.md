@@ -1,10 +1,3 @@
----
-title: ThreadPoolExecutor源码学习笔记
-date: 2016-07-24 13:06:08
-categories: Android源码学习
-tags:
----
-
 转载请附原文链接：[ThreadPoolExecutor源码学习笔记](http://extremej.itscoder.com/threadpoolexecutor_source/)
 
 **大部分分析以注释形式写在源码中**
@@ -87,17 +80,21 @@ public ThreadPoolExecutor(int corePoolSize,
 - unit — 上一个参数的单位
 - workQueue — 任务队列（阻塞队列）
 - threadFacotry —  线程创建工厂
-- handler — 当线程池或者任务队列容量已满时用于reject
+- handler — 当线程池或者任务队列容量已满时用于 reject
 
-这里要明白一件事情，**核心线程只是通过数目来判断，而不是说先创建的线程就是核心线程**
+这里要明白一件事情，**核心线程只是通过数目来判断，而不是说先创建的线程就是核心线程。**
 
-在构造方法里面初始化了成员变量值，通过构造方法应该明白了不同类型的线程获取的原理。
+这句话可能有点难懂，我大概解释一下，线程池这个核心线程数的用处就是来判断当前这个闲置线程是否应该回收，那么什么是闲置线程呢？一个线程执行完了一个任务后，会去阻塞队列里面取新的任务，在取到任务之前它就是一个闲置的线程，**取任务的方法有两个，一个是一直阻塞直到取出任务，另一个是一定时间内阻塞直到取出任务或者超时，如果超时这个线程就会被回收，我们知道核心线程一般不会被回收。**
+
+**线程在取任务的时候，线程池会比较当前的有效线程数和允许的核心线程数，如果小于当前的核心线程数则使用第一个方法取任务，也就是没有超时回收，如果大于核心线程数，则使用第二个，一旦超时就回收，所以，并没有绝对的核心线程，只要这个线程出于闲置状态就有被回收的可能。**
+
+**还有一种情况是设置了线程池允许核心线程超时回收，那么无论线程数有多少，统统会使用第二个方法取任务。**
 
 ### 任务的执行
 
 #### A.状态属性
 
-在看源码之前先了解一下 ThreadPoolExecutor的几个状态属性，这对后面的源码阅读有很重要的作用，ThreadPoolExecutor 有五种状态
+在看源码之前先了解一下 ThreadPoolExecutor 的几个状态属性，这对后面的源码阅读有很重要的作用，ThreadPoolExecutor 有五种状态
 
 ```java
 private static final int RUNNING    = -1 << COUNT_BITS; 
@@ -180,6 +177,10 @@ public void execute(Runnable command) {
 **当这个任务被添加到了阻塞队列前，池子处于 RUNNING 状态，但如果在添加到队列成功后，池子进入了 SHUTDOWN 状态或者其他状态，这时候是不应该再接收新的任务的，所以需要把这个任务从队列中移除，并且 reject**
 
 **同样，在没有添加到队列前，可能有一个有效线程，但添加完任务后，这个线程闲置超时或者因为异常被干掉了，这时候需要创建一个新的线程来执行任务**
+
+为了更直观的理解一个任务的执行过程，我画了一张图：
+
+![执行流程.png](http://7xtakx.com1.z0.glb.clouddn.com/threadpoolexecutor.png)
 
 #### C .addWorker()
 
@@ -723,7 +724,4 @@ public void rejectedExecution(Runnable r, ThreadPoolExecutor e) {
 
 以上是我的一点拙见。
 
-最后感谢我的好基友  — **用语**，在与他的探讨中我走出了误区并有了很多新的理解。
-
-
-
+最后感谢我的好基友  — **[阿语](http://yongyu.itscoder.com/)**，在与他的探讨中我走出了误区并有了很多新的理解。
