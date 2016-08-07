@@ -3,10 +3,11 @@
  title:  Volley学习笔记之简单使用及部分源码详解
  date:  2016-08-02 00:00：00
  categories:  Android源码学习
+ tags:  Android、Volley、源码
 
 ---
 
-转载请附原文链接：[Volley学习笔记之简单使用及部分源码详解](http://yongyu.itscoder.com/2016/08/01/Volley%20Study/) 
+转载请附原文链接：[Volley学习笔记之简单使用及部分源码详解](http://yongyu.itscoder.com/2016/08/07/yongyu_20160803_volley_use_and_source_code_study/) 
 
 
 ## 一、使用背景简介
@@ -932,6 +933,8 @@ public HttpResponse performRequest(Request<?> request, Map<String, String> addit
 这段代码中我们终于看见了我们熟悉的HttpURLConnection对象，并进行了一系列的参数设置，解析返回数据返回HttpResponse对象。到这里负责执行网络请求部分的内容我们也梳理结束。
 
 至此，关于volley的学习笔记到此结束，如有理解错误地方，还请指教！！
+
+最后其实网络上关 Volley源码分析有很多文章，东西都差不多，但是每个人的侧重点和分析角度以及能否把事情讲的通俗易懂差别就大了，关键是要找到适合自己的，如果感觉本人分析你读着比较懵逼，那可能是我写的不清真，那么可以出门左拐[[黑丫山上的小帅比 对Volley的深入分析](http://extremej.itscoder.com/volley_source/)](http://yongyu.itscoder.com/2016/08/01/Volley%20Study/) 和郭霖大神的博客去看一下，如果还是看不懂，那就有肯能是你理解的不清真了（just a joke) !!
 
 
 
