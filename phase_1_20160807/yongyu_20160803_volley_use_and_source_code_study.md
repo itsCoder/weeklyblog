@@ -11,13 +11,13 @@
 
 ## 一、使用背景简介
 
-现在大多数手机App几乎都离不开网络技术，需要手机端与网络服务端进行数据交互，Android系统中主要提供了两种方式来进行HTTP通信，HttpURLConnection和HttpClient，在初学Android的时候，这两个类是我们最开始学着使用的，但是在使用过程中需要调取各种API，进行封，然后请求到的结果需要自己去解析，最后再将解析到的数据进行封装存到数据库，整个过程，相当复杂，而且重复性很高，于是针对这种情况，网络上就有大神封装了各种第三方使用库供我们使用，将这些流程封装组合包装优化，使得整个流程得以简化，只需简单配置，几行代码就完成整个过程。今天我们介绍的Volley 就是其中一个优秀第三方框架。笔者所在公司目前项目使用的就是Volley ，所以在使用的同时决定写一系列笔记分析，从学会简单使用，到最后的Volley源码分析一系列循序渐进的流程来理解Volley的实现原理。
+现在大多数手机 App 几乎都离不开网络技术，需要手机端与网络服务端进行数据交互，Android 系统中主要提供了两种方式来进行HTTP通信，HttpURLConnection 和 HttpClient，在初学 Android 的时候，这两个类是我们最开始学着使用的，但是在使用过程中需要调取各种API，进行封，然后请求到的结果需要自己去解析，最后再将解析到的数据进行封装存到数据库，整个过程，相当复杂，而且重复性很高，于是针对这种情况，网络上就有大神封装了各种第三方框架供我们使用，将这些复杂冗余操作进行组合优化，使得整个编写过程得以简化，只需简单配置几行代码就可以完成整个流程操作。今天我们介绍的 Volley  就是其中一个优秀第三方框架。笔者所在公司目前项目使用的就是Volley ，所以在使用的同时决定写一系列笔记分析，从学会简单使用，到最后的 Volley 源码分析一系列循序渐进的流程来理解Volley的实现原理。
 
 ## 二、Volley简介
 
 Volley 是 Google在 Google I/O 2013 大会上 推出的 Android 异步网络请求和图片加载框架。
 
-- 主要作用 ：实现异步网络请求、图片加载、本地数据缓存功能框架。
+- 主要作用 ：实现异步网络请求、图片加载。
 
 - 主要特点：
 
@@ -27,7 +27,7 @@ Volley 是 Google在 Google I/O 2013 大会上 推出的 Android 异步网络请
 
   (4). 支持指定请求的优先级。
 
-  (4). 高并发网络连接。
+  (5). 高并发网络连接。
 
 - 使用下载地址：https://android.googlesource.com/platform/frameworks/volley
 
@@ -138,7 +138,7 @@ public static RequestQueue getVolleyRequestQueue() {
 
 首先我们来看看Volley官方给出的一张Volley工作流程图 
 
-![“Volley工作原理如”](https://github.com/yongyu0102/yongyu0102.github.io/blob/master/images/operating%20principle.png?raw=true)
+![“Volley工作原理如”](https://github.com/yongyu0102/yongyu0102.github.io/blob/master/images/operating_principle.png?raw=true)
 
 下面将这张图翻译如下：
 
@@ -165,7 +165,8 @@ public static RequestQueue newRequestQueue(Context context) {
 ```java
 /**
  * @param context A 用于创建缓存文件夹
- * @param stack HttpStack处理http网络请求包装，可以自己定义，如果传入null，那么就使用系统默认的HttpStack
+ * @param stack HttpStack处理http网络请求包装，可以自己定义，如果传入null，
+ *那么就使用系统默认的HttpStack
  * @return A 返回 instance.
  */
 public static RequestQueue newRequestQueue(Context context, HttpStack stack)
@@ -179,8 +180,9 @@ public static RequestQueue newRequestQueue(Context context, HttpStack stack)
 ```java
  /**
      * @param context A 用于创建缓存文件夹
-     * @param stack HttpStack处理http网络请求包装，内部就是我		*们使用过的HttpURLConnection或者HttpClient，进行包装处
-     *理，可以自己定义，也可以传入null，那么就使用系统默认的		 *HttpStack
+     * @param stack HttpStack处理http网络请求包装，内部就是我		
+     *们使用过的HttpURLConnection或者HttpClient，进行包装处
+     *理，可以自己定义，也可以传入null，那么就使用系统默认的HttpStack
      * @param maxDiskCacheBytes 设置最大sd卡缓存,如果传入-1
      *就使用默认缓存
      * @return A 返回 instance.
@@ -209,11 +211,11 @@ public static RequestQueue newRequestQueue(Context context, HttpStack stack)
         }
 //如果传入stack参数为null，那么创建默认的stack
         if (stack == null) {
-            //如果版本号大于9采用基于 HttpURLConnection 的 //HurlStack
+            //如果 API 大于9采用基于 HttpURLConnection 的 //HurlStack
             if (Build.VERSION.SDK_INT >= 9) {
                 stack = new HurlStack();
             } else {
-                //版本号小于9采用基于 HttpClient 的 //HttpClientStack
+                // API小于9采用基于 HttpClient 的 //HttpClientStack
             stack = new HttpClientStack(AndroidHttpClient.newInstance(userAgent));
             }
         }
@@ -238,7 +240,7 @@ public static RequestQueue newRequestQueue(Context context, HttpStack stack)
     
 ```
 
-这个方法代码稍微多一点，代码已经注释，这个构造方法主要是new 了一个 负责处理网络请求部分的stack对象，然后 用BasicNetwork将stack进行包装处理，又new了一个负责缓存部分的DiskBasedCache对象，并将这两个参数传入了列队queue中，并启动了列队；这里说明一下，在创建HttpStack对象的时候是比较了一下版本号，如果Build.VERSION.SDK_INT >= 9， stack = new HurlStack();这里是因为在Android 2.2版本之前，HttpURLConnection一直存在着一些令人厌烦的bug，在Android 2.3版本及以后，HttpURLConnection则是最佳的选择。它的API简单，体积较小，因而非常适用于Android项目。压缩和缓存机制可以有效地减少网络访问的流量。到这里我们就完成使用volley的第一步分析，即获取RequestQueue对象，那么接下来我们分析下RequestQueue构造方法的实现：
+这个方法代码稍微多一点，代码已经注释，这个构造方法主要是new 了一个 负责处理网络请求部分的stack对象，然后 用BasicNetwork将stack进行包装处理，又new了一个负责缓存部分的DiskBasedCache对象，并将这两个参数传入了列队queue中，并启动了列队；这里说明一下，在创建HttpStack对象的时候是比较了一下版本号，如果Build.VERSION.SDK_INT >= 9（ API大于9）， stack = new HurlStack();这里是因为在Android 2.2版本之前，HttpURLConnection一直存在着一些令人厌烦的bug，在Android 2.3版本及以后，HttpURLConnection则是最佳的选择。它的API简单，体积较小，因而非常适用于Android项目。压缩和缓存机制可以有效地减少网络访问的流量。到这里我们就完成使用volley的第一步分析，即获取RequestQueue对象，那么接下来我们分析下RequestQueue构造方法的实现：
 
 ```java
 /**
