@@ -1,12 +1,14 @@
-Title: Android 利用 APT 技术在编译期生成代码
-Category: 开发
-Tag: Android, APT, Annotation
-Slug: apt-in-android
-Date: 2016-08-06
+# Android 利用 APT 技术在编译期生成代码
+
+原文链接：[http://brucezz.itscoder.com/articles/2016/08/06/use-apt-in-android](http://brucezz.itscoder.com/articles/2016/08/06/use-apt-in-android/)
+
+
 
 APT(`Annotation Processing Tool` 的简称)，可以在代码编译期解析注解，并且生成新的 Java 文件，减少手动的代码输入。现在有很多主流库都用上了 APT，比如 Dagger2, ButterKnife, EventBus3 等，我们要紧跟潮流，与时俱进呐！ (ง •̀_•́)ง
 
 下面通过一个简单的 View 注入项目 `ViewFinder` 来介绍 APT 相关内容，简单实现了类似于 `ButterKnife` 中的两种注解 `@BindView` 和 `@OnClick` 。
+
+项目地址：[https://github.com/brucezz/ViewFinder](https://github.com/brucezz/ViewFinder)
 
 大概项目结构如下：
 
@@ -105,7 +107,7 @@ public class ViewFinder {
 
 那么 `inject()` 方法中都写一些什么呢？
 
-首先我们需要一个接口 `Finder`，然后为每一个注解类都生成一个对应的内部类并且实现这个接口，然后实现具体的注入逻辑。在 `inject()` 方法中首先找到调用者对应的 `Finder`实现类，然后调用其内部的具体逻辑来达到注入的目的。
+首先我们需要一个接口 `Finder`，然后为每一个注解类都生成一个对应的内部类并且实现这个接口，然后实现具体的注入逻辑。在 `inject()` 方法中首先找到调用者对应的 `Finder` 实现类，然后调用其内部的具体逻辑来达到注入的目的。
 
 接口 `Finder` 设计如下 ：
 
@@ -115,7 +117,7 @@ public interface Finder<T> {
 }
 ```
 
-举个🌰，为 `MainActivity` 生成 `MainActivity$$Finder`，为 MainActivity 所注解的 View 进行初始化和设置点击事件，这就跟我们平常所写的重复代码基本相同。
+举个🌰，为 `MainActivity` 生成 `MainActivity$$Finder`，对其注解的 View 进行初始化和设置点击事件，这就跟我们平常所写的重复代码基本相同。
 
 ```java
 public class MainActivity$$Finder implements Finder<MainActivity> {
@@ -151,7 +153,7 @@ public class ViewFinder {
 
   	// same as above
   
-    private static final Map<String, Finder> FINDER_MAP = new LinkedHashMap<>();
+    private static final Map<String, Finder> FINDER_MAP = new HashMap<>();
  
     public static void inject(Object host, Object source, Provider provider) {
         String className = host.getClass().getName();
@@ -172,7 +174,7 @@ public class ViewFinder {
 
 另外代码中使用到了一点反射，为了提高效率，避免每次注入的时候都去找 `Finder` 对象，用一个 Map 将第一次找到的对象缓存起来，后面用的时候直接从 Map 里面取。
 
-到此，API 模块的设计基本搞定了，接下来就是去通过注解处理器来每一个注解类生成 `Finder` 内部类。
+到此，API 模块的设计基本搞定了，接下来就是去通过注解处理器为每一个注解类生成 `Finder` 内部类。
 
 ### 创建注解处理器
 
@@ -187,7 +189,7 @@ compile 'com.google.auto.service:auto-service:1.0-rc2'
 ```
 
 - 因为要用到前面定义的注解，当然要依赖 `viewFinder-annotation`。
-- `javapoet` 是**方块公司**出的又一个好用到爆炸的裤子，提供了各种 API 让你用各种姿势去生成 Java 代码文件，避免了字符串+++到底的尴尬。
+- `javapoet` 是**方块公司**出的又一个好用到爆炸的裤子，提供了各种 API 让你用各种姿势去生成 Java 代码文件，避免了徒手拼接字符串的尴尬。
 - `auto-service` 是 Google 家的裤子，主要用于注解 `Processor`，对其生成 `META-INF` 配置信息。
 
 下面就来创建我们的处理器 `ViewFinderProcessor`。
@@ -299,7 +301,7 @@ public class BindViewField {
 
 ```
 
-主要就是在初始化时校验了一下元素类型，然后获取注解的值，在提供几个 get 方法。`OnClickMethod`封装类似。
+主要就是在初始化时校验了一下元素类型，然后获取注解的值，在提供几个 get 方法。`OnClickMethod` 封装类似。
 
 ```java
 public class AnnotatedClass {
@@ -362,7 +364,7 @@ public class AnnotatedClass {
 }
 ```
 
-`AnnotatedClass` 表示一个注解类，里面放了两个列表，分别装着注解的成员变量和方法。在 `generateFinder()` 方法中，按照前面设计的模板，利用 `JavaPoet` 的 API 生成代码。这部分没啥特别的，照着 [JavaPoet 文档](https://github.com/square/javapoet)来就好了，文档写得很细致。
+`AnnotatedClass` 表示一个注解类，里面放了两个列表，分别装着注解的成员变量和方法。在 `generateFinder()` 方法中，按照上一节设计的模板，利用 `JavaPoet` 的 API 生成代码。这部分没啥特别的姿势，照着 [JavaPoet 文档](https://github.com/square/javapoet) 来就好了，文档写得很细致。
 
 >  有很多地方需要用到对象的类型，普通类型可以用
 >
@@ -376,13 +378,13 @@ public class AnnotatedClass {
 >
 >  传入具体类和泛型类型就好了。
 
-这些 model 都确定好了之后，`process()`方法就很清爽啦。使用 `RoundEnvironment` 参数来查询被特定注解标注的元素，然后解析成具体的 model，最后生成代码输出到文件中。
+这些 model 都确定好了之后，`process()` 方法就很清爽啦。使用 `RoundEnvironment` 参数来查询被特定注解标注的元素，然后解析成具体的 model，最后生成代码输出到文件中。
 
 ```java
 @AutoService(Processor.class)
 public class ViewFinderProcesser extends AbstractProcessor {
 
-    private Map<String, AnnotatedClass> mAnnotatedClassMap = new LinkedHashMap<>();
+    private Map<String, AnnotatedClass> mAnnotatedClassMap = new HashMap<>();
 
     @Override
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
@@ -495,5 +497,5 @@ all done ~
 
 - [Annotation-Processing-Tool详解](http://qiushao.net/2015/07/07/Annotation-Processing-Tool%E8%AF%A6%E8%A7%A3/) （大力推荐）
 - [Android 如何编写基于编译时注解的项目](http://blog.csdn.net/lmj623565791/article/details/51931859)
-- [JavaPoet](https://github.com/square/javapoet)
-- [ButterKnife](https://github.com/JakeWharton/butterknife)
+- [JavaPoet 文档](https://github.com/square/javapoet) 
+- [ButterKnife](https://github.com/JakeWharton/butterknife) （代码结构设计很棒）
