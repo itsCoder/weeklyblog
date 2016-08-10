@@ -121,7 +121,7 @@ public class ServiceFactory {
             // 有网络时 设置缓存超时时间1个小时
             response.newBuilder()
                     .removeHeader("Cache-Control")
-                    .removeHeader("Expires")
+                    .removeHeader("Expires")//(注1)
                     .removeHeader("Pragma")// 清除头信息，因为服务器如果不支持，会返回一些干扰信息，不清除下面无法生效
                     .header("Cache-Control", "public, max-age=" + maxAge)
                     .build();
@@ -191,11 +191,24 @@ IBookService iBookService = ServiceFactory.createService(URL.HOST_URL_DOUBAN, IB
             });
 ```
 
+(注1):在正常web请求时用户可以指定自己的缓存策略，可以在请求头里面加入`Cache-control : cache` 其中`cache`有`no-cache`,`no-store`,`max-age = time`,`max-stale = time`,`only-if-cached`等等。服务器响应头也有类似的`Cache-control`,当然这些策略需要服务器支持才行，比如你请求缓存某个请求的数据，然后服务器返回的确实`no-cache`,这就是服务器有意为之不让客户端缓存，比如豆瓣接口 api,就不允许缓存，如下豆瓣响应头信息：
+
+![project tree](https://raw.githubusercontent.com/itsCoder/weeklyblog/member/hymane/images/douban_cache.png)
+
+一般的网络请求框架都考虑到这个特性，比如 okhttp，他会根据响应头还做缓存机制，但是对于豆瓣这种不让缓存该怎么办尼？我们会想到人为伪造响应头，将不缓存策略改成缓存策略，这就需要使用**拦截器**拦截响应头，然后修改之。
+
+如上我们根据有无网络动态修改了响应头`"Cache-Control", "public, max-age=" + maxAge`。maxAge为一个缓存时间，考虑到在`HTTP/1.0`协议里面`Cache-Control`支持的不全，但是另一个头信息`Pragma: no-cache`却有效，可以看到豆瓣响应头，能设置不缓存的地方都给设置了，所以我们要删掉这些头信息，防止有所干扰。
+`Expires `:表示存在时间，允许客户端在这个时间之前不去检查（发请求），等同max-age的
+效果。但是如果同时存在，则被Cache-Control的max-age覆盖。
+格式：
+Expires = "Expires" ":" HTTP-date
+
 ##五.  配合MVP实现逻辑清晰易维护的代码
-MVP模型分3块Model，View，Presenter，相互配合分工明确。
-1.  Model主要处理数据部分，**比如执行网络请求，获取网络数据**；
+MVP模型分3块 Model，View，Presenter，相互配合分工明确。
+
+1.  Model主要处理数据部分，**比如执行网络请求，获取网络数据**；<br>
 2.  View主要用来更新视图，**比如数据请求完成了页面数据需要刷新**，就是通过view来控制的；
-3.  Presenter主要用来处理逻辑的，协调配合Model层和View层，**比如让model区请求数据，让view更新视图，处理网络异常等逻辑**。
+3.  Presenter主要用来处理逻辑的，协调配合Model层和View层，**比如让model去请求数据，让view更新视图，处理网络异常等逻辑**。
 
 ####1. View层 由activity或者fragment继承，来更新视图
 
