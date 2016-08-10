@@ -6,11 +6,11 @@ tags: [Android ,MVP ,Retrofit2, Rxjava]
 ---
 刚接触rxjava和retrofit，加上自己对MVP架构的一点理解，就结合起来实践一下。豆瓣图书api个人版是免费试用的，不过有访问限制，你可以去[这里](https://developers.douban.com/wiki/?title=api_v2)了解更多。本文将展示的是一个小项目的开始工作，而不仅仅是一个小demo(什么意思？)，这意味着图书列表的UI不会仅用一个TextView来示意一下(⊙o⊙)…，那样就太demo了。
 
-![book item](https://raw.githubusercontent.com/itsCoder/weeklyblog/member/hymane/images/phase_1_book_item.png)
+![book item](http://ww3.sinaimg.cn/mw690/005X6W83gw1f6p032la2tj30dw04vq4g.jpg)
 
 最终效果图：
 
-![demo](https://raw.githubusercontent.com/itsCoder/weeklyblog/member/hymane/images/phase_1_demo1.png)
+![demo](http://ww4.sinaimg.cn/mw690/005X6W83gw1f6p0339jkbj30c00lcn3f.jpg)
 
 ## 一 .  准备工作
 第一步不急着写代码，先把项目目录整理一下，当然对于rxjava和retrofit的实践可以把所有代码全写在一个文件里面，但是这样就很不清真了。项目目录如下：
@@ -55,7 +55,7 @@ tags: [Android ,MVP ,Retrofit2, Rxjava]
 ```
 ！整个目录结构如下图：
 
-![project tree](https://raw.githubusercontent.com/itsCoder/weeklyblog/member/hymane/images/phase_1_project_tree.png)
+![project tree](http://ww2.sinaimg.cn/mw690/005X6W83gw1f6p033lyt6j30990i5q3e.jpg)
 
 ！你可以直接去github主页[**查看源码**](https://github.com/Hymanme/MaterialHome)
 ##二.  分析豆瓣图书接口
@@ -193,7 +193,7 @@ IBookService iBookService = ServiceFactory.createService(URL.HOST_URL_DOUBAN, IB
 
 (注1):在正常web请求时用户可以指定自己的缓存策略，可以在请求头里面加入`Cache-control : cache` 其中`cache`有`no-cache`,`no-store`,`max-age = time`,`max-stale = time`,`only-if-cached`等等。服务器响应头也有类似的`Cache-control`,当然这些策略需要服务器支持才行，比如你请求缓存某个请求的数据，然后服务器返回的确实`no-cache`,这就是服务器有意为之不让客户端缓存，比如豆瓣接口 api,就不允许缓存，如下豆瓣响应头信息：
 
-![project tree](https://raw.githubusercontent.com/itsCoder/weeklyblog/member/hymane/images/douban_cache.png)
+![douban_cache](http://ww4.sinaimg.cn/mw690/005X6W83gw1f6p032730gj309n06wt90.jpg)
 
 一般的网络请求框架都考虑到这个特性，比如 okhttp，他会根据响应头还做缓存机制，但是对于豆瓣这种不让缓存该怎么办尼？我们会想到人为伪造响应头，将不缓存策略改成缓存策略，这就需要使用**拦截器**拦截响应头，然后修改之。
 
