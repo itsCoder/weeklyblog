@@ -64,3 +64,4 @@
 
 - 用语 [@yongyu](https://github.com/yongyu0102)
 
+- 写代码的香港记者 [@Manjusaka](https://github.com/Zheaoli)
