@@ -13,7 +13,7 @@ Android 控件中，看起来最简单、最基础的 TextView 实际上是很�
 本文将会简单地深入 StaticLayout 的源码，分析下具体是如何工作的。
 
 #### 概述
-先看 StaticLayout 类的注释：StaticLayout 是一个为不可编辑的文本布局的类，这意味着一旦布局完成，文本内容就不可以改变，如果需要改变的话，应该使用 DynamicLayout 来布局。同时你不应该直接使用 StaticLayout 类，除非你在实现一个自定义的控件或者自定义显示对象时，否则，你应该直接调用  `Canvas.drawText()`。因此，在正常的开发工作中，你接触 StaticLayout 的机会应该不多。
+先看 StaticLayout 类的注释：StaticLayout 是一个为不可编辑的文本布局的类，这意味着一旦布局完成，文本内容就不可以改变，如果需要改变的话，应该使用 DynamicLayout 来布局。同时你不应该直接使用 StaticLayout 类，除非你需要实现一个自定义的控件或者自定义显示对象，否则，你应该直接调用  `Canvas.drawText()`。因此，在正常的开发工作中，你接触 StaticLayout 的机会应该不多。
 
 在 TextView 初始化时，会通过 `makeNewLayout()` 方法，根据文本的特点，是否包含 Span，是否单行等，决定创建具体的 Layout 类型。在单纯地使用TextView来展示静态文本的时候，创建的就是 StaticLayout。StaticLayout 的初始化是通过内部类 `StaticLayout.Builder` 完成的，然后调用 `generate()` 方法完成段落、折行以及缩进之类的处理，在 `generate()` 方法中调用了 `out()` 方法，完成文本显示的行距、顶部底部留白、省略文本等的处理，这两个方法也是 StaticLayout 源码中两个主要的方法，完成了一系列的文本处理。在 TextView 的 `onDraw(Canvas canvas)` 方法中，调用父类 Layout 的 `draw()` 方法，改方法会依次调用 `drawBackground()` 和 `drawText()` 完成背景和文本的绘制。
 
@@ -561,15 +561,3 @@ StaticLayout 中的 `generate()` 方法近 300 行，其完成了文本的段落
 
 #### 总结
 至此，StaticLayout 的源码大致分析了一遍，后面需要结合 TextView 和 Layout 来具体看一下，文字到底是怎么绘制到屏幕上的。
-	
-	
-
-
-
-
-
-
-
-
-
-
