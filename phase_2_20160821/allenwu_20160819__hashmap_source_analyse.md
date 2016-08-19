@@ -4,7 +4,7 @@ date: 2016-08-18 11:37:48
 tags: javacode
 categories: About Java
 ---
-java 集合框架源码分析系列之 HashMap
+Java 集合框架源码分析系列之 HashMap
 
 <!--more-->
 
@@ -64,7 +64,6 @@ transient volatile int modCount;
 ### 2.2 构造函数
 
 ``` java
-
 public HashMap(int initialCapacity, float loadFactor) {
 	// 初始大小为0 即抛出异常
 	if (initialCapacity < 0)
@@ -129,7 +128,7 @@ private V getForNullKey() {
 
 ### 2.4 Put() 函数源码
 
-**注意下 putForNullKey( ) 这个函数**,说明 HashMap 是允许 key 为 Null 的。
+**注意下 putForNullKey( ) 这个函数**,说明 HashMap 是允许 key 为 Null 的。源码分析如下：
 
 ```java
 public V put(K key, V value) {
