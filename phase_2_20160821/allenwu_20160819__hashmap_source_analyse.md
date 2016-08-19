@@ -10,7 +10,7 @@ java 集合框架源码分析系列之 HashMap
 
 ### 引言
 
-我们都知道 HashMap 输出是无序的。是因为存储时候 HashMap 会根据 key 值来决定 value 的存储位置。但是我们想过没有？为什么输出的时候顺序就会跟存储时候相反呢？JDK1.7 中的 HashMap 底层构造与 JDK1.8 中有哪些区别呢？HashCode 的作用是什么呢？
+我们都知道 HashMap 输出是无序的。是因为存储时候 HashMap 会根据 key 值来决定 value 的存储位置。但是我们想过没有？到底为什么输出的时候顺序会跟存储时候不一样呢？JDK1.7 中的 HashMap 底层构造与 JDK1.8 中有哪些区别呢？HashCode() 的作用是什么呢？
 
 ## 一 .  初识 HashMap
 
@@ -125,7 +125,7 @@ private V getForNullKey() {
     }
 ```
 
- 该方法是一个私有方法，只在 get 中被调用。该方法判断 table[0] 中的链表是否包含 key 为 null 的元素，包含则返回 value，不包含则返回 null。为什么是遍历 **table[0] 的链表**？因为 key 为 null 的时候获得的 hash 值都是 0。
+ 该方法是一个私有方法，只在 get() 中被调用。该方法判断 table[0] 中的链表是否包含 key 为 null 的元素，包含则返回 value，不包含则返回 null。为什么是遍历 **table[0] 的链表**？因为 key 为 null 的时候获得的 hash 值都是 0。
 
 ### 2.4 Put() 函数源码
 
@@ -458,7 +458,7 @@ static final class TreeNode<K,V> extends LinkedHashMap.Entry<K,V> {
 
 ### 3.5 getNode() 函数
 
-get 函数最终还是要通过 getNode() 来进行操作：
+get() 函数最终还是要通过 getNode() 来进行操作：
 
 ``` java
 final Node<K,V> getNode(int hash, Object key) {
@@ -569,9 +569,9 @@ final Node<K,V> getNode(int hash, Object key) {
     }
 ```
 
-## 四. HashCode 的作用
+## 四. HashCode() 的作用
 
-面试经常会问到 HashCode 是干嘛的？什么时候重写 equals() 方法啊？
+面试经常会问到 HashCode() 是干嘛的？什么时候重写 equals() 方法啊？
 
 > 引用自[Hashcode的作用](http://c610367182.iteye.com/blog/1930676)
 >
@@ -584,7 +584,7 @@ final Node<K,V> getNode(int hash, Object key) {
 >            2、如果两个对象的hashCode相等，它们并不一定相等(在同一个链表上)。 
 >
 
-在上述第二种情况下 ，若要判断两个对象是否相等，就要去重写 equals 方法了。简单来讲 HashCode 是用来查找用的，equals 是用来判断两个对象是否相等用的。而我们进一步看看 Java 官方文档对于 HashCode 定义要求：
+在上述第二种情况下 ，若要判断两个对象是否相等，就要去重写 equals() 方法了。简单来讲 HashCode() 是用来查找用的，equals() 是用来判断两个对象是否相等用的。而我们进一步看看 Java 官方文档对于 HashCode() 定义要求：
 
 > hashcode方法返回该对象的哈希码值。支持该方法是为哈希表提供一些优点，例如，java.util.Hashtable 提供的哈希表。 
 >
@@ -596,7 +596,7 @@ final Node<K,V> getNode(int hash, Object key) {
 >
 > 当equals方法被重写时，通常有必要重写 hashCode 方法，以维护 hashCode 方法的常规协定，该协定声明相等对象必须具有相等的哈希码。
 
-可以看[这里](http://blog.csdn.net/fenglibing/article/details/8905007)的实例告诉我们为什么**重写 HashCode 时有必要重写 equals 方法**。
+可以看[这里](http://blog.csdn.net/fenglibing/article/details/8905007)的实例告诉我们为什么**重写 HashCode() 时有必要重写 equals() 方法**。
 
 ## 五 . 个人总结
 
