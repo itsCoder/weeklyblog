@@ -4,6 +4,11 @@ date: 2016-08-18 11:37:48
 tags: javacode
 categories: About Java
 ---
+>- 文章来源：itsCoder 的 [WeeklyBolg](https://github.com/itsCoder/weeklyblog) 项目
+>- itsCoder主页：[http://itscoder.com/](http://itscoder.com/)
+>- 作者：[allenwu](https://wuchangfeng.github.io/)
+>- 审阅者：[暂无]()
+
 Java 集合框架源码分析系列之 HashMap
 
 <!--more-->
