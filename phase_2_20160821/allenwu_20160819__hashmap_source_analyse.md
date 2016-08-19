@@ -584,3 +584,6 @@ final Node<K,V> getNode(int hash, Object key) {
 * [HashMap 在Android中应用](http://www.jianshu.com/p/e54047b2b563)
 * [LinkedHashMap 的实现原理(推荐)](http://allenwu.itscoder.com/2016/05/24/Java-linkedhashmap/)
 
+
+由于篇幅原因，更多集合框架源码分析请看[这里。](http://allenwu.itscoder.com/android)
+
