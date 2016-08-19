@@ -12,7 +12,7 @@ java 集合框架源码分析系列之 HashMap
 
 我们都知道 HashMap 输出是无序的。是因为存储时候 HashMap 会根据 key 值来决定 value 的存储位置。但是我们想过没有？为什么输出的时候顺序就会跟存储时候相反呢？JDK1.7 中的 HashMap 底层构造与 JDK1.8 中有哪些区别呢？HashCode 的作用是什么呢？
 
-## 一 . JDK1.7 中的 HashMap
+## 一 .  初识 HashMap
 
 在 **JDK 1.7** 之前的：HashMap 的内部存储结构其实是**数组**和**链表**的结合。当实例化一个 HashMap 时，系统会创建一个长度为 Capacity 的 **Entry 数组**，这个长度在哈希表中被称为容量(Capacity)，在这个数组中可以存放元素的位置我们称之为“桶”(bucket)，每个 bucket 都有自己的索引，系统可以根据索引快速的查找 bucket 中的元素。 
 
@@ -36,7 +36,7 @@ Crazy Java 上面说了，发生冲突的元素以**链表形式存储**，必�
 
 * [处理Hash冲突的方法](http://carmen-hongpeng.iteye.com/blog/1706415)
 
-## 二 . JDK1.7 中 HashMap
+## 二 . JDK1.7 中的 HashMap
 
 我们首先来分析一下 JDK1.7 中的 HashMap 相关定义和实现原理。下面是常量,属性以及构造函数的定义：
 
