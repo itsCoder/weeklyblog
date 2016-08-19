@@ -456,7 +456,7 @@ static final class TreeNode<K,V> extends LinkedHashMap.Entry<K,V> {
     }
 ```
 
-### 3.6 getNode() 函数
+### 3.5 getNode() 函数
 
 get 函数最终还是要通过 getNode() 来进行操作：
 
@@ -488,7 +488,7 @@ final Node<K,V> getNode(int hash, Object key) {
 }
 ```
 
-### 3.7 resize() 函数 
+### 3.6 resize() 函数 
 
 扩容函数，指的是对 table 表进行的操作，resize() 函数分析如下：
 
@@ -538,7 +538,7 @@ final Node<K,V> getNode(int hash, Object key) {
     }
 ```
 
-### 3.8 treeifyBin() 函数
+### 3.7 treeifyBin() 函数
 
 判断是**对 table 表进行扩容** 还是将**冲突节点调整成红黑树：**
 
@@ -580,12 +580,7 @@ final Node<K,V> getNode(int hash, Object key) {
 ## 五 .参考和扩展阅读
 
 * [HashMap 在1.7 与 1.8 之间的区别](http://www.jianshu.com/p/77b87a964088)
-
-
-* [Hash 算法深入了解](http://blog.csdn.net/qa962839575/article/details/44889553)
-
-
+* [HashCode 在 HashMap 中的作用](http://blog.csdn.net/fenglibing/article/details/8905007)
 * [HashMap 在Android中应用](http://www.jianshu.com/p/e54047b2b563)
 * [LinkedHashMap 的实现原理(推荐)](http://allenwu.itscoder.com/2016/05/24/Java-linkedhashmap/)
 
-  ​
