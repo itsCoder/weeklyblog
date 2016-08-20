@@ -44,7 +44,7 @@ Android 应用打包成 apk 文件时，class 文件会被打包成一个或者�
 
 ![](http://ac-QYgvX1CC.clouddn.com/3c5e66e9e048d343.jpg)
 
-当 Android 系统安装一个应用的时候，会针对不同平台对 Dex 进行优化，这个过程有一个专门的工具来处理，叫 DexOpt。DexOpt 是在第一次加载 Dex 文件的时候执行的，该过程会生成一个 ODEX 文件，即 Optimised Dex。执行 ODEX 的效率会比直接执行 Dex 文件的效率要高很多，加快 App 的启动和响应。
+当 Android 系统安装一个应用的时候，会针对不同平台对 Dex 进行优化，这个过程由一个专门的工具来处理，叫 DexOpt 。DexOpt 是在第一次加载 Dex 文件的时候执行的，该过程会生成一个 ODEX 文件，即 Optimised Dex。执行 ODEX 的效率会比直接执行 Dex 文件的效率要高很多，加快 App 的启动和响应。
 
 ODEX 相关的细节可以阅读以下文章扩展：
 
@@ -56,13 +56,13 @@ ODEX 相关的细节可以阅读以下文章扩展：
 
 ![](http://ac-QYgvX1CC.clouddn.com/b79b994f71a47130.png)
 
-总之，Android 中的 Dalvik/ART 无法像 JVM 那样 **直接** 加载 class 文件和 jar 文件中的 class，需要通过dx工具来优化转换成 Dalvik byte code 才行，只能通过 dex 或者 包含 dex 的jar、apk 文件来加载（注意 odex 文件后缀可能是 .dex 或 .odex，也属于 dex 文件），因此 Android 中的 ClassLoader 工作就交给了 BaseDexClassLoader 来处理。
+总之，Android 中的 Dalvik/ART 无法像 JVM 那样 **直接** 加载 class 文件和 jar 文件中的 class，需要通过 dx 工具来优化转换成 Dalvik byte code 才行，只能通过 dex 或者 包含 dex 的jar、apk 文件来加载（注意 odex 文件后缀可能是 .dex 或 .odex，也属于 dex 文件），因此 Android 中的 ClassLoader 工作就交给了 BaseDexClassLoader 来处理。
 
 > 注：如果 jar 文件包含有 dex 文件，此时 jar 文件也是可以用来加载的，不过实际加载的还是其中的 dex 文件，不要弄混淆了。
 
 #### BaseDexClassLoader 及其子类
 
-在 Android 开发者官网上，[ClassLoader](https://developer.android.com/reference/java/lang/ClassLoader.html) 的文档说明中我们可以看到，ClassLoader 是个抽象类，其具体实现的子类有 `BaseDexClassLoader` 和 ` SecureClassLoader` 。
+在 Android 开发者官网上的 [ClassLoader](https://developer.android.com/reference/java/lang/ClassLoader.html) 的文档说明中我们可以看到，ClassLoader 是个抽象类，其具体实现的子类有 `BaseDexClassLoader` 和 ` SecureClassLoader` 。
 
 SecureClassLoader 的子类是 `URLClassLoader` ，其只能用来加载 jar 文件，这在 Android 的 Dalvik/ART  上没法使用的。
 
@@ -70,7 +70,7 @@ BaseDexClassLoader 的子类是 `PathClassLoader` 和 `DexClassLoader` 。
 
 ##### PathClassLoader
 
-PathClassLoader 在应用启动时创建，从 data/app/… 安装目录下的 apk 文件。
+PathClassLoader 在应用启动时创建，从 data/app/… 安装目录下加载 apk 文件。
 
 其有 2 个构造函数，如下所示，这里遵从之前提到的双亲委托模型：
 
@@ -88,11 +88,11 @@ public PathClassLoader(String dexPath, String libraryPath,
 - `dexPath` :  包含 dex 的 jar 文件或 apk 文件的路径集，多个以文件分隔符分隔，默认是“：”
 - `libraryPath` : 包含 C/C++ 库的路径集，多个同样以文件分隔符分隔，可以为空
 
-PathClassLoader 里面除了这 2 个构造方法以为就没有其他的代码了，具体的实现都是在 BaseDexClassLoader 里面，其 dexPath 比较受限制，一般是已经安装的应用的 apk 文件路径。
+PathClassLoader 里面除了这 2 个构造方法以外就没有其他的代码了，具体的实现都是在 BaseDexClassLoader 里面，其 dexPath 比较受限制，一般是已经安装应用的 apk 文件路径。
 
-在 Android 中，你的 App 安装到手机后，apk 里面的 class.dex 中的 class 均是通过 PathClassLoader 来加载的。
+在 Android 中，App 安装到手机后，apk 里面的 class.dex 中的 class 均是通过 PathClassLoader 来加载的。
 
-我们可以新建一个项目，在 MainActivity 中添加如下代码：
+我们可以新建一个项目来验证下，在 MainActivity 中添加如下代码：
 
 ```java
 public class MainActivity extends AppCompatActivity {
@@ -174,7 +174,7 @@ public static Class<?> forName(String className, boolean shouldInitialize,
 
 > A class loader that loads classes from .jar and .apk filescontaining a  classes.dex entry. This can be used to execute code notinstalled as part of an application.
 
-很明显，对比 PathClassLoader 只能加载已经安装应用的 dex 或 apk 文件，DexClassLoader 则没有此限制，可以加载从 SD 卡上加载包含 class.dex 的 .jar 和 .apk 文件，这也是插件化和热修复的基础，在不需要引用安装的情况下，完成需要使用的 dex 的加载。
+很明显，对比 PathClassLoader 只能加载已经安装应用的 dex 或 apk 文件，DexClassLoader 则没有此限制，可以从 SD 卡上加载包含 class.dex 的 .jar 和 .apk 文件，这也是插件化和热修复的基础，在不需要安装应用的情况下，完成需要使用的 dex 的加载。
 
 DexClassLoader 的源码里面只有一个构造方法，这里也是遵从双亲委托模型：
 
@@ -201,7 +201,7 @@ public DexClassLoader(String dexPath, String optimizedDirectory,
 
 - `ClassLoader parent `: 父类加载器，遵从双亲委托模型
 
-简单介绍了 PathClassLoader 和 DexClassLoader，但这两个都是对 BaseDexClassLoader 的一层简单封装，真正的实现都在 BaseClassLoader 内。
+简单介绍了 PathClassLoader 和 DexClassLoader，但这两者都是对 BaseDexClassLoader 的一层简单封装，真正的实现都在 BaseClassLoader 内。
 
 #####  BaseClassLoader 源码分析
 
@@ -209,7 +209,7 @@ public DexClassLoader(String dexPath, String optimizedDirectory,
 
 ![](http://ac-QYgvX1CC.clouddn.com/a6f9824c199cf304.jpg)
 
-其中有个重要的字段 `private final DexPathList pathList` ，其继承 ClassLoader 实现的 `findClass()` 、`findResource()` 均基于 pathList 来实现的（源码有一部分省略了）：
+其中有个重要的字段 `private final DexPathList pathList` ，其继承 ClassLoader 实现的 `findClass()` 、`findResource()` 均是基于 pathList 来实现的（省略了部分源码）：
 
 ```java
 @Override
@@ -305,7 +305,7 @@ private static Element[] makePathElements(List<File> files, File optimizedDirect
 }
 ```
 
-`loadDexFile()` 方法最终会调用 JNI 层的方法来读取 dex 文件，这里不再深入探究，有兴趣的可以阅读 [从源码分析 Android dexClassLoader 加载机制原理](http://blog.csdn.net/nanzhiwen666/article/details/50515895) 这篇文章。
+`loadDexFile()` 方法最终会调用 JNI 层的方法来读取 dex 文件，这里不再深入探究，有兴趣的可以阅读 [从源码分析 Android dexClassLoader 加载机制原理](http://blog.csdn.net/nanzhiwen666/article/details/50515895) 这篇文章深入了解。
 
 接下来看以下 DexPathList 的 `findClass()` 方法，其根据传入的完整的类名来加载对应的 class，源码如下：
 
@@ -370,21 +370,21 @@ protected Class<?> loadClass(String className, boolean resolve) throws ClassNotF
 
 上面这段代码结合之前提到的双亲委托模型就很好理解了，先查找是否已经加载过，如果没有就交给父 ClassLoader 去加载，如果父类加载器没有找到，才调用当前 ClassLoader 来加载，此时就是调用上面分析的 `findClass() ` 方法了。
 
-###  ClassLoader 示例
+###  ClassLoader 使用示例
 
-上面说了这么多理论知识，只说不练假把式，接下来实战从 SD 卡中动态加载一个包含 class.dex 的 jar 文件，加载其中的类，并调用其方法。
+上面说了这么多理论知识，只说不练假把式，接下来实战：从 SD 卡中动态加载一个包含 class.dex 的 jar 文件，加载其中的类，并调用其方法。
 
 1.  新建一个 Java 项目，包含两个文件：`ISayHello.java` 和 `HelloAndroid.java`
 
-   ```java
+```java
    package com.jaeger;
 
    public interface ISayHello {
        String say();
    }
-   ```
+```
 
-   ```java
+```java
    package com.jaeger;
 
    public class HelloAndroid implements ISayHello {
@@ -393,7 +393,7 @@ protected Class<?> loadClass(String className, boolean resolve) throws ClassNotF
            return "Hello Android";
        }
    }
-   ```
+```
 
 2. 导出 jar 包
 
