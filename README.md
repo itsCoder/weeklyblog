@@ -108,7 +108,10 @@
 
 - 写代码的香港记者 [@Manjusaka](https://github.com/Zheaoli)
 
+- Melo [@Melo](https://github.com/itsMelo)
+
 - shadow [@shaDowZwy](https://github.com/shaDowZwy)
 
 - 千百度 [@fq050766](https://github.com/fq050766) 
+
 
