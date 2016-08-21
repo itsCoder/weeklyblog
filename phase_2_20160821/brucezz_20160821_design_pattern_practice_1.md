@@ -41,7 +41,7 @@ public class OneplusPhone extends Phone {
 
 不同的手机，自然有自己的 feature， 比如有的手机屏幕大，有的手机续航时间长，还有的音质不错~
 
-这里就要用到第一个模式啦 —— **装饰器**。先继承 `Phone` 得到一个装饰器类 `PhoneDecorator`。
+这里就要用到第一个模式啦 —— **装饰器模式**。先继承 `Phone` 得到一个装饰器类 `PhoneDecorator`。
 
 ```java
 public abstract class PhoneDecorator extends Phone {
@@ -93,7 +93,7 @@ public abstract class PhoneStore {
 }
 ```
 
-这里用到了另一个模式 —— **工厂方法模式**，将实例化 `Phone` 对象的过程延迟到子类中进行，由子类即具体的手机专卖店来决定手机的类型。这样一来，不同品牌的专卖店就能卖各自家的手机了。
+这里用到了另一个模式 —— **工厂方法模式**。将实例化 `Phone` 对象的过程延迟到子类中进行，由子类即具体的手机专卖店来决定手机的类型。这样一来，不同品牌的专卖店就能卖各自家的手机了。
 
 ```java
 public class NexusStore extends PhoneStore {
@@ -131,17 +131,19 @@ public class Main {
 
 输出：
 
->[Jaeger] 嘿, 我是 Jaeger, 我喜欢 Nexus 这个牌子, 不过我还没有手机诶 :(
->[Nexus, HiFi, Large Screen, Long Battery Life Phone] 打包中 ...
->[Nexus, HiFi, Large Screen, Long Battery Life Phone] 运输中 ...
->[Jaeger] 我有手机啦! Nexus, HiFi, Large Screen, Long Battery Life
->[Jaeger] 嘿, 我是 Jaeger, 我喜欢 Nexus 这个牌子, 我现在有一个手机: Nexus, HiFi, Large Screen, Long Battery Life 
+```
+[Jaeger] 嘿, 我是 Jaeger, 我喜欢 Nexus 这个牌子, 不过我还没有手机诶 :(
+[Nexus, HiFi, Large Screen, Long Battery Life Phone] 打包中 ...
+[Nexus, HiFi, Large Screen, Long Battery Life Phone] 运输中 ...
+[Jaeger] 我有手机啦! Nexus, HiFi, Large Screen, Long Battery Life
+[Jaeger] 嘿, 我是 Jaeger, 我喜欢 Nexus 这个牌子, 我现在有一个手机: Nexus, HiFi, Large Screen, Long Battery Life 
+```
 
 骚年，你以为这样故事就完结了？图样图森破啊！
 其实 [Jaeger](https://github.com/laobie) 去买手机的时候，手机没货啦 😅
 然后店员告诉他：你在这里登记一下，然后三天之后手机到货了，我们会主动联系你的，到时候你再来买手机，肯定有货！
 
-这个登记和通知的过程嘛，就要用到第三个模式 —— **观察者模式**了。手机店为被观察对象， [Jaeger](https://github.com/laobie) 是观察者。首先观察者要向被观察者进行注册，也就是登记的过程。然后被观察者在状态改变时，会通知所有注册的观察者。
+这个登记和通知的过程嘛，就要用到第三个模式 —— **观察者模式**。手机店为被观察对象， [Jaeger](https://github.com/laobie) 是观察者。首先观察者要向被观察者进行注册，也就是登记的过程。然后被观察者在状态改变时，会通知所有注册的观察者。
 
 ```java
 public abstract class PhoneStore {
@@ -282,18 +284,19 @@ public class Main {
         jaeger.hello();
     }
 }
-
 ```
 
->[Jaeger] 嘿, 我是 Jaeger, 我喜欢 Nexus 这个牌子, 不过我还没有手机诶 :(
->[NexusStore] 现在手机卖完啦, 你先登记一下, 等三天之后手机到货了我们再通知你~
->1 天过去了 ...
->2 天过去了 ...
->3 天过去了 ...
->[Nexus, HiFi, Large Screen, Long Battery Life Phone] 打包中 ...
->[Nexus, HiFi, Large Screen, Long Battery Life Phone] 运输中 ...
->[Jaeger] 我有手机啦! Nexus, HiFi, Large Screen, Long Battery Life
->[Jaeger] 嘿, 我是 Jaeger, 我喜欢 Nexus 这个牌子, 我现在有一个手机: Nexus, HiFi, Large Screen, Long Battery Life ^_^
+```
+[Jaeger] 嘿, 我是 Jaeger, 我喜欢 Nexus 这个牌子, 不过我还没有手机诶 :(
+[NexusStore] 现在手机卖完啦, 你先登记一下, 等三天之后手机到货了我们再通知你~
+1 天过去了 ...
+2 天过去了 ...
+3 天过去了 ...
+[Nexus, HiFi, Large Screen, Long Battery Life Phone] 打包中 ...
+[Nexus, HiFi, Large Screen, Long Battery Life Phone] 运输中 ...
+[Jaeger] 我有手机啦! Nexus, HiFi, Large Screen, Long Battery Life
+[Jaeger] 嘿, 我是 Jaeger, 我喜欢 Nexus 这个牌子, 我现在有一个手机: Nexus, HiFi, Large Screen, Long Battery Life ^_^
+```
 
 最后， [Jaeger](https://github.com/laobie) 觉得这个 Nexus 手机用着不爽，要买最新的 1+3 😒。这个不难，直接去专卖店买一个就好啦。
 
@@ -312,7 +315,7 @@ public class Main {
 }
 ```
 
-其实这里包含了最后一种模式 —— 策略模式。`Custom` 对象中持有一个 `Phone` 手机对象，这是一个抽象类型，并不是一个具体的类。这样的好处就是可以方便地用 `Phone` 的任意子类去替换 `Custom` 中的手机，而不会影响到内部其他地方的使用。
+其实这里包含了最后一种模式 —— **策略模式**。`Custom` 对象中持有一个 `Phone` 手机对象，这是一个抽象类型，并不是一个具体的类。这样的好处就是可以方便地用 `Phone` 的任意子类去替换 `Custom` 中的手机，而不会影响到内部其他地方的使用。
 
 
 
