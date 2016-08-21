@@ -8,31 +8,35 @@ tags: [Android ,RecyclerView ,swipe]
 > 本文所讲的都是使用自带 **API** 实现，并不借用第三方控件。用于**RecyclerView** 中实现*滑动删除*，*拖拽排序*，以及如何实现删除后*撤销操作*（类似于知乎中撤销删除操作）
  - 初始化RecyclerView，绑定Adapter，LayoutManager等。
 
-**效果图**
+#效果图
+
 ![效果图](http://img.blog.csdn.net/20160319150453310)
+
+#直接上代码
+
 ```
-//数据
-mUserBookShelfResponses = new ArrayList<>();
-mRecyclerView =(RecyclerView)findViewById(R.id.recyclerView);
-mSwipeRefreshLayout = (SwipeRefreshLayout)findViewById(R.id.swipe_refresh_widget);
-//给刷新控件添加颜色，最多4中颜色
-mSwipeRefreshLayout.setColorSchemeResources(R.color.recycler_color1,R.color.recycler_color2,R.color.recycler_color3, R.color.recycler_color4);
-//瀑布流
-mLayoutManager = new StaggeredGridLayoutManager(2,StaggeredGridLayoutManager.VERTICAL);
-mRecyclerView.setHasFixedSize(false);
-mRecyclerView.setLayoutManager(mLayoutManager);
-//创建Adapter
-mBookShelfAdapter = new UserBookShelfAdapter(mUserBookShelfResponses);
-//设置Item增加、移除动画
-mRecyclerView.setItemAnimator(new DefaultItemAnimator());
-final int space = DensityUtils.dp2px(getActivity(), 4);
-//自定义一个Decoration,用于recyclerView中每一个Item之间的间隔（后面将贴出代码【附1】）
-mRecyclerView.addItemDecoration(new StaggeredGridDecoration(space, space, space, space));
-mRecyclerView.setAdapter(mBookShelfAdapter);
-//绑定监听事件实现上拉加载更多【附2】
-mRecyclerView.addOnScrollListener(new RecyclerViewScrollDetector());
-//监听刷新
-mSwipeRefreshLayout.setOnRefreshListener(this);
+	//数据
+	mUserBookShelfResponses = new ArrayList<>();
+	mRecyclerView =(RecyclerView)findViewById(R.id.recyclerView);
+	mSwipeRefreshLayout = (SwipeRefreshLayout)findViewById(R.id.swipe_refresh_widget);
+	//给刷新控件添加颜色，最多4中颜色
+	mSwipeRefreshLayout.setColorSchemeResources(R.color.recycler_color1,R.color.recycler_color2,R.color.recycler_color3, R.color.recycler_color4);
+	//瀑布流
+	mLayoutManager = new StaggeredGridLayoutManager(2,StaggeredGridLayoutManager.VERTICAL);
+	mRecyclerView.setHasFixedSize(false);
+	mRecyclerView.setLayoutManager(mLayoutManager);
+	//创建Adapter
+	mBookShelfAdapter = new UserBookShelfAdapter(mUserBookShelfResponses);
+	//设置Item增加、移除动画
+	mRecyclerView.setItemAnimator(new DefaultItemAnimator());
+	final int space = DensityUtils.dp2px(getActivity(), 4);
+	//自定义一个Decoration,用于recyclerView中每一个Item之间的间隔（后面将贴出代码【附1】）
+	mRecyclerView.addItemDecoration(new StaggeredGridDecoration(space, space, space, space));
+	mRecyclerView.setAdapter(mBookShelfAdapter);
+	//绑定监听事件实现上拉加载更多【附2】
+	mRecyclerView.addOnScrollListener(new RecyclerViewScrollDetector());
+	//监听刷新
+	mSwipeRefreshLayout.setOnRefreshListener(this);
 ```
 
 - 使用 ItemTouchHelper 工具类来处理RecyclerView中item的选中、滑动或（和）拖拽动作。
@@ -41,7 +45,7 @@ This is a utility class to add swipe to dismiss and drag & drop support to Recyc
 意思就是：这是一个支持RecyclerView滑动删除和拖拽的实用工具类
  
 
-> 看看它的构造函数：
+####看看它的构造函数：
 
 ```
  public ItemTouchHelper(Callback callback) {
@@ -120,7 +124,7 @@ ItemTouchHelper.Callback mCallback = new ItemTouchHelper.SimpleCallback(int drag
 即我们对哪些方向操作关心。如果我们关心用户向上拖动，可以将dragDirs参数填充UP | DOWN ，如果我们对左右滑动感兴趣，填充swipeDirs参数为
 LEFT | RIGHT 。0表示从不关心。
 
-> 然后调用attachToRecyclerView()绑定动作
+#### 然后调用attachToRecyclerView()绑定动作
 
 ```
 ItemTouchHelper touchHelper = new ItemTouchHelper(newSimpleItemTouchHelperCallback(0,ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT));
@@ -128,7 +132,7 @@ ItemTouchHelper touchHelper = new ItemTouchHelper(newSimpleItemTouchHelperCallba
 touchHelper.attachToRecyclerView(mRecyclerView);
 ```
 
-> 接下来我们看看Callback具体实现
+#### 接下来我们看看Callback具体实现
 
 ```
 class SimpleItemTouchHelperCallback extends ItemTouchHelper.SimpleCallback {
