@@ -15,7 +15,7 @@ Java 集合框架源码分析系列之 HashMap
 
 ### 引言
 
-我们都知道 HashMap 输出是无序的。是因为存储时候 HashMap 会根据 key 值来决定 value 的存储位置。但是我们想过没有？到底为什么输出的时候顺序会跟存储时候不一样呢？JDK1.7 中的 HashMap 底层构造与 JDK1.8 中有哪些区别呢？HashCode() 的作用是什么呢？
+我们都知道 HashMap 输出是无序的。是因为存储时候 HashMap 会根据 key 值来决定 value 的存储位置。但是我们想过没有？到底为什么输出的时候顺序会跟存储时候不一样呢？JDK1.7 中的 HashMap 底层构造与 JDK1.8 中有哪些区别呢？HashCode() 的作用是什么呢？另外如果你熟悉集合的基本常用用法可以参见[Java 基本集合用法总结](https://github.com/wuchangfeng/Blog-Resource/blob/master/Java-se1.md)
 
 ## 一 .  初识 HashMap
 
@@ -54,30 +54,48 @@ static final int DEFAULT_INITIAL_CAPACITY = 16;
 static final int MAXIMUM_CAPACITY = 1 << 30;
 // 负载因子
 static final float DEFAULT_LOAD_FACTOR = 0.75f;
-// 储存key-value键值对的数组，一个键值对对象映射一个Entry对象
+// 储存 key-value 键值对的数组，一个键值对对象映射一个Entry对象
 transient Entry[] table;
 // 键值对的数目
 transient int size;
-// 调整HashMap大小门槛，该变量包含了HashMap能容纳的key-value对的极限，它的值等于HashMap的容量乘以负载因子
+// 调整 HashMap 大小门槛，该变量包含了HashMap 能容纳的 key-value 对的极限，它的值等于 HashMap 的容量乘以负载因子
 int threshold;
 // 加载因子
 final float loadFactor;
-// HashMap结构修改次数,防止在遍历时，有其他的线程在进行修改
+// HashMap 结构修改次数,防止在遍历时，有其他的线程在进行修改
 transient volatile int modCount;
 ```
+
+注：位移操作在底层源码还挺多的，可以一定程度上替代乘法和除法(效率好吧)，解释一下位移操作：
+
+例如：3 <<2( 3 为 int 型)
+
+　　1. 把3转换为二进制数字 0000 0000 0000 0000 0000 0000 0000 0011，
+
+​	2. 把该数字高位(左侧)的两个零移出，其他的数字都朝左平移 2 位，
+
+　　 3. 在低位(右侧)的两个空位补零。则得到的最终结果是 0000 0000 0000 0000 0000 0000 0000 1100，
+
+　　转换为十进制是12。
+
+上面只是一个例子总结起来就是：左移运算符，num << 1,相当于 num 乘以2。同理右移。而对于上述这个例子就是 3 乘以 2 的 2 次方啦，即 3 乘以 4 等于 12.
+
+另外一个知识点是 **transient 关键字**：这个关键字是在对象序列化过程中，除掉那个你**不想序列化的变量**。一般你为了方便会将实体对象实现 Serilizable 接口，但是其中某几个变量你不想序列化，就可以用这个关键字修饰。另外 transient **只能**修饰变量,**静态变量**不管是否被其修饰**均不能实现序列化。**
+
+继而扩展一下 volatile 关键字 ：volatile 是为解决 Java 线程并发而产生的。为了解决线程并发的问题，在语言内部引入了 同步块 和 volatile 关键字机制。而对 volatile 的使用大家也可能不是很明白。具体使用和详情可以参见[这里](http://www.cnblogs.com/aigongsi/archive/2012/04/01/2429166.html)。
 
 ### 2.2 构造函数
 
 ``` java
 public HashMap(int initialCapacity, float loadFactor) {
-	// 初始大小为0 即抛出异常
+	// 初始大小为 0 即抛出异常
 	if (initialCapacity < 0)
 			throw new IllegalArgumentException("Illegal initial capacity: "
 					+ initialCapacity);
 		// 初始大小超过指定的最大值，则容量为指定的最大值
 		if (initialCapacity > MAXIMUM_CAPACITY)
 			initialCapacity = MAXIMUM_CAPACITY;
-		// 负载因子也不能为0
+		// 负载因子也不能为 0
 		if (loadFactor <= 0 || Float.isNaN(loadFactor))
 			throw new IllegalArgumentException("Illegal load factor: "
 					+ loadFactor);
@@ -153,6 +171,8 @@ public V put(K key, V value) {
   		// 这种情况是 Entry 数组上已经插入了元素。
         for (Entry<K,V> e = table[i]; e != null; e = e.next) {
             Object k;
+           // 找到指定 key 与需要放入的 key 相等（hash 值相同  
+     	   // 通过 equals 比较放回 true）
             if (e.hash == hash && ((k = e.key) == key || key.equals(k))) {
                 V oldValue = e.value;
                 e.value = value;
@@ -163,7 +183,7 @@ public V put(K key, V value) {
         }
         // 表示更改了一次底层数据结构
         modCount++;
-		// 当前 Entry 数组位置为空，即还没有插入元素。则直接插入
+		// 此时进行元素的插入，添加至索引 i 处
         addEntry(hash, key, value, i);
         return null;
 }
@@ -287,7 +307,7 @@ transient volatile int modCount;
 ### 3.1 常量数值的定义
 
 ``` java
-	// 最开始的容量，必须是2的次方，这里即2的4次方
+	// 最开始的容量，必须是 2 的次方，这里即 2 的 4 次方
 	static final int DEFAULT_INITIAL_CAPACITY = 1 << 4; // aka 16
     // 最大容量
 	static final int MAXIMUM_CAPACITY = 1 << 30;
@@ -379,14 +399,14 @@ static final int hash(Object key) {
 ``` java
 static final class TreeNode<K,V> extends LinkedHashMap.Entry<K,V> {
         TreeNode<K,V> parent;  // 父
-        TreeNode<K,V> left;    //左
-        TreeNode<K,V> right;   //右
+        TreeNode<K,V> left;    // 左
+        TreeNode<K,V> right;   // 右
         TreeNode<K,V> prev;    // needed to unlink next upon deletion
-        boolean red;           //判断颜色
+        boolean red;           // 判断颜色
         TreeNode(int hash, K key, V val, Node<K,V> next) {
             super(hash, key, val, next);
         }
-        //返回根节点
+        // 返回根节点
         final TreeNode<K,V> root() {
             for (TreeNode<K,V> r = this, p;;) {
                 if ((p = r.parent) == null)
@@ -405,25 +425,25 @@ static final class TreeNode<K,V> extends LinkedHashMap.Entry<K,V> {
 	 final V putVal(int hash, K key, V value, boolean onlyIfAbsent,
                    boolean evict) {
         Node<K,V>[] tab; Node<K,V> p; int n, i;
-		// tab 没有分配初始的空间或者为空，就resize一次
+		// tab 没有分配初始的空间或者为空，就 resize 一次
         if ((tab = table) == null || (n = tab.length) == 0)
             n = (tab = resize()).length;
-		// 指定hash值节点为空则直接在tab表中插入，注意这里(n - 1) & hash 才是真正的hash值
+		// 指定 hash 值节点为空则直接在tab表中插入，注意这里 (n - 1) & hash 才是真正的 hash 值
         if ((p = tab[i = (n - 1) & hash]) == null)
             tab[i] = newNode(hash, key, value, null);
 		// 不为空
         else {
             Node<K,V> e; K k;
-			// 计算当前节点的key.hash 与要插入的 key.hash
+			// 计算当前节点的 key.hash 与要插入的 key.hash
             if (p.hash == hash &&
                 ((k = p.key) == key || (key != null && key.equals(k))))
 				// 相同则覆盖
                 e = p; 
-			// 若不同的话，并且当前节点已经在TreeNode上了
+			// 若不同的话，并且当前节点已经在 TreeNode 上了
             else if (p instanceof TreeNode)
 				// 创建新的树节点
                 e = ((TreeNode<K,V>)p).putTreeVal(this, tab, hash, key, value);
-			// key.hash不同并且也不再TreeNode上，在链表上找到p.next==null
+			// key.hash 不同并且也不再 TreeNode 上，在链表上找到 p.next==null
             else {
                 for (int binCount = 0; ; ++binCount) {
                     if ((e = p.next) == null) {
@@ -467,7 +487,7 @@ get() 函数最终还是要通过 getNode() 来进行操作：
 ``` java
 final Node<K,V> getNode(int hash, Object key) {
     Node<K,V>[] tab; Node<K,V> first, e; int n; K k;
-    // table已经初始化，长度大于0，根据hash寻找table中的项也不为空
+    // table 已经初始化，长度大于 0，根据 hash 寻找 table 中的项也不为空
     if ((tab = table) != null && (n = tab.length) > 0 &&
         (first = tab[(n - 1) & hash]) != null) {
         // 桶中第一项(数组元素)相等
@@ -523,7 +543,7 @@ final Node<K,V> getNode(int hash, Object key) {
             newThr = (newCap < MAXIMUM_CAPACITY && ft < (float)MAXIMUM_CAPACITY ?
                       (int)ft : Integer.MAX_VALUE);
         }
-    	//...省略//
+    	//...
                         while ((e = next) != null);
 						// 这里就是冲突的链表分成两个队列存储
                         if (loTail != null) {
