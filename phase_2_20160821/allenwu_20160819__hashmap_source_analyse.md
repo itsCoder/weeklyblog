@@ -15,7 +15,7 @@ Java 集合框架源码分析系列之 HashMap
 
 ### 引言
 
-我们都知道 HashMap 输出是无序的。是因为存储时候 HashMap 会根据 key 值来决定 value 的存储位置。但是我们想过没有？到底为什么输出的时候顺序会跟存储时候不一样呢？JDK1.7 中的 HashMap 底层构造与 JDK1.8 中有哪些区别呢？HashCode() 的作用是什么呢？另外如果你熟悉集合的基本常用用法可以参见[Java 基本集合用法总结](https://github.com/wuchangfeng/Blog-Resource/blob/master/Java-se1.md)
+我们都知道 HashMap 输出是无序的。是因为存储时候 HashMap 会根据 key 值来决定 value 的存储位置。但是我们想过没有？到底为什么输出的时候顺序会跟存储时候不一样呢？JDK1.7 中的 HashMap 底层构造与 JDK1.8 中有哪些区别呢？HashCode() 的作用是什么呢？另外如果你不熟悉集合的基本常用用法可以参见[Java 基本集合用法总结](https://github.com/wuchangfeng/Blog-Resource/blob/master/Java-se1.md)
 
 ## 一 .  初识 HashMap
 
