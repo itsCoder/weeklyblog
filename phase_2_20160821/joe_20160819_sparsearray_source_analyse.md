@@ -6,7 +6,7 @@
 >
 > 作者：[Joe](http://extremej.itscoder.com/about/)
 >
-> 审阅者：[]()
+> 审阅者：[allenwu](http://allenwu.itscoder.com/)
 
 ### 序言
 
@@ -14,7 +14,7 @@
 
 细心的朋友可能也发现了这个提示，并且会发现并不是所有的`HashMap`都会提示替换。今天就来一探究竟，到底`SparseArray`跟`HaspMap`相比有什么优缺点，又是在什么场景下来使用的呢？
 
-如果你对于`HashMap`的实现原理还不是很了解，推荐你阅读[allen](http://allenwu.itscoder.com/)的这篇[java 集合框架源码分析系列之 HashMap]()。
+如果你对于`HashMap`的实现原理还不是很了解，推荐你阅读[allen](http://allenwu.itscoder.com/)的这篇[Java 集合框架源码分析系列之 HashMap]()。
 
 ### SparseArray 的使用
 
@@ -29,7 +29,7 @@ SparseArray<Student> sparseArray = new SparseArray<>(capacity);
 
 `SparseArray`有两个构造方法，一个默认构造方法，一个传入容量。
 
-#### put
+#### put()
 
 创建完`sparseArray`后，来看看怎么往里面存放数据吧。
 
@@ -41,14 +41,14 @@ sparseArray.put(int key,Student value);
 
 `put()`就跟`HashMap`的使用方法一样。
 
-#### get
+#### get()
 
 ```java
 sparseArray.get(int key);
 sparseArray.get(int key,Student valueIfNotFound);
 ```
 
-#### remove
+#### remove()
 
 ```java
 sparseArray.remove(int key);
@@ -79,6 +79,8 @@ sparseArray.removeAt(int index,int size);
 > SparseArrays map integers to Objects.  Unlike a normal array of Objects,there can be gaps in the indices.  It is intended to be more memory efficient than using a HashMap to map Integers to Objects, both because it avoids auto-boxing keys and its data structure doesn't rely on an extra entry object for each mapping.
 
 这段注释基本解释了该类的作用：**使用`int[]`数组存放`key`，避免了`HashMap`中基本数据类型需要装箱的步骤，其次不使用额外的结构体（Entry)，单个元素的存储成本下降。**
+
+如果你对装箱的概念还不清楚，可以看看小黑屋的这篇文章：[Java中的自动装箱与拆箱](http://droidyue.com/blog/2015/04/07/autoboxing-and-autounboxing-in-java/)。
 
 #### 初始化
 
@@ -135,7 +137,7 @@ public void put(int key, E value) {
             // Search again because indices may have changed.
             i = ~ContainerHelpers.binarySearch(mKeys, mSize, key);
         }
-		// 在 i 位置上插入键与值，并且size ＋1
+		// 最终在 i 位置上插入键与值，并且size ＋1
         mKeys = GrowingArrayUtils.insert(mKeys, mSize, i, key);
         mValues = GrowingArrayUtils.insert(mValues, mSize, i, value);
         mSize++;
@@ -147,7 +149,7 @@ public void put(int key, E value) {
 
 - **存放`key`的数组是有序的（二分查找的前提条件）**
 - **如果冲突，新值直接覆盖原值，并且不会返回原值（`HashMap`会返回原值）**
-- **如果当前索引上的值为DELETE，直接覆盖**
+- **如果当前要插入的 key 的索引上的值为DELETE，直接覆盖**
 - **前几步都失败了，检查是否需要`gc()`并且在该索引上插入数据**
 
 插入的逻辑大体上是这四点，理解起来可能还是有些抽象，我们来几张图：
@@ -254,9 +256,18 @@ public void delete(int key) {
 private static final Object DELETED = new Object();
 ```
 
-上面的代码可以知道，删除一个键值对实际上只是将这个`key`指向了一个`DELETED`对象，并没有真正的删除`key`,而之前的`value`因为失去了引用，会在下一次系统`gc()`的时候被回收掉。
+事实上，`SparseArray`在进行`remove()`操作的时候分为两个步骤：
 
-那么真正去进行回收的方法是什么呢？`gc()`
+- 删除`value` — 在`remove()`中处理
+- 删除`key` —  在`gc()`中处理，注意这里不是系统的 GC，只是`SparseArray` 的一个方法
+
+`remove()`中，将这个`key`指向了`DELETED`，这时候`value`失去了引用，如果没有其它的引用，会在下一次系统内存回收的时候被干掉。来看一张图：
+
+![remove](http://7xtakx.com1.z0.glb.clouddn.com/sparse_array_remove.png)
+
+但是可以看到`key`仍然保存在数组中，并没有马上删除，目的应该是为了保持索引结构，同时不会频繁压缩数组，保证索引查询不会错位，那么`key`什么时候被删除呢？当`SparseArray`的`gc()`被调用时。
+
+> To help with performance, the container includes an optimization when removing keys: instead of compacting its array immediately, it leaves the removed entry marked as deleted. The entry can then be re-used for the same key, or compacted later in a single garbage collection step of all removed entries. This garbage collection will need to be performed at any time the array needs to be grown or the the map size or entry values are retrieved.
 
 #### gc()
 
