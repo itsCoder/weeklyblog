@@ -6,7 +6,7 @@ tags: [Android ,RecyclerView ,swipe]
 ---
 
 > 本文所讲的都是使用自带 **API** 实现，并不借用第三方控件。用于**RecyclerView** 中实现*滑动删除*，*拖拽排序*，以及如何实现删除后*撤销操作*（类似于知乎中撤销删除操作）
- - 初始化RecyclerView，绑定Adapter，LayoutManager等。
+ - 初始化 RecyclerView，绑定 Adapter，LayoutManager等。
 
 #效果图
 
@@ -39,10 +39,10 @@ tags: [Android ,RecyclerView ,swipe]
 	mSwipeRefreshLayout.setOnRefreshListener(this);
 ```
 
-- 使用 ItemTouchHelper 工具类来处理RecyclerView中item的选中、滑动或（和）拖拽动作。
+- 使用 ItemTouchHelper 工具类来处理 RecyclerView 中 item 的选中、滑动或（和）拖拽动作。
  Google官方文档上是这么介绍的：
 This is a utility class to add swipe to dismiss and drag & drop support to RecyclerView.
-意思就是：这是一个支持RecyclerView滑动删除和拖拽的实用工具类
+意思就是：这是一个支持 RecyclerView 滑动删除和拖拽的实用工具类
  
 
 ####看看它的构造函数：
@@ -52,7 +52,7 @@ This is a utility class to add swipe to dismiss and drag & drop support to Recyc
         mCallback = callback;
     }
 ```
-我们发现这里需要一个Callback参数，进入ItemTouchHelper我们会看到有一个Callback类，集成它需要实现一些方法
+我们发现这里需要一个 Callback 参数，进入 ItemTouchHelper 我们会看到有一个 Callback 类，集成它需要实现一些方法
 
 ```
 		//所有动作的标志
@@ -73,7 +73,7 @@ This is a utility class to add swipe to dismiss and drag & drop support to Recyc
 
         }
 ```
-我们还会发现还有一个已经被封装好了的一个SimpleCallback类，Google工程师已经为我们封装好了一些操作，让我们更简单的使用它。
+我们还会发现还有以下已经被封装好了的一个 SimpleCallback 类，Google 工程师已经为我们封装好了一些操作，让我们更简单的使用它。
 
 ```
 ItemTouchHelper.Callback mCallback = new ItemTouchHelper.SimpleCallback(int dragDirs, int swipeDirs) {
@@ -98,7 +98,7 @@ ItemTouchHelper.Callback mCallback = new ItemTouchHelper.SimpleCallback(int drag
     }
 };
 ```
-这里来解释一下构造函数SimpleCallback(int dragDirs, int swipeDirs)中的参数的含义，有一下这些可选项：
+这里来解释一下构造函数 SimpleCallback(int dragDirs, int swipeDirs)中的参数的含义，有一下这些可选项：
 
 ```
 	/**
@@ -121,23 +121,23 @@ ItemTouchHelper.Callback mCallback = new ItemTouchHelper.SimpleCallback(int drag
      */
     public static final int RIGHT = 1 << 3;
 ```
-即我们对哪些方向操作关心。如果我们关心用户向上拖动，可以将dragDirs参数填充UP | DOWN ，如果我们对左右滑动感兴趣，填充swipeDirs参数为
+即我们对哪些方向操作关心。如果我们关心用户向上拖动，可以将 dragDirs参数填充 UP | DOWN ，如果我们对左右滑动感兴趣，填充 swipeDirs参数为 
 LEFT | RIGHT 。0表示从不关心。
 
-#### 然后调用attachToRecyclerView()绑定动作
+#### 然后调用 attachToRecyclerView() 绑定动作
 
 ```
 ItemTouchHelper touchHelper = new ItemTouchHelper(newSimpleItemTouchHelperCallback(0,ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT));
-//attachToRecyclerView(将动作处理监听绑定到RecyclerView中)
+//attachToRecyclerView(将动作处理监听绑定到 RecyclerView 中)
 touchHelper.attachToRecyclerView(mRecyclerView);
 ```
 
-#### 接下来我们看看Callback具体实现
+#### 接下来我们看看 Callback 具体实现
 
 ```
 class SimpleItemTouchHelperCallback extends ItemTouchHelper.SimpleCallback {
         //保存被删除item信息，用于撤销操作
-        //这里使用队列数据结构，当连续滑动删除几个item时可能会保存多个item数据，并需要记录删除循序。
+        //这里使用队列数据结构，当连续滑动删除几个 item 时可能会保存多个 item 数据，并需要记录删除循序。
         BlockingQueue queue = new ArrayBlockingQueue(3);
 
         public SimpleItemTouchHelperCallback(int dragDirs, int swipeDirs) {
@@ -146,12 +146,12 @@ class SimpleItemTouchHelperCallback extends ItemTouchHelper.SimpleCallback {
 
         @Override
         public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
-            //得到拖动ViewHolder的position
+            //得到拖动 ViewHolder 的 position
             int fromPosition = viewHolder.getAdapterPosition();
-            //得到目标ViewHolder的position
+            //得到目标 ViewHolder 的 position
             int toPosition = target.getAdapterPosition();
             if (fromPosition < toPosition) {
-                //分别把中间所有的item的位置重新交换
+                //分别把中间所有的 item 的位置重新交换
                 for (int i = fromPosition; i < toPosition; i++) {
                     Collections.swap(mUserBookShelfResponses, i, i + 1);
                 }
@@ -161,19 +161,19 @@ class SimpleItemTouchHelperCallback extends ItemTouchHelper.SimpleCallback {
                 }
             }
             mBookShelfAdapter.notifyItemMoved(fromPosition, toPosition);
-            //返回true表示执行拖动
+            //返回 true 表示执行拖动
             return true;
         }
 
         @Override
         public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
-	        //记录将要删除item的位置
+	        //记录将要删除 item 的位置
             int position = viewHolder.getAdapterPosition();
             final UserBookShelfResponse bookShelfResponse = mUserBookShelfResponses.get(position);
             bookShelfResponse.setIndex(position);
             //将位置放到数据中，再保存到队列中方便操作
             queue.add(bookShelfResponse);
-            //滑动删除，将该item数据从集合中移除，
+            //滑动删除，将该 item 数据从集合中移除，
             //被移除的数据可能还需要被撤销，已经被保存到队列中了
             mUserBookShelfResponses.remove(position);
             mBookShelfAdapter.notifyItemRemoved(position);
@@ -182,7 +182,7 @@ class SimpleItemTouchHelperCallback extends ItemTouchHelper.SimpleCallback {
         @Override
         public void onChildDraw(Canvas c, RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
             if (actionState == ItemTouchHelper.ACTION_STATE_SWIPE) {
-                //滑动时改变Item的透明度，以实现滑动过程中实现渐变效果
+                //滑动时改变 Item 的透明度，以实现滑动过程中实现渐变效果
                 final float alpha = 1 - Math.abs(dX) / (float) viewHolder.itemView.getWidth();
                 viewHolder.itemView.setAlpha(alpha);
                 viewHolder.itemView.setTranslationX(dX);
@@ -197,28 +197,28 @@ class SimpleItemTouchHelperCallback extends ItemTouchHelper.SimpleCallback {
         public void clearView(final RecyclerView recyclerView, final RecyclerView.ViewHolder viewHolder) {
             super.clearView(recyclerView, viewHolder);
             if (!queue.isEmpty()) {
-		        //如果队列中有数据，说明刚才有删掉一些item
+		        //如果队列中有数据，说明刚才有删掉一些 item
                 Snackbar.make(((BaseActivity) getActivity()).getToolbar(), R.string.delete_bookshelf_success, Snackbar.LENGTH_LONG).setAction(R.string.repeal, new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                    //SnackBar的撤销按钮被点击，队列中取出刚被删掉的数据，然后再添加到数据集合，实现数据被撤回的动作
+                    //SnackBar 的撤销按钮被点击，队列中取出刚被删掉的数据，然后再添加到数据集合，实现数据被撤回的动作
                         final UserBookShelfResponse bookShelfResponse = (UserBookShelfResponse) queue.remove();
-					//通知Adapter                        mBookShelfAdapter.notifyItemInserted(bookShelfResponse.getIndex());
+					//通知 Adapter                        mBookShelfAdapter.notifyItemInserted(bookShelfResponse.getIndex());
                         mUserBookShelfResponses.add(bookShelfResponse.getIndex(), bookShelfResponse);
-                        //实际开发中遇到一个bug：删除第一个item再撤销出现的试图延迟
-                        //手动将recyclerView滑到顶部可以解决这个bug
+                        //实际开发中遇到一个 bug：删除第一个item再撤销出现的试图延迟
+                        //手动将 recyclerView 滑到顶部可以解决这个bug
                         if (bookShelfResponse.getIndex() == 0) {
                             mRecyclerView.smoothScrollToPosition(0);
                         }
                     }
                 }).setCallback(new Snackbar.Callback() {
-                //不撤销将做正在的删除操作，监听SnackBar消失事件，
-                //SnackBar消失（非排挤式消失）出队、访问服务器删除数据。
+                //不撤销将做正在的删除操作，监听 SnackBar 消失事件，
+                //SnackBar 消失（非排挤式消失）出队、访问服务器删除数据。
                     @Override
                     public void onDismissed(Snackbar snackbar, int event) {
                         super.onDismissed(snackbar, event);
                         //event 为消失原因，详细介绍在下文【附3】
-                        //排除一种情况就是联系删除多个item SnackBar挤掉前一个SnackBar导致的
+                        //排除一种情况就是联系删除多个 item SnackBar 挤掉前一个 SnackBar 导致的
                         //消失
                         if (event != DISMISS_EVENT_ACTION) {
                             final UserBookShelfResponse bookShelfResponse = (UserBookShelfResponse) queue.remove();
@@ -283,9 +283,9 @@ public class StaggeredGridDecoration extends RecyclerView.ItemDecoration {
 
 ```
 	class RecyclerViewScrollDetector extends RecyclerView.OnScrollListener {
-		//如果你的recyclerview是列表只需要用一个int就可以，private int lastVisibleItem;
-		//如果是gridview几列就需要几个数据的一个数组,
-		//如3列private int[] lastVisibleItem = {0, 0, 0};
+		//如果你的 recyclerview 是列表只需要用一个int就可以，private int lastVisibleItem;
+		//如果是 gridview 几列就需要几个数据的一个数组,
+		//如3列 private int[] lastVisibleItem = {0, 0, 0};
         private int[] lastVisibleItem = {0, 0};
         private int mScrollThreshold = DensityUtils.dp2px(x.app(), 1);
 
@@ -336,10 +336,10 @@ public class StaggeredGridDecoration extends RecyclerView.ItemDecoration {
 //你还可以复写以下方法定义选中item时动画逻辑
 @Overridepublic void onSelectedChanged(RecyclerView.ViewHolder viewHolder, int actionState) {
   super.onSelectedChanged(viewHolder, actionState);
-  //当选中Item时候会调用该方法，重写此方法可以实现选中时候的一些动画逻辑
+  //当选中 Item 时候会调用该方法，重写此方法可以实现选中时候的一些动画逻辑
   Log.v("zxy","onSelectedChanged");
 }
 ```
 
 > 总结
-RecyclerView 是ListView的很好的替代品，它不仅带给我们更加方便地实现方法，还优化了视图复用效率。原本用listview很难实现的功能用RecyclerView来实现，却变得很简单。吼吼。
+RecyclerView 是 ListView 的很好的替代品，它不仅带给我们更加方便地实现方法，还优化了视图复用效率。原本用 listview 很难实现的功能用 RecyclerView 来实现，却变得很简单。吼吼。
