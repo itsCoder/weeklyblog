@@ -114,6 +114,8 @@
 
 - 千百度 [@fq050766](https://github.com/fq050766) 
 
+- JangGwa [@JangGwa](https://github.com/JangGwa) 
+
 - Win-Man [@Win-Man](https://github.com/Win-Man)
 
 
