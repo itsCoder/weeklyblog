@@ -15,8 +15,7 @@ Java 集合框架源码分析系列之 HashMap
 
 ### 引言
 
-我们都知道 HashMap 输出是无序的。是因为存储时候 HashMap 会根据 key 值来决定 value 的存储位置。但是我们想过没有？到底为什么输出的时候顺序会跟存储时候不一样呢？JDK1.7 中的 HashMap 底层构造与 JDK1.8 中有哪些区别呢？HashCode() 的作用是什么呢？另外如果你不熟悉集合的基本常用用法可以参见[Java 基本集合用法总结](https://github.com/wuchangfeng/Blog-Resource/blob/master/Java-se1.md)
-
+我们都知道 HashMap 输出是无序的。是因为存储时候 HashMap 会根据 key 值来决定 value 的存储位置。但是我们想过没有？到底为什么输出的时候顺序会跟存储时候不一样呢？JDK1.7 中的 HashMap 底层构造与 JDK1.8 中有哪些区别呢？HashCode() 的作用是什么呢？另外如果你不熟悉集合的基本常用用法可以参见[Java 基本集合用法总结](https://github.com/wuchangfeng/Blog-Resource/blob/master/Java-se1.md)。
 ## 一 .  初识 HashMap
 
 在 **JDK 1.7** 之前的：HashMap 的内部存储结构其实是**数组**和**链表**的结合。当实例化一个 HashMap 时，系统会创建一个长度为 Capacity 的 **Entry 数组**，这个长度在哈希表中被称为容量(Capacity)，在这个数组中可以存放元素的位置我们称之为“桶”(bucket)，每个 bucket 都有自己的索引，系统可以根据索引快速的查找 bucket 中的元素。 
@@ -48,7 +47,7 @@ Crazy Java 上面说了，发生冲突的元素以**链表形式存储**，必�
 ### 2.1 常量定义
 
 ``` java
-// table 数组即 Entry 数组的初始值
+// table 数组即 Entry 数组的初始容量
 static final int DEFAULT_INITIAL_CAPACITY = 16;
 // 最大的容量，左移即 2 的 30 次方
 static final int MAXIMUM_CAPACITY = 1 << 30;
@@ -66,17 +65,15 @@ final float loadFactor;
 transient volatile int modCount;
 ```
 
-注：位移操作在底层源码还挺多的，可以一定程度上替代乘法和除法(效率好吧)，解释一下位移操作：
+注：位移操作在底层源码中应用还挺多的，可以一定程度上替代乘法和除法(效率好吧)，解释一下位移操作：
 
-例如：3 <<2( 3 为 int 型)
+例如：3 << 2( 3 为 int 型)
 
 　　1. 把3转换为二进制数字 0000 0000 0000 0000 0000 0000 0000 0011，
+　　2. 把该数字高位(左侧)的两个零移出，其他的数字都朝左平移 2 位，
+　　3. 在低位(右侧)的两个空位补零。则得到的最终结果是 0000 0000 0000 0000 0000 0000 0000 1100，
 
-​	2. 把该数字高位(左侧)的两个零移出，其他的数字都朝左平移 2 位，
-
-　　 3. 在低位(右侧)的两个空位补零。则得到的最终结果是 0000 0000 0000 0000 0000 0000 0000 1100，
-
-　　转换为十进制是12。
+　　转换为十进制是 12。
 
 上面只是一个例子总结起来就是：左移运算符，num << 1,相当于 num 乘以2。同理右移。而对于上述这个例子就是 3 乘以 2 的 2 次方啦，即 3 乘以 4 等于 12.
 
@@ -89,26 +86,26 @@ transient volatile int modCount;
 ``` java
 public HashMap(int initialCapacity, float loadFactor) {
 	// 初始大小为 0 即抛出异常
-	if (initialCapacity < 0)
-			throw new IllegalArgumentException("Illegal initial capacity: "
-					+ initialCapacity);
-		// 初始大小超过指定的最大值，则容量为指定的最大值
-		if (initialCapacity > MAXIMUM_CAPACITY)
-			initialCapacity = MAXIMUM_CAPACITY;
-		// 负载因子也不能为 0
-		if (loadFactor <= 0 || Float.isNaN(loadFactor))
-			throw new IllegalArgumentException("Illegal load factor: "
-					+ loadFactor);
-		// Find a power of 2 >= initialCapacity
-		int capacity = 1;
-		// 使得capacity 的大小为2的幂
-		while (capacity < initialCapacity)
-			capacity <<= 1;
-		this.loadFactor = loadFactor;
-		// size 超过这个数值就会扩容,即其为阈值
-		threshold = (int) (capacity * loadFactor);
-		table = new Entry[capacity];
-		init();
+if (initialCapacity < 0)
+		throw new IllegalArgumentException("Illegal initial capacity: "
+				+ initialCapacity);
+	// 初始大小超过指定的最大值，则容量为指定的最大值
+	if (initialCapacity > MAXIMUM_CAPACITY)
+		initialCapacity = MAXIMUM_CAPACITY;
+	// 负载因子也不能为 0
+	if (loadFactor <= 0 || Float.isNaN(loadFactor))
+		throw new IllegalArgumentException("Illegal load factor: "
+				+ loadFactor);
+	// Find a power of 2 >= initialCapacity
+	int capacity = 1;
+	// 使得capacity 的大小为2的幂
+	while (capacity < initialCapacity)
+		capacity <<= 1;
+	this.loadFactor = loadFactor;
+	// size 超过这个数值就会扩容,即其为阈值
+	threshold = (int) (capacity * loadFactor);
+	table = new Entry[capacity];
+	init();
 }
 ```
 
@@ -116,12 +113,12 @@ public HashMap(int initialCapacity, float loadFactor) {
 
 ``` java
 public V get(Object key) {
-  		// key 为 null 的情况
-        if (key == null)
-            return getForNullKey();
-  		// key ！= null 的情况
-        int hash = hash(key.hashCode());
-  		// 遍历 table 
+  	// key 为 null 的情况
+    if (key == null)
+        return getForNullKey();
+  	// key ！= null 的情况
+    int hash = hash(key.hashCode());
+    // 遍历 table 
         for (Entry<K,V> e = table[indexFor(hash, table.length)];
              e != null;
              e = e.next) {
@@ -129,22 +126,22 @@ public V get(Object key) {
           	// 相等则返回 e.value
             if (e.hash == hash && ((k = e.key) == key || key.equals(k)))
                 return e.value;
-        }
-        return null;
     }
+    return null;
+}
 ```
 
 当 key 为 null 时候：
 
 ``` java
 private V getForNullKey() {
-  		// 遍历 table[0] 的链表
-        for (Entry<K,V> e = table[0]; e != null; e = e.next) {
-            if (e.key == null)
-                return e.value;
-        }
-        return null;
-    }
+ // 遍历 table[0] 的链表
+    for (Entry<K,V> e = table[0]; e != null; e = e.next) {
+         if (e.key == null)
+           return e.value;
+   }
+  return null;
+}
 ```
 
  该方法是一个私有方法，只在 get() 中被调用。该方法判断 table[0] 中的链表是否包含 key 为 null 的元素，包含则返回 value，不包含则返回 null。为什么是遍历 **table[0] 的链表**？因为 key 为 null 的时候获得的 hash 值都是 0。
@@ -262,7 +259,7 @@ static int indexFor(int h, int length) {
 }
 ```
 
-另外一个 Fail-Fast 机制，这个的出现就是因为 HashMap 是 **线程不安全的**，也就是说如果同时几个线程对 HashMap 进行修改，将会抛出异常，而这个机制的实现就是因为 modCount 。我们每一次，对 HashMap 的操作这个数值都会增加，而且也是**全局的**(是否是来自父类 Map？)。
+另外一个 Fail-Fast 机制，这个的出现就是因为 HashMap 是 **线程不安全的**，也就是说如果同时几个线程对 HashMap 进行修改，将会抛出异常，而这个机制的实现就是因为 modCount 。我们每一次，对 HashMap 的操作这个数值都会增加，而且也是**全局的**。
 
 ``` java
 HashIterator() {
@@ -300,7 +297,7 @@ transient volatile int modCount;
 
 ## 三 . JDK1.8 中的 HashMap
 
-![](http://7xrl8j.com1.z0.glb.clouddn.com/1.7%20hashcode.jpg)
+![](http://ww3.sinaimg.cn/large/b10d1ea5gw1f76vq82kzqj20f70dddgl.jpg)
 
 上面就是 JDK 1.8 中数据的存储方式，很明显看见了一颗红黑树。
 
@@ -449,9 +446,9 @@ static final class TreeNode<K,V> extends LinkedHashMap.Entry<K,V> {
                     if ((e = p.next) == null) {
 						// 表示在表尾插入
                         p.next = newNode(hash, key, value, null);
-						// 新增节点后如果节点个数到达阈值，则将链表转换为红黑树
+						// 新增节点后如果节点个数到达阈值，则进入 treeifyBin() 进行再次判断
                         if (binCount >= TREEIFY_THRESHOLD - 1) // -1 for 1st
-							// 这里有可能还会跟64比较，判断是否需要对 table进行扩容
+							// 这里有可能还会跟64比较，判断是否需要对 table 进行扩容
                             treeifyBin(tab, hash);
                         break;
                     }
@@ -517,21 +514,21 @@ final Node<K,V> getNode(int hash, Object key) {
 扩容函数，指的是对 table 表进行的操作，resize() 函数分析如下：
 
 ``` java
-		final Node<K,V>[] resize() {
-        Node<K,V>[] oldTab = table;
-        int oldCap = (oldTab == null) ? 0 : oldTab.length;
-        int oldThr = threshold;
-        int newCap, newThr = 0;
-        // 对 newCap 的取值
-        if (oldCap > 0) {
-            if (oldCap >= MAXIMUM_CAPACITY) {
+final Node<K,V>[] resize() {
+    Node<K,V>[] oldTab = table;
+    int oldCap = (oldTab == null) ? 0 : oldTab.length;
+    int oldThr = threshold;
+    int newCap, newThr = 0;
+    // 对 newCap 的取值
+    if (oldCap > 0) {
+         if (oldCap >= MAXIMUM_CAPACITY) {
                 threshold = Integer.MAX_VALUE;
                 return oldTab;
-            }
+     }
             else if ((newCap = oldCap << 1) < MAXIMUM_CAPACITY &&
                      oldCap >= DEFAULT_INITIAL_CAPACITY)
                 newThr = oldThr << 1; // double threshold
-        }
+     }
         else if (oldThr > 0) // initial capacity was placed in threshold
             newCap = oldThr;
         else {               // zero initial threshold signifies using defaults
@@ -544,13 +541,13 @@ final Node<K,V> getNode(int hash, Object key) {
                       (int)ft : Integer.MAX_VALUE);
         }
     	//...
-                        while ((e = next) != null);
-						// 这里就是冲突的链表分成两个队列存储
-                        if (loTail != null) {
+                  while ((e = next) != null);
+				  // 这里就是冲突的链表分成两个队列存储
+                     if (loTail != null) {
                             loTail.next = null;
                             newTab[j] = loHead;
-                        }
-                        if (hiTail != null) {
+                    }
+                    if (hiTail != null) {
                             hiTail.next = null;
                             newTab[j + oldCap] = hiHead;
                         }
@@ -567,14 +564,13 @@ final Node<K,V> getNode(int hash, Object key) {
 判断是**对 table 表进行扩容** 还是将**冲突节点调整成红黑树：**
 
 ``` java
-	
-	final void treeifyBin(Node<K,V>[] tab, int hash) {
-        int n, index; Node<K,V> e;
-		// table 为空或者 table 的桶位还没达到 64，进行 table 扩容，而不是红黑调整
-        if (tab == null || (n = tab.length) < MIN_TREEIFY_CAPACITY)
+final void treeifyBin(Node<K,V>[] tab, int hash) {
+    int n, index; Node<K,V> e;
+	// table 为空或者 table 的桶位还没达到 64，进行 table 扩容，而不是红黑调整
+    if (tab == null || (n = tab.length) < MIN_TREEIFY_CAPACITY)
             resize();
-		// >=64,进行红黑树转化
-        else if ((e = tab[index = (n - 1) & hash]) != null) {
+    // >=64,进行红黑树转化
+       else if ((e = tab[index = (n - 1) & hash]) != null) {
             TreeNode<K,V> hd = null, tl = null;
             do {
                 TreeNode<K,V> p = replacementTreeNode(e, null);
@@ -589,17 +585,17 @@ final Node<K,V> getNode(int hash, Object key) {
             if ((tab[index] = hd) != null)
               // 调整成红黑树  
               hd.treeify(tab);
-        }
     }
+}
 ```
 
-## 四. HashCode() 的作用
+## 四. hashCode() 的作用
 
-面试经常会问到 HashCode() 是干嘛的？什么时候重写 equals() 方法啊？
+面试经常会问到 hashCode() 是干嘛的？什么时候重写 equals() 方法啊？
 
-> 引用自[Hashcode的作用](http://c610367182.iteye.com/blog/1930676)
+> 引用自[hashCode的作用](http://c610367182.iteye.com/blog/1930676)
 >
-> 关于Hashcode的作用 
+> 关于hashCode的作用 
 > 　　总的来说，Java中的集合（Collection）有两类，一类是List，再有一类是Set。前者集合内的元素是有序的，元素可以重复；后者元素无序，但元素不可重复。 
 >        要想保证元素不重复，可两个元素是否重复应该依据什么来判断呢？这就是Object.equals方法了。但是，如果每增加一个元素就检查一 次，那么当元素很多时，后添加到集合中的元素比较的次数就非常多了。也就是说，如果集合中现在已经有1000个元素，那么第1001个元素加入集合时，它 就要调用1000次equals方法。这显然会大大降低效率。 
 >        于是，Java采用了哈希表的原理。哈希算法也称为散列算法，是将数据依特定算法直接指定到一个地址上。这样一来，当集合要添加新的元素时，先调用这个元素的hashCode方法，就一下子能定位到它应该放置的物理位置上。如果这个位置上没有元素，它就可以 直接存储在这个位置上，不用再进行任何比较了；如果这个位置上已经有元素了，就调用它的equals方法与新元素进行比较，相同的话就不存了；不相同，也就是发生了Hash key相同导致冲突的情况,那么就在这个Hash key的地方产生一个链表,将所有产生相同hashcode的对象放到这个单链表上去,串在一起。所以这里存在一个冲突解决的问题（很少出现）。这样一来实际调用equals方法的次数就大大降低了，几乎只需要一两次。 
@@ -608,7 +604,7 @@ final Node<K,V> getNode(int hash, Object key) {
 >            2、如果两个对象的hashCode相等，它们并不一定相等(在同一个链表上)。 
 >
 
-在上述第二种情况下 ，若要判断两个对象是否相等，就要去重写 equals() 方法了。简单来讲 HashCode() 是用来查找用的，equals() 是用来判断两个对象是否相等用的。而我们进一步看看 Java 官方文档对于 HashCode() 定义要求：
+在上述第二种情况下 ，若要判断两个对象是否相等，就要去重写 equals() 方法了。简单来讲 hashCode() 是用来查找用的，equals() 是用来判断两个对象是否相等用的。而我们进一步看看 Java 官方文档对于 hashCode() 定义要求：
 
 > hashcode方法返回该对象的哈希码值。支持该方法是为哈希表提供一些优点，例如，java.util.Hashtable 提供的哈希表。 
 >
@@ -620,7 +616,7 @@ final Node<K,V> getNode(int hash, Object key) {
 >
 > 当equals方法被重写时，通常有必要重写 hashCode 方法，以维护 hashCode 方法的常规协定，该协定声明相等对象必须具有相等的哈希码。
 
-可以看[这里](http://blog.csdn.net/fenglibing/article/details/8905007)的实例告诉我们为什么**重写 HashCode() 时有必要重写 equals() 方法**。
+可以看[这里](http://blog.csdn.net/fenglibing/article/details/8905007)的实例告诉我们为什么**重写 hashCode() 时有必要重写 equals() 方法**。
 
 ## 五 . 个人总结
 
@@ -634,6 +630,7 @@ final Node<K,V> getNode(int hash, Object key) {
 * [HashCode 在 HashMap 中的作用](http://blog.csdn.net/fenglibing/article/details/8905007)
 * [HashMap 在Android中应用](http://www.jianshu.com/p/e54047b2b563)
 * [LinkedHashMap 的实现原理(推荐)](http://allenwu.itscoder.com/2016/05/24/Java-linkedhashmap/)
+* [HashMap 面试常问](http://www.jianshu.com/p/8b372f3a195d)
 
 
 由于篇幅原因，更多集合框架源码分析请看[这里。](http://allenwu.itscoder.com/android)
