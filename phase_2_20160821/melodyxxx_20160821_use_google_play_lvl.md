@@ -57,7 +57,7 @@ toc: true
 
 ### 下载安装LVL库
 
-在进行LVL测试之前，你需要下载LVL库，这里从SDK Manager里面下载即可,扎到Google Play License Library，然后Install安装
+在进行LVL测试之前，你需要下载LVL库，这里从SDK Manager里面下载即可,找到Google Play License Library，然后Install安装
 ![](http://i.imgur.com/8B1sv7z.png)
 
 ### 导入到项目中
@@ -117,7 +117,7 @@ compile project(':lvlm')
 ``` java
     // 这里填你的PUBLIC_KEY，具体的获取方法，见文章下面
     private static final String BASE64_PUBLIC_KEY ="YOUR PUBLIC KEY";
-    // 盐，这里应该是和验证的缓存有关，这里可以随便修改，也可以每次打开应用验证时随机成功
+    // 盐(这里指参与加密的一组随机数)，这里应该是和验证的缓存有关，这里可以随便修改，也可以每次打开应用验证时随机成功
     private static final byte[] SALT = new byte[]{
             -43, 65, 36, -128, -103, -57, 74, -68, 51, 28, -26, -96, 37, -117, -33, -113, -44, 32, -64,
             89
