@@ -1,5 +1,10 @@
 ## 热修复入门：ClassLoader 机制
 
+>- 文章来源：itsCoder 的 [WeeklyBolg](https://github.com/itsCoder/weeklyblog) 项目
+>- itsCoder主页：[http://itscoder.com/](http://itscoder.com/)
+>- 作者：[Jaeger]( https://github.com/laobie )
+>- 审阅者：[xcc3641]( https://github.com/xcc3641 ) , [Zheaoli]( https://github.com/Zheaoli )
+
 > 对于 Java 程序来说，编写程序就是编写类，运行程序也就是运行类（编译得到的 class 文件），其中起到关键作用的就是类加载器 ClassLoader。
 
 ### ClassLoader 简介
@@ -368,7 +373,7 @@ protected Class<?> loadClass(String className, boolean resolve) throws ClassNotF
 }
 ```
 
-上面这段代码结合之前提到的双亲委托模型就很好理解了，先查找是否已经加载过，如果没有就交给父 ClassLoader 去加载，如果父类加载器没有找到，才调用当前 ClassLoader 来加载，此时就是调用上面分析的 `findClass() ` 方法了。
+上面这段代码结合之前提到的双亲委托模型就很好理解了，先查找当前的 ClassLoader 是否已经加载过，如果没有就交给父 ClassLoader 去加载，如果父 ClassLoader 没有找到，才调用当前 ClassLoader 来加载，此时就是调用上面分析的 `findClass() ` 方法了。
 
 ###  ClassLoader 使用示例
 
