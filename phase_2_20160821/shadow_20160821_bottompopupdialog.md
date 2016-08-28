@@ -245,6 +245,64 @@ getDialog().requestWindowFeature(Window.FEATURE_NO_TITLE)
 可以从代码中看到 LinearLayout 里循环添加的 item 是 PopupDialogItem ，它其实主体就是一个 TextView ，负责显示
 String数组里的内容。
 
+*PopupDialogItem 代码如下，里面包括了一下给item设置数据的公共方法，我觉得以后要扩展成可以自定义设置item，不仅仅局限于一种view的样式。*
+
+```java
+public class PopupDialogItem extends LinearLayout {
+
+
+    private Context mContext;
+
+    private TextView mContentView;
+
+    private View mLineView;
+
+    private String mContent;
+
+    public PopupDialogItem(Context context) {
+        super(context);
+        mContext = context;
+        initView();
+    }
+
+    public PopupDialogItem(Context context, AttributeSet attrs) {
+        super(context, attrs);
+        mContext = context;
+        initView();
+    }
+
+    private void initView() {
+        LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View view = inflater.inflate(R.layout.item_popup_dialog, this);
+        mContentView = (TextView) view.findViewById(R.id.popup_dialog_item);
+        mLineView = view.findViewById(R.id.popup_dialog_line);
+    }
+
+    public void refreshData(String text) {
+        mContentView.setText(text);
+        mContent = text;
+    }
+
+    public void setLineColor(int color) {
+        mLineView.setBackgroundResource(color);
+    }
+
+    public void hideLine() {
+        mLineView.setVisibility(GONE);
+    }
+
+    public String getItemContent() {
+        return mContent;
+    }
+
+    public void setTextColor(int textColor) {
+        mContentView.setTextColor(mContext.getResources().getColor(textColor));
+    }
+
+}
+
+```
+
 ### BottomPopUpDialog 使用
 ```java
   BottomPopUpDialog dialog = new BottomPopUpDialog()
