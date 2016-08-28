@@ -1,6 +1,6 @@
 ---
 
- title: Android 开发艺术探索 View 的事件分发机制读书笔记
+ title: View 的事件分发机制（Android 开发艺术探索读书笔记）
  date:  2016-08-02 00:00：00
  categories:  Android View
  tags:  Android View
