@@ -8,7 +8,7 @@ categories: [编程,Python]
 >- 文章来源：itsCoder 的 [WeeklyBolg](https://github.com/itsCoder/weeklyblog) 项目
 >- itsCoder主页：[http://itscoder.com/](http://itscoder.com/)
 >- 作者：[写代码的香港记者](https://github.com/Zheaoli)
->- 校对：[小天](https://github.com/brucezz)
+>- 审阅者：[小天](https://github.com/brucezz)
 
 ## 前言
 
