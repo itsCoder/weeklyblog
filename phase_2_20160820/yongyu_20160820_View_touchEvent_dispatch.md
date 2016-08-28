@@ -1,6 +1,6 @@
 ---
 
- title: Android 开发艺术探索第3章 3.4 View 的事件分发读书笔记
+ title: Android 开发艺术探索 View 的事件分发机制读书笔记
  date:  2016-08-02 00:00：00
  categories:  Android View
  tags:  Android View
@@ -8,15 +8,14 @@
 
 >-文章来源：itsCoder 的 [WeeklyBolg](https://github.com/itsCoder/weeklyblog) 项目
 >- itsCoder主页：[http://itscoder.com/](http://itscoder.com/)
->- 作者：[用语](http://yongyu.itscoder.com/)
->- 审阅者：[]()
+>- 作者：[yongyu0102](https://github.com/yongyu0102)
+>- 审阅者：[HanJie](https://github.com/melodyxxx)
 
-
-## 1 View 事件的分发机制
-
-### 1.1 点击事件的传递规则
+### 前言
 
 在写这篇笔记的时候想了好久，也拖了好长时间，关于事件分发的博客看了很多，有的写的思路很清晰，画了事件分发的整体流程图，但是没有源码，看过之后只能知道事件是怎么分发的，但完全是记住的，而不是通过源码分析出来的，试想，如果以后再遇到其他知识点还是这样，那么我们就完全成了不能靠自己去分析问题，只能去食他人知识，没有自我学习分析能力，所以笔者试着结合艺术探索的讲解，尝试在源码的基础上加以理解，本文的写作逻辑是先从文字描述上尽量让大家先大概了解，事件分发的概况，先有个感性认识，再结合源码进行分析，如果错误的地方，还请指出。
+
+### 1.1 点击事件的传递规则
 
 在我们进行分析事件分发机制之前，先思考一下我们要研究哪些问题：
 
