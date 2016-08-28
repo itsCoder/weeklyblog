@@ -11,7 +11,7 @@ toc: true
 >- 文章来源：itsCoder 的 [WeeklyBolg](https://github.com/itsCoder/weeklyblog) 项目
 >- itsCoder主页：[http://itscoder.com/](http://itscoder.com/)
 >- 作者：[Melodyxxx](http://melodyxxx.com/)
->- 审阅者：[暂无]()
+>- 审阅者：[Hymanme](https://github.com/Hymanme)
 
 ## 关于License Verification Library (LVL)
 
