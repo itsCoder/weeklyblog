@@ -12,19 +12,19 @@
 >- 审阅者：[]()
 
 
-## 3.4 View 事件的分发机制
+## 1 View 事件的分发机制
 
-### 3.4.1 点击事件的传递规则
+### 1.1 点击事件的传递规则
 
 在写这篇笔记的时候想了好久，也拖了好长时间，关于事件分发的博客看了很多，有的写的思路很清晰，画了事件分发的整体流程图，但是没有源码，看过之后只能知道事件是怎么分发的，但完全是记住的，而不是通过源码分析出来的，试想，如果以后再遇到其他知识点还是这样，那么我们就完全成了不能靠自己去分析问题，只能去食他人知识，没有自我学习分析能力，所以笔者试着结合艺术探索的讲解，尝试在源码的基础上加以理解，本文的写作逻辑是先从文字描述上尽量让大家先大概了解，事件分发的概况，先有个感性认识，再结合源码进行分析，如果错误的地方，还请指出。
 
 在我们进行分析事件分发机制之前，先思考一下我们要研究哪些问题：
 
-1、事件分发的对象是什么？
+**1、事件分发的对象是什么？**
 
 当用户触摸屏幕时，将创建一个 MotionEvent 对象即点击事件。MotionEvent 包含关于发生触摸的位置、时间、历史记录、手势动作等细节信息， Touch 事件相关细节被封装成了 MotionEvent 对象。理解了这一个知识点后，其实我们就很容易理解所谓点击事件的分发，其实就是对 MotionEvent 事件分发的过程，即当一个 MotionEvent 产生后，系统需要把这个事件传递给一个具体的 View 去处理, 而这个传递的过程就是分发过程。
 
-2、事件是在那些对象之间传递？
+**2、事件是在哪些对象之间传递？**
 
 Android 与用户交互的界面就是由一系列 Activity（Fragment)、ViewGroup、View 组成如图：
 
@@ -32,7 +32,7 @@ Android 与用户交互的界面就是由一系列 Activity（Fragment)、ViewGr
 
 当然一个界面可能由多个ViewGroup或者多个View 组成，所以事件就是在这三者之间进行传递，我们要分析的就是要捋清楚事件是由哪个对象发出，经过哪些对象，最终达到哪个对象，在某些条件改变的时候下他们之间的关系又是怎样的，理解了这些之后，当我们在遇到点击或者滑动事件冲突的情况，相信一切问题就迎刃而解了。
 
-3、这个分发过程由哪些对象协作完成？
+**3、这个分发过程由哪些对象协作完成？**
 
 其实点击事件分发过程主要由三个重要方法共同完成：dispatchTouchEvent(MotionEvent event) 、onInterceptTouchEvent(MotionEvent event)和onTouchEvent(MotionEvent event)，下面先介绍一下这三个方法的主要作用，这样有利于后面我们对源码的分析：
 
@@ -42,7 +42,7 @@ Android 与用户交互的界面就是由一系列 Activity（Fragment)、ViewGr
    在 dispatchTouchEvent 方法内部调用，用来判断是否拦截某个事件，如果当前 view 拦截了某个事件，那么在同一个事件序列当中，此方法不会再被调用，返回结果表示是否拦截当前事件。只有 ViewGroup 中才有该方法 ，返回值 true，表示ViewGroup拦截了该触摸事件，该事件就不会分发给它的子 View 或者子 ViewGroup，事件会由自己的 onTouchEvent() 方法处理。返回值 false，表示 ViewGroup 没有拦截该事件，该事件就可以分发给它的子 View 和子 ViewGroup ，事件传递到子 view 的 dispatchTouchEvent() 方法中去处理。
 
 3. public boolean onTouchEvent(MotionEvent event)
-   在 dispatchTouchEvent 方法内部调用，用来处理点击事件，返回结果表示是否消耗当前事件，如果不消耗，则在同一个事件序列中，当前 view 无法再次接收到事件。返回值为 True ，事件由自己处理，后续事件序列让其处理；返回值为 False ，自己不消耗事件，向上返回让其他的父容器的onTouchEvent接受处理。
+   在 dispatchTouchEvent 方法内部调用，用来处理点击事件，返回结果表示是否消耗当前事件，如果 ACTION_DOWN不消耗，则在同一个事件序列中，当前 view 无法再次接收到事件。返回值为 True ，事件由自己处理，后续事件序列让其处理；返回值为 False ，自己不消耗事件，向上返回让其他的父容器的onTouchEvent接受处理。
 
    这三个方法都是通过 dispatchTouchEvent() 联系在一起，他们之间的关系可以用如下伪代码表示：
 ``` java
@@ -67,7 +67,7 @@ public boolean dispatchTouchEvent(MotionEvent ev) {
 
 当一个View需要处理事件时，如果设置了 OnTouchListener ，那么 OnTouchListener 的 onTouch方法会回调，如果 onTouch 返回 false，则当前 View 的 onTouchEvent 方法会被调用；如果返回 true，那么 onTouchEvent 方法将不会调用。由此可见，OnTouchListener 优先级高于 onTouchEvent。OnClickListener 优先级处在事件传递的尾端。
 
-4、事件的传递顺序是什么？
+**4、事件的传递顺序是什么？**
 
 这里就直接给出答案:一个点击事件产生后，传递顺序：Activity -> Window -> ViewGroup  -> View；如果一个 View 的 onTouchEvent 返回 false 即 View 没有处理事件，那么它的父容器的onTouchEvent 会被调用，以此类推，所有元素都不处理该事件，最终将传递给 Activity 处理，即 Activity 的 onTouchEvent 会被调用，事件顺序为：View ->  ViewGroup -> Window ->  Activity。
 
@@ -83,7 +83,7 @@ public boolean dispatchTouchEvent(MotionEvent ev) {
 8. onClick 发生的前提是View可点击，并且它收到了down 和 up 事件。
 9. 事件传递过程是由外而内，事件总是先传递给父元素，然后在由父元素分发给子 View，通过requestDisallowInterceptTouchEvent 方法可以在子元素干预父元素的事件分发过程，但 ACTION_DOWN 事件除外。                
 
-### 3.4.2 事件分发的源码解析
+### 1.2 事件分发的源码解析
 
 这里要分别分析 Activity  、ViewGroup 和 View 对事件的分发。
 
@@ -483,7 +483,7 @@ public boolean dispatchTouchEvent(MotionEvent ev) {
         if (mFirstTouchTarget == null) {
             // 调用 ViewGroup 的父类，即 view 的dispatchTouchEvent(MotionEvent ev)方法处理
           //处理方法就是我们上面分析的 view 对点击事件的分发流程
-            // 并将分发结果的返回值负值给 handler 进行返回
+            // 并将分发结果的返回值赋值给 handler 进行返回
             handled = dispatchTransformedTouchEvent(ev, canceled, null,
                     TouchTarget.ALL_POINTER_IDS);
         } else {
