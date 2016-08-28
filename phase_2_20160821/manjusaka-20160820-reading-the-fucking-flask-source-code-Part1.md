@@ -1,10 +1,14 @@
 ---
-title: 菜鸟阅读Flask源码系列（1）：Flask的router初探
+title: 菜鸟阅读 Flask 源码系列（1）：Flask的router初探
 type: tags
 date: 2016-08-09 15:54:20
 tags: [Python,编程,Flask,源码阅读]
 categories: [编程,Python]
 ---
+>- 文章来源：itsCoder 的 [WeeklyBolg](https://github.com/itsCoder/weeklyblog) 项目
+>- itsCoder主页：[http://itscoder.com/](http://itscoder.com/)
+>- 作者：[写代码的香港记者](https://github.com/Zheaoli)
+>- 校对：[小天](https://github.com/brucezz)
 
 ## 前言
 
@@ -55,12 +59,12 @@ def login():
     return render_template('login.html', error=error)
 
 ~~~
-那么问题来了，上面的例子中，我们知道 `app.route('xxxx',methods=['xxx'])` 将会设置我们对应的方法与对应url的关联，那么这样一种做法是怎样生效的呢？
+那么问题来了，上面的例子中，我们知道 `app.route('xxxx',methods=['xxx'])` 将会设置我们对应的方法与对应 url 的关联，那么这样一种做法是怎样生效的呢？
 
 ## **Flask** 源码阅读
 
-### 让我们看看最开始的router是什么样子的
-首先让我们从 [Flask](https://github.com/pallets/flask) 这里获取flask源码，然后我们将版本号切换至最初的 0.1 版（git tag为8605cc310d260c3b08160881b09da26c2cc95f8d）
+### 让我们看看最开始的 router 是什么样子的
+首先让我们从 [Flask](https://github.com/pallets/flask) 这里获取 flask 源码，然后我们将版本号切换至最初的 0.1 版（git tag为8605cc310d260c3b08160881b09da26c2cc95f8d）
 
 > 小tips：阅读开源项目时，如果当前版本太过于复杂，可以切换至项目最初发布时的版本，然后根据每次项目版本发布的 Release Note 来进行跟进。
 
