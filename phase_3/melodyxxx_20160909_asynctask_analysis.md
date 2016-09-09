@@ -111,6 +111,7 @@ public final AsyncTask<Params, Progress, Result> executeOnExecutor(Executor exec
     // 回调我们自己可以复写的onPreExecute()方法
     onPreExecute();
 
+    // 将我们传进来的参数赋给mWorker.mParams
     mWorker.mParams = params;
     exec.execute(mFuture);
 
@@ -256,7 +257,7 @@ mWorker = new WorkerRunnable<Params, Result>() {
     }
 };
 ```
-call()方法内回调了熟悉的doInBackground()方法，并将mParams传给了它。需要注意的是，当前线程已经切换到了线程池中，而非UI线程中，所以doInBackground()方法是在非UI线程中调用的。然后将doInBackground()执行完的返回值result传给了postResult()，跟进去看postResult()的实现：
+call()方法内回调了熟悉的doInBackground()方法，并将之前保存起来的mWorker内的mParams传给了它。需要注意的是，当前线程已经切换到了线程池中，而非UI线程中，所以doInBackground()方法是在非UI线程中调用的。然后将doInBackground()执行完的返回值result传给了postResult()，跟进去看postResult()的实现：
 
 ``` java
 private Result postResult(Result result) {
