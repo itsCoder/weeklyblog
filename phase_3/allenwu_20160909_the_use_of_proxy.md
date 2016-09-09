@@ -418,7 +418,7 @@ public <T> T create(final Class<T> service) {
 
 而在**二部分中**我们稍微探究了一下动态代理在 Retrofit2.0 中的应用。Retrofit2.0 用注解来描述一个 HTTP 请求，将其抽象成一个接口，接着**动态的**将这个接口的注解翻译成一个 HTTP 请求，并且最后再执行这个HTTP请求。
 
-最后，本来想分析分析 Android 中 Hook 技术的。也成功的根据作者的文章实现了 Demo。后来改造了一下，一直没有成功，发邮件问了原作者，也没得到回应。也按照自己的思路写了一半关于 Hook 的文章，但是后来发现很难离开原作者的思路。大概是本人没有理解以及原作者写的太好了的原因吧。如果你有兴趣了解 Hook 技术，推荐你看[Android插件化原理解析——Hook机制之动态代理](http://weishu.me/2016/01/28/understand-plugin-framework-proxy-hook/)。
+最后，本来想分析分析 Android 中 Hook 技术的。也成功的根据作者的文章实现了 Demo。后来改造了一下，一直没有成功，发邮件问了原作者，也没得到回应。同时也按照自己的思路写了一半关于 Hook 的文章，但是后来发现很难离开原作者的思路。大概是本人没有理解以及原作者写的太好了的原因吧。如果你有兴趣了解 Hook 技术，推荐你看[Android插件化原理解析——Hook机制之动态代理](http://weishu.me/2016/01/28/understand-plugin-framework-proxy-hook/)。
 
  ## 四. 参考
 
