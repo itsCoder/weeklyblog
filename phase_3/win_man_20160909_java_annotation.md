@@ -24,7 +24,6 @@ categories:
 　　除了使用 Java 自带的三种内置注解，我们也可以根据自己的实际需要来自定义注解，怎么定义一个注解呢。定义一个注解和定义一个接口，定义一个类是一样的。先上一个例子：
 
 ``` java
-
 	import java.lang.annotation.ElementType;
 	import java.lang.annotation.Retention;
 	import java.lang.annotation.RetentionPolicy;
@@ -36,7 +35,6 @@ categories:
 	    public int id();
 	    public String name() default "there is something";
 	}
-
 ```
 
 　　这样子就定义了一个最简单的注解，通过 `@Example` 来使用这个注解。接下来，我们一点一点的看定义一个注解需要哪些部分。
@@ -84,7 +82,6 @@ categories:
 　　上面只是定义了一个注解，现在我们来看一下注解应该怎么使用：
 
 ``` java
-
 	public class ExampleTest {
 	
 	    @Example(id = 1)
@@ -106,7 +103,6 @@ categories:
 	        System.out.println("this is test4()");
 	    }
 	}
-
 ```
 
 　　到这一步，我们好像还是看不出来注解究竟有什么用，好像就是跟注释一样啊。别急，要让注解真正发挥作用，我们需要写一个注解处理器，注解处理器才是真正让注解起作用的部分。
@@ -114,7 +110,6 @@ categories:
 　　编写注解处理器的时候需要用到一些关于反射机制方面的内容，不过是属于比较简单的内容。
 
 ``` java
-
 	public class ExampleHandler {
 	    public static void examplePrint(Class<?> cl){
 	        for(Method m : cl.getDeclaredMethods()){
@@ -129,7 +124,6 @@ categories:
 	        ExampleHandler.examplePrint(ExampleTest.class);
 	    }
 	}
-
 ```
 
 　　可以看到主要是用了反射中的 `getDeclaredMethods()` 和 `getAnnotation` 方法， `examplePrint()` 方法的作用就是对类中的所有方法进行遍历，看是否有 `@Example` 这个注解，如果存在这个注解，那么输出这个注解的 `id` 和 `name` 值。
