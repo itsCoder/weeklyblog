@@ -4,7 +4,7 @@
 
 
 #一、环境搭建
-它的方式是使用 nodeJs API 调用系统资源，所以第一步就是安装 node.js 环境哟。
+它的方式是使用 nodeJs API 调用系统资源，所以第一步就是安装 node.js 环境。
 ##1.1、安装 node.js
 如果你的机器上还没有 **[Node.js® 和 npm](https://nodejs.org/en/download/)** ，请安装它们。
 ##1.2、全局安装 electron
@@ -15,17 +15,17 @@ mac 系统需要在管理员权限下安装哟，输好密码就可以开始等�
 ```
 sudo npm install -g electron-prebuilt
 ```
-全局安装后就可以在命令行使用 electron 工具
+全局安装后就可以在命令行使用 electron 工具。
 全局安装之后，就可以通过 electron .  启动应用，当然也可以选择局部安装。
 ##1.3、安装打包工具 electron-packager
 ```
 npm install -g electron-packager
 ```
-同样，mac 系统需要在管理员权限下安装哟
+同样，mac 系统需要在管理员权限下安装。
 ```
 sudo npm install -g electron-packager
 ```
-打包需要注意的点会在后面讲解
+打包需要注意的点会在后面讲解。
 #二、简单开发
 那么，我们 Electron 程序到底是怎么跑起来的呢？先看下一个 Electron 项目的基本框架组成吧。
 ##2.1、项目框架
@@ -38,64 +38,64 @@ app/
 ```
 
 - **package.json**
-  可以理解为 android 里面的 mainfest 文件，里面声明了程序的名称、简介、版本等信息；设置 Electron 主进程运行的脚本（main.js），即设置程序的入口；设置快捷键，在你的 CLI（命令行）中可以用 electron . 方便地启动应用。可以看下面例子：
+可以理解为 android 里面的 mainfest 文件，里面声明了程序的名称、简介、版本等信息；设置 Electron 主进程运行的脚本（main.js），即设置程序的入口；设置快捷键，在你的 CLI（命令行）中可以用 electron . 方便地启动应用。可以看下面例子：
 ```
 {
-    "name": "channel",
-    "version": "1.0.0",
-    "description": "",
-    "main": "main.js",
-    "author": "Young",
-    "scripts": {
-        "start": "electron ."
-    }
+"name": "channel",
+"version": "1.0.0",
+"description": "",
+"main": "main.js",
+"author": "Young",
+"scripts": {
+"start": "electron ."
+}
 }
 ```
 
 - **main.js**
-  这个文件是程序的入口，Electron 的主进程将用它来启动并创建桌面应用。
+这个文件是程序的入口，Electron 的主进程将用它来启动并创建桌面应用。
 ```
 const {app, BrowserWindow} = require('electron')
 let win
 function createWindow(){
-    win = new BrowserWindow({width:800, height:600})
-    win.loadURL(`file://${__dirname}/index.html`)
-    win.webContents.openDevTools()//开启调试工具
-    win.on('close', () => {
-        win = null
-    })
-    win.on('resize', () => {
-        win.reload()
-    })
+win = new BrowserWindow({width:800, height:600})
+win.loadURL(`file://${__dirname}/index.html`)
+win.webContents.openDevTools()//开启调试工具
+win.on('close', () => {
+win = null
+})
+win.on('resize', () => {
+win.reload()
+})
 }
 app.on('ready', createWindow)
 app.on('window-all-cloased', () => {
-    if(process.platform !== 'drawin' ){
-        app.quit()
-    }
+if(process.platform !== 'drawin' ){
+app.quit()
+}
 })
 app.on('activate', () => {
-    if(win === null){
-        createWindow()
-    }
+if(win === null){
+createWindow()
+}
 })
 ```
 app 模块：会控制应用的生命周期（例如， 对应用的 ready 状态做出反应），有点像 Application ，对应有各个生命周期会有不同的状态。
 
- BrowserWindow 模块：为你创建窗口。
+BrowserWindow 模块：为你创建窗口。
 
- win 对象：是你应用的主窗口，被声明成 null ，否则当 JavaScript 垃圾回收掉这个对象时，窗口会被关闭。
+win 对象：是你应用的主窗口，被声明成 null ，否则当 JavaScript 垃圾回收掉这个对象时，窗口会被关闭。
 
- 当 app 捕获 ready 事件，BrowserWindow 创建一个800*600大小的窗口。浏览器窗口的渲染进程会渲染 index.html 文件。
+当 app 捕获 ready 事件，BrowserWindow 创建一个800*600大小的窗口，浏览器窗口的渲染进程会渲染 index.html 文件。
 
- 当 app 捕获 resize 事件，BrowserWindow 会重新加载，以此类推。
+当 app 捕获 resize 事件，BrowserWindow 会重新加载，以此类推。
 
 - **index.html**
-  这个文件就是我们要呈现出来的网页了。这就需要你自己发挥想象写咯~
+这个文件就是我们要呈现出来的网页了。这就需要你自己发挥想象写咯~
 
 ##2.2、初次开发踩坑记录
 - **Electron 加载带 jquery 的项目报错**
-  solution： [详细解答可以查看这里](https://github.com/electron/electron/issues/254#issuecomment-183483641)
+solution： [详细解答可以查看这里](https://github.com/electron/electron/issues/254#issuecomment-183483641)
 ```
 <!-- Insert this line above script imports -->
 <script>if (typeof module === 'object') {window.module = module; module = undefined;}</script>
@@ -113,9 +113,9 @@ Does NOT require node-integration
  to be false
 
 - **Electrons 使用网络请求**
-  solution：原来也有很多库提供给我们使用的，使用方式方法也很简单。
-  **superagent**
-  [superagent](https://github.com/visionmedia/superagent) 是一个极其简单的 AJAX 库。看过下面例子，相信机智的你已经知道怎么使用了吧。
+solution：原来也有很多库提供给我们使用的，使用方式方法也很简单。
+**superagent**
+[superagent](https://github.com/visionmedia/superagent) 是一个极其简单的 AJAX 库。看过下面例子，相信机智的你已经知道怎么使用了吧。
 ```
 var request = require( 'superagent' );
 request 
@@ -137,21 +137,21 @@ request
 .then( function ( res ) { 
 // do something when resolved 
 }, function ( err ) {
- // do something when rejected 
+// do something when rejected 
 });
 ```
 立刻就可以使用上 then了，方便吧。
 
 
 #三、打包
-开发搞定后最后就是打包啦！！这里给大家介绍的是在 mac os 环境下用 electron-packager 打包的流程（原谅我刚入门 electron ，目前也只学会了这种方式）。mac 下打包 mas 程序当然是可行的，但是打包 win32 的程序的话，就需要花一点时间配置 Wine 环境了，后面会为大家介绍。
+开发搞定后最后就是打包啦！这里给大家介绍的是在 mac os 环境下用 electron-packager 打包的流程（原谅我刚入门 electron ，目前也只学会了这种方式）。mac 下打包 mas 程序当然是可行的，但是打包 win32 的程序的话，就需要花一点时间配置 Wine 环境了，后面会为大家介绍。
 ##3.1 mac os 环境下打包 mas 安装包
 ###3.1.1 在 package.json 中添加安装包依赖
 ```
 "devDependencies": {
-        "electron-prebuilt": "^1.3.5",
-        "electron-packager": "latest"
-    }
+"electron-prebuilt": "^1.3.5",
+"electron-packager": "latest"
+}
 ```
 
 ###3.1.2 命令行打包
@@ -202,7 +202,7 @@ brew install wine
 
 
 - 安装缺失组件 Xquartz
-  浏览器打开https://xquartz.macosforge.org/landing 下载并安装即可
+浏览器打开https://xquartz.macosforge.org/landing 下载并安装即可
 
 - 重试安装 Wine
 ```
