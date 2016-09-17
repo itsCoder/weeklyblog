@@ -4,20 +4,20 @@ tags: [Android]
 toc: true
 ---
 
-AsyncTask是Android提供给我们的一个轻量级处理异步任务的类，可以把执行的进度和执行的结果反馈给UI线程来更新UI。
+AsyncTask 是 Android 提供给我们的一个轻量级处理异步任务的类，可以把执行的进度和执行的结果反馈给 UI 线程来更新  UI。
 
 <!--more-->
 
 >- 文章来源：itsCoder 的 [WeeklyBolg](https://github.com/itsCoder/weeklyblog) 项目
 >- itsCoder主页：[http://itscoder.com/](http://itscoder.com/)
 >- 作者：[Melodyxxx](http://melodyxxx.com/)
->- 审阅者：[暂无]()
+>- 审阅者：[Jaeger](https://github.com/laobie)
 
 ## AsyncTask的使用
 
 ### AsyncTask的基本使用
 
-Android已经为我们将AsyncTask封装的已经很好了，所以AsyncTask使用起来也比较简单，下面是一般的使用方法：
+Android 已经为我们将 AsyncTask 封装的已经很好了，所以 AsyncTask 使用起来也比较简单，下面是一般的使用方法：
 
 ``` java
 new AsyncTask<String, Integer, Void>() {
@@ -56,7 +56,7 @@ new AsyncTask<String, Integer, Void>() {
 
 ### AsyncTask的取消
 
-可以手动调用AsyncTask的cancle()方法来尝试取消一个任务，需要注意的是这里的取消只是改变任务的状态标记，并不会立马停止后台任务，可以通过isCancelled()方法获取当前的取消状态来做相应的处理，例如可以在doInBackground()方法里面像下面这样处理，不断的检测状态：
+可以手动调用 AsyncTask 的`cancle()`方法来尝试取消一个任务，需要注意的是这里的取消只是改变任务的状态标记，并不会立马停止后台任务，可以通过`isCancelled()`方法获取当前的取消状态来做相应的处理，例如可以在`doInBackground()`方法里面像下面这样处理，不断的检测状态：
 ``` java
 @Override
 protected Void doInBackground(String... strings) {
@@ -76,7 +76,7 @@ protected Void doInBackground(String... strings) {
 
 > 下面的分析的为Android 5.0的源码
 
-先从AsyncTask从AsyncTask的执行入口方法execute()开始分析
+先从 AsyncTask 从 AsyncTask 的执行入口方法`execute()`开始分析
 
 ``` java
 @MainThread
@@ -85,7 +85,7 @@ public final AsyncTask<Params, Progress, Result> execute(Params... params) {
 }
 ```
 
-内部调用了AsyncTask的executeOnExecutor()方法，跟进去
+内部调用了 AsyncTas k的`executeOnExecutor()`方法，跟进去
 
 ``` java
 @MainThread
@@ -118,9 +118,9 @@ public final AsyncTask<Params, Progress, Result> executeOnExecutor(Executor exec
     return this;
 }
 ```
-上面回调了onPreExecute()方法，而当前线程为AsyncTask创建并启动的线程，所以**AsyncTask启动必须在UI线程，不能在子线程中**，否则onPreExecute()方法会在子线程中被调用。
+上面回调了`onPreExecute()`方法，而当前线程为 AsyncTask 创建并启动的线程，所以**AsyncTask 启动必须在 UI 线程，不能在子线程中**，否则`onPreExecute()`方法会在子线程中被调用。
 
-在execute方法中，将sDefaultExecutor传递给了executeOnExecutor的第一个参数，即上面的exec，这里的sDefaultExecutor是一个串行线程池，一个进程中的所有AsyncTask全部在这个串行线程池中排队执行：
+在 AsyncTask 执行入口的 execute 方法中，将 sDefaultExecutor 传递给了 executeOnExecutor 的第一个参数，即上面的 exec ，这里的 sDefaultExecutor 是一个串行线程池，一个进程中的所有 AsyncTask 全部在这个串行线程池中排队执行：
 ``` java
 private static volatile Executor sDefaultExecutor = SERIAL_EXECUTOR;
 ```
@@ -157,9 +157,9 @@ public static final Executor SERIAL_EXECUTOR = new SerialExecutor();
         }
     }
 ```
-可以看到，这个线程池的execute方法会将任务进行排队，然后判断当前若没有正在执行的任务，则取出一个任务放进THREAD_POOL_EXECUTOR线程池去执行，而这个THREAD_POOL_EXECUTOR是一个并行线程池。所以又可以得出的结论是，**AsyncTaks内有两个线程池，一个串行线程池和一个并行线程池，串行线程池用于给任务排队使用，而THREAD_POOL_EXECUTOR线程池才是任务真正执行的地方。**
+可以看到，这个线程池的 execute 方法会将任务进行排队，然后判断当前若没有正在执行的任务，则取出一个任务放进`THREAD_POOL_EXECUTOR`线程池去执行，而这个`THREAD_POOL_EXECUTOR`是一个并行线程池。所以又可以得出的结论是，**AsyncTaks 内有两个线程池，一个串行线程池和一个并行线程池，串行线程池用于给任务排队使用，而`THREAD_POOL_EXECUTOR`线程池才是任务真正执行的地方。**
 
-然后回到上面的executeOnExecutor()方法内的exec.execute(mFuture)这一行，由刚才分析可知这个mFuture就是我们的任务了，这个任务mFuture是在AsyncTask的构造器中初始化的：
+然后回到上面的`executeOnExecutor()`方法内的`exec.execute(mFuture)`这一行，由刚才分析可知这个 mFuture 就是我们的任务了，这个任务 mFuture 是在 AsyncTask 的构造器中初始化的：
 
 
 ``` java
@@ -193,7 +193,7 @@ public AsyncTask() {
     };
 }
 ```
-可以看到mFuture初始化的时候用到了mWorker，先记住mWorker里面有个call()方法，再看mFuture的构造方法，可以看到，mFuture将mWorker赋值给了mFuture内的callable对象：
+可以看到 mFuture 初始化的时候用到了 mWorker ，先记住 mWorker 里面有个`call()`方法，再看 mFuture 的构造方法，可以看到，mFuture 将 mWorke r赋值给了 mFuture 内的 callable 对象：
 ``` java
 public FutureTask(Callable<V> callable) {
     if (callable == null)
@@ -204,7 +204,7 @@ public FutureTask(Callable<V> callable) {
 }
 ```
 
-前面说了，AsyncTask启动执行后，mFuture会被放到THREAD_POOL_EXECUTOR中去执行，执行会调用mFuture的run()方法，所以下面看mFuture对应的的FutureTask中的run方法()：
+前面说了，AsyncTask 启动执行后，mFuture 会被放到`THREAD_POOL_EXECUTOR`中去执行，执行会调用 mFuture 的`run()`方法，所以下面看 mFuture 对应的的 FutureTask 中的`run()`方法：
 
 
 ``` java
@@ -243,7 +243,7 @@ public void run() {
 }
 ```
 
-所以执行mFuture后会调用mWorker的call()方法，mWorker的call()方法实现如下：
+所以执行 mFuture 后会调用 mWorker 的`call()`方法，mWorker 的`call()`方法实现如下：
 ``` java
 mWorker = new WorkerRunnable<Params, Result>() {
     public Result call() throws Exception {
@@ -257,7 +257,7 @@ mWorker = new WorkerRunnable<Params, Result>() {
     }
 };
 ```
-call()方法内回调了熟悉的doInBackground()方法，并将之前保存起来的mWorker内的mParams传给了它。需要注意的是，当前线程已经切换到了线程池中，而非UI线程中，所以doInBackground()方法是在非UI线程中调用的。然后将doInBackground()执行完的返回值result传给了postResult()，跟进去看postResult()的实现：
+`call()`方法内回调了熟悉的`doInBackground()`方法，并将之前保存起来的 mWorker 内的 mParams 传给了它。需要注意的是，当前线程已经切换到了线程池中，而非 UI 线程中，所以`doInBackground()`方法是在非 UI 线程中调用的。然后将`doInBackground()`执行完的返回值 result 传给了`postResult()`，跟进去看`postResult()`的实现：
 
 ``` java
 private Result postResult(Result result) {
@@ -269,7 +269,7 @@ private Result postResult(Result result) {
 }
 ```
 
-这里使用Handler发送了一个MESSAGE_POST_RESULT的消息，这里getHandler()获取到的Handler是一个与UI主线程Looper相关联的sHandler，下面是sHandler的获取和实例化过程。
+这里使用 Handler 发送了一个`MESSAGE_POST_RESULT`的消息，这里`getHandler()`获取到的 Handler 是一个与 UI 主线程 Looper 相关联的 sHandler，下面是 sHandler 的获取和实例化过程。
 
 ``` java
 private static Handler getHandler() {
@@ -306,7 +306,7 @@ private static class InternalHandler extends Handler {
 }
 ```
 
-通过使用sHandler发送MESSAGE_POST_RESULT消息，从线程池中切换到UI主线程中，然后执行AsyncTask的finish()方法：
+通过使用 sHandler 发送`MESSAGE_POST_RESULT`消息，从线程池中切换到 UI 主线程中，然后执行 AsyncTask 的`finish()`方法：
 
 ``` java
 private void finish(Result result) {
@@ -319,20 +319,22 @@ private void finish(Result result) {
 }
 ```
 
-在AsyncTask的finish()方法中首先会判断当前任务的状态是否已取消，如果已取消则会回调onCancelled()方法，否则直接回调onPostExecute()方法，最后将任务的状态设置为FINISHED完成状态。
+在 AsyncTask 的`finish()`方法中首先会判断当前任务的状态是否已取消，如果已取消则会回调`onCancelled()`方法，否则直接回调`onPostExecute()`方法，最后将任务的状态设置为`FINISHED`完成状态。
 
 ## AsyncTask并行
 
-在Android 1.6之前，AsyncTask是串行执行任务的，Android 1.6开始AsyncTask开始采用线程池处理并行任务，从Android 3.0开始，为了避免AsyncTask所带来的并发错误，AsyncTask又采用一个线程来串行执行任务。
+在 Android 1.6 之前，AsyncTask 是串行执行任务的，Android 1.6 开始 AsyncTask 开始采用线程池处理并行任务，从 Android 3.0 开始，为了避免 AsyncTask 所带来的并发错误，AsyncTask 又采用一个线程来串行执行任务。
 
-根据上面Android 5.0的源码分析可以看到AsyncTask是串行执行任务的，当然我们也可以手动使其并行执行任务，只要执行时把`execute(params)`改成`executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,params)`即可，不过需要注意只能在Android 3.0+才能这样做。
+根据上面 Android 5.0 的源码分析可以看到 AsyncTask 是串行执行任务的，当然我们也可以手动使其并行执行任务，只要执行时把`execute(params)`改成`executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,params)`即可，不过需要注意只能在 Android 3.0+ 才能这样做。
 
 ## 总结
 
-- AsyncTask使用起来比较方便，适合不是特别耗时的操作。
-- AsyncTask的execute方法必须在主线程中调用。
-- 再次启动一个已执行过的AsyncTask对象会抛异常。
-- AsyncTask在不同的Android版本上会有不同的表现。
+- AsyncTask 使用起来比较方便，适合不是特别耗时的操作。
+- AsyncTask 的 execute方法必须在主线程中调用。
+- 再次启动一个已执行过的 AsyncTask 对象会抛异常。
+- AsyncTask 在不同的 Android 版本上会有不同的表现。
 
+
+> 如果还不了解线程池方面的文章，可以看看Joe的这个: [ThreadPoolExecutor源码学习笔记](http://extremej.itscoder.com/threadpoolexecutor_source/)
 
 > 本文参考资料《Android开发艺术探索》
