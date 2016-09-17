@@ -1,7 +1,7 @@
 >- 文章来源：itsCoder 的 [WeeklyBolg](https://github.com/itsCoder/weeklyblog) 项目
 >- itsCoder主页：[http://itscoder.com/](http://itscoder.com/)
 >- 作者：[谢三弟](https://github.com/xcc3641)
->- 审阅者：[]()
+>- 审阅者：[Brucezz](https://github.com/brucezz)
 
 自己很少做自定义 View ，只有最开始的时候跟着郭神写了一个小 Demo ，后来随着见识的越来越多，特别是在开源社区看到很多优秀的漂亮的控件，都是羡慕的要死，但是拉下来的代码还是看不明白，而且当时因为时间因素，没有深入学习和研究控件和动画方面的知识，而是把更多时间花在了 Android 的异步通信和网络框架这一块。
 因为想起暑假实习的时候有个小需求，当时因为忙着主要的业务，一直搁浅没有做，回到学校发现其实不难。索性从这个人生第一个上架的小控件慢慢深入一点，顺带复习 View 的绘制原理。
