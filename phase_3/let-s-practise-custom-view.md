@@ -44,16 +44,16 @@
 public class CharAvatarView extends ImageView {
     private static final String TAG = CharAvatarView.class.getSimpleName();
     // 颜色画板集
-    private static final String[] colors = {
-        "#1abc9c", "#16a085", "#f1c40f", "#f39c12", "#2ecc71",
-        "#27ae60", "#e67e22", "#d35400", "#3498db", "#2980b9",
-        "#e74c3c", "#c0392b", "#9b59b6", "#8e44ad", "#bdc3c7",
-        "#34495e", "#2c3e50", "#95a5a6", "#7f8c8d", "#ec87bf",
-        "#d870ad", "#f69785", "#9ba37e", "#b49255", "#b49255", "#a94136"
+    private static final int[] colors = {
+        0xFF1abc9c, 0xFF16a085, 0xFFf1c40f, 0xFFf39c12, 0xFF2ecc71,
+        0xFF27ae60, 0xFFe67e22, 0xFFd35400, 0xFF3498db, 0xFF2980b9,
+        0xFFe74c3c, 0xFFc0392b, 0xFF9b59b6, 0xFF8e44ad, 0xFFbdc3c7,
+        0xFF34495e, 0xFF2c3e50, 0xFF95a5a6, 0xFF7f8c8d, 0xFFec87bf,
+        0xFFd870ad, 0xFFf69785, 0xFF9ba37e, 0xFFb49255, 0xFFb49255, 0xFFa94136
     };
 
-    private Paint mPaint;
-
+    private Paint mPaintBackground;
+    private Paint mPaintText;
     private Rect mRect;
 
     private String text;
@@ -61,12 +61,21 @@ public class CharAvatarView extends ImageView {
     private int charHash;
 
     public CharAvatarView(Context context) {
-        super(context);
+        this(context, null);
     }
 
     public CharAvatarView(Context context, AttributeSet attrs) {
-        super(context, attrs);
-        mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        this(context, attrs, 0);
+    }
+
+    public CharAvatarView(Context context, AttributeSet attrs, int defStyleAttr) {
+        super(context, attrs, defStyleAttr);
+        init();
+    }
+
+    private void init() {
+        mPaintBackground = new Paint(Paint.ANTI_ALIAS_FLAG);
+        mPaintText = new Paint(Paint.ANTI_ALIAS_FLAG);
         mRect = new Rect();
     }
 }
@@ -96,7 +105,27 @@ CharAvatarView avatarView = new CharAvatarView(this);
 
 - 第三个主题的 style 信息，也会从 XML 里带入
 
-目前我们的 CharAvatarView 不需要自定义主题配置，所以一般用第二种就行。
+为了自定义的 View 兼容 Java 和 Xml 两种代码的使用方式，一般推荐这样写构造方法：
+```java
+  public CharAvatarView(Context context) {
+        this(context, null);
+    }
+
+    public CharAvatarView(Context context, AttributeSet attrs) {
+        this(context, attrs, 0);
+    }
+
+    public CharAvatarView(Context context, AttributeSet attrs, int defStyleAttr) {
+        super(context, attrs, defStyleAttr);
+        init();
+    }
+
+    private void init() {
+        mPaintBackground = new Paint(Paint.ANTI_ALIAS_FLAG);
+        mPaintText = new Paint(Paint.ANTI_ALIAS_FLAG);
+        mRect = new Rect();
+    }
+```
 
 ### 工作流程
 我们的 View 系统是如何将它绘制到屏幕上的呢？
@@ -122,7 +151,7 @@ protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
 让宽高相同，我在这里是只直接传入宽度进行测量。
 这样会得到一个正方形的 View。
 
-x
+
 
 #### onLayout()
 ```Java
@@ -198,12 +227,12 @@ mAvatarView = (CharAvatarView) findViewById(R.id.avatar);
 mAvatarView.setText("谢三弟");
 ```
 
-运行：
+运行：
 ![](http://ww4.sinaimg.cn/large/801b780agw1f7upxsczbsj20p815egnp.jpg)
 
 人生第一个自定义 View 就完成了。
 
-开源地址：[github 地址](https://github.com/xcc3641/CharAvatarView)
+开源地址：[GitHub 地址](https://github.com/xcc3641/CharAvatarView)
 
 
 ### 额外阅读
