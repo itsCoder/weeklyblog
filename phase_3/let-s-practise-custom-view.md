@@ -1,12 +1,15 @@
->- 文章来源：itsCoder 的 [WeeklyBolg](https://github.com/itsCoder/weeklyblog) 项目
->- itsCoder主页：[http://itscoder.com/](http://itscoder.com/)
->- 作者：[谢三弟](https://github.com/xcc3641)
->- 审阅者：[Brucezz](https://github.com/brucezz)
 
 自己很少做自定义 View ，只有最开始的时候跟着郭神写了一个小 Demo ，后来随着见识的越来越多，特别是在开源社区看到很多优秀的漂亮的控件，都是羡慕的要死，但是拉下来的代码还是看不明白，而且当时因为时间因素，没有深入学习和研究控件和动画方面的知识，而是把更多时间花在了 Android 的异步通信和网络框架这一块。
 因为想起暑假实习的时候有个小需求，当时因为忙着主要的业务，一直搁浅没有做，回到学校发现其实不难。索性从这个人生第一个上架的小控件慢慢深入一点，顺带复习 View 的绘制原理。
 
 <!-- more -->
+
+>- 文章来源：itsCoder 的 [WeeklyBolg](https://github.com/itsCoder/weeklyblog) 项目
+>- itsCoder主页：[http://itscoder.com/](http://itscoder.com/)
+>- 作者：[谢三弟](https://github.com/xcc3641)
+>- 审阅者：[Brucezz](https://github.com/brucezz)
+
+
 ### 目录
 
 
@@ -167,27 +170,26 @@ protected void onLayout(boolean changed, int left, int top, int right, int botto
 大部分自定义控件，最核心的代码就是在 `onDraw()` 里了。
 
 ```Java
-@Override
- protected void onDraw(Canvas canvas) {
-     super.onDraw(canvas);
-     if (null != text) {
-         int color = Color.parseColor(colors[charHash % colors.length]);
-         // 画圆
-         mPaint.setColor(color);
-         canvas.drawCircle(getWidth() / 2, getWidth() / 2, getWidth() / 2, mPaint);
-         // 写字
-         mPaint.setColor(Color.WHITE);
-         mPaint.setTextSize(getWidth() / 2);
-         mPaint.setStrokeWidth(3);
-         mPaint.getTextBounds(text, 0, 1, mRect);
-         // 垂直居中
-         Paint.FontMetricsInt fontMetrics = mPaint.getFontMetricsInt();
-         int baseline = (getMeasuredHeight() - fontMetrics.bottom - fontMetrics.top) / 2;
-         // 左右居中
-         mPaint.setTextAlign(Paint.Align.CENTER);
-         canvas.drawText(text, getWidth() / 2, baseline, mPaint);
-     }
- }
+    protected void onDraw(Canvas canvas) {
+        super.onDraw(canvas);
+        if (null != text) {
+            int color = colors[charHash % colors.length];
+            // 画圆
+            mPaintBackground.setColor(color);
+            canvas.drawCircle(getWidth() / 2, getWidth() / 2, getWidth() / 2, mPaintBackground);
+            // 写字
+            mPaintText.setColor(Color.WHITE);
+            mPaintText.setTextSize(getWidth() / 2);
+            mPaintText.setStrokeWidth(3);
+            mPaintText.getTextBounds(text, 0, 1, mRect);
+            // 垂直居中
+            Paint.FontMetricsInt fontMetrics = mPaintText.getFontMetricsInt();
+            int baseline = (getMeasuredHeight() - fontMetrics.bottom - fontMetrics.top) / 2;
+            // 左右居中
+            mPaintText.setTextAlign(Paint.Align.CENTER);
+            canvas.drawText(text, getWidth() / 2, baseline, mPaintText);
+        }
+    }
 ```
 1. 首先从颜色数组里根据 hash 取余得到背景颜色
 2. 然后画出背景圆
@@ -196,15 +198,20 @@ protected void onLayout(boolean changed, int left, int top, int right, int botto
 
 
 ```Java
-/**
- * @param content 传入字符内容
- * 只会取内容的第一个字符,如果是字母转换成大写
- */
-public void setText(String content) {
-    this.text = String.valueOf(content.toCharArray()[0]);
-    this.text = text.toUpperCase();
-    charHash = this.text.hashCode();
-}
+    /**
+     * @param content 传入字符内容
+     * 只会取内容的第一个字符,如果是字母转换成大写
+     */
+    public void setText(String content) {
+        if (content == null) {
+            throw new NullPointerException("字符串内容不能为空");
+        }
+        this.text = String.valueOf(content.toCharArray()[0]);
+        this.text = text.toUpperCase();
+        charHash = this.text.hashCode();
+        // 重绘
+        invalidate();
+    }
 ```
 这是暴露给外部的方法，我们也是在这里得到要画的字符。
 
@@ -231,6 +238,13 @@ mAvatarView.setText("谢三弟");
 ![](http://ww4.sinaimg.cn/large/801b780agw1f7upxsczbsj20p815egnp.jpg)
 
 人生第一个自定义 View 就完成了。
+
+上传到可以参考司机的这篇文章[码农必知之上传开源库到 jcenter]()，配置好各种参数。以后更新版本就执行一行代码就行啦。
+
+```gradle
+./gradlew install // 只需要第一次执行
+./gradlew bintrayUpload
+```
 
 开源地址：[GitHub 地址](https://github.com/xcc3641/CharAvatarView)
 
