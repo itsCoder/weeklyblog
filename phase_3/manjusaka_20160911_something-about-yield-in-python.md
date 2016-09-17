@@ -1,10 +1,15 @@
 ---
 title: 聊聊 Python 中生成器和协程那点事儿
 type: tags
-date: 2016-08-30 10:27:15
+date: 2016-09-11 10:27:15
 tags: [Python,编程,协程,编程技巧]
 categories: [编程,Python]
 ---
+>- 文章来源：itsCoder 的 [WeeklyBolg](https://github.com/itsCoder/weeklyblog) 项目
+>- itsCoder主页：[http://itscoder.com/](http://itscoder.com/)
+>- 作者：[Manjusaka](https://github.com/Zheaoli)
+>- 审阅者：[allenwu](https://github.com/wuchangfeng),[Brucezz](https://github.com/brucezz)
+
 ## 写在前面的话
 本来想这周继续写写 **Flask** 那点破事儿的，但是想了想决定换换口味，来聊聊很不容易理解但是很重要的 **Python** 中的生成器和协程。
 <!-- more -->
@@ -20,8 +25,15 @@ def generateList(start,stop):
 		tempList.append(i)
 	return tempList
 ~~~
+> 注1：这里有同学提出了为什么我们不直接返回 `range(start,stop)`，Nice question，这里涉及到一个基础问题，`range` 的机制究竟是怎样的。这就要分版本而论了，在 Python 2.x 的版本中，`range(start,stop)` 其实本质上是预先生成一个 `list` ,而 `list` 对象是一个 **Iterator** ，因此可以被 `for` 语句所使用。
+![Python 2.x 中的 range](https://cloud.githubusercontent.com/assets/7054676/18607847/90092cf6-7d0b-11e6-9963-8f59f8ebbb28.png)
+然后在 Python 2.x 中还有一个语句叫做 `xrange` ，其生成的是一个 **Generator** 对象。
+![Python 2.x 中的 xrange](https://cloud.githubusercontent.com/assets/7054676/18607857/cf72561a-7d0b-11e6-9084-bc8a02404ed1.png)
+在 Python 3 中事情发生了一点变化，可能社区觉得 `range` 和 `xrange` 分裂太过蛋疼，于是将其合并，于是现在在 Python 3 中，取消了 `xrange` 的语法糖，然后 `range` 的机制也变成生成一个 **Generator** 而不是 `list`
+![Python 3 中的 range](https://cloud.githubusercontent.com/assets/7054676/18607878/6fc147f2-7d0c-11e6-9384-d1dd748ffb5d.png)
 
-但是大家考虑过一个问题么，如果我们想生成数据量非常大，预先生成数据的行为无疑是很不明智的。于是 Python 给我们提供了一种新的姿势，**Generator** (生成器)
+
+但是大家考虑过一个问题么，如果我们想生成数据量非常大，预先生成数据的行为无疑是很不明智的，这样会耗费大量的内存。于是 Python 给我们提供了一种新的姿势，**Generator** (生成器)
 
 ~~~Python
 def generateList1(start,stop):
@@ -95,7 +107,7 @@ def generateList1(start,stop):
 if __name__=="__main__":
 	a=generateList1(0,5)
 	for i in range(0,5):
-		a.send(None)
+		print(a.send(None))
 ~~~
 这里我们应该输出什么？答案就是 `0,1,2,3,4` ，结果上和我们用 `for` 循环进行运算的结果是不是一样。好了，我们现在可以得出一个结论就是
 
@@ -130,9 +142,11 @@ if __name__=='__main__':
 好了这段代码的输出应该是什么？
 答案是 `[5，2，1，0]` ，是不是很迷惑？别急，我们先来看看这段代码的运行流程
 
-![代码运行流程](https://cloud.githubusercontent.com/assets/7054676/18417878/b17e6636-786e-11e6-9182-0e7a69b5611f.png
+![代码运行流程](https://cloud.githubusercontent.com/assets/7054676/18417878/b17e6636-786e-11e6-9182-0e7a69b5611f.png)
 
 简而言之就是，当我们调用 `send()` 函数的时候，我们 `send(x)` 的值会发送给 `newvalue` 向下继续执行直到遇到下一次 `yield` 的出现，然后返回值作为一个过程的结束。然后我们的 **Generator** 静静的沉睡在内存中，等待下一次的 `send` 来唤醒它。
+
+> 注2：有同志问：“这里没想明白，c.send(3) 是 相当于 yield n 返回了个 3 给 newvalue ?”，好的，nice question，其实这个问题我们看前面之前的代码运行图就知道， `c.send(3)` 首先，将 `3` 赋值给 `newvalue` ，然后程序运行剩下的代码，直到遇到下一个 `yield` 为止，那么在这里，我们运行剩下完代码，在遇到 `yiled n` 之前，将 `n` 的值已经改变为 `3` ,接着，`yield n` 即约等于 `return 3`。接着 `countdown` 这个 **Generator** 将所有变量的状态冻结，然后静静的呆在内存中，等待下一次的 `next` 或 `__next__()` 方法或者是 `send()` 方法的唤醒。
 
 > 小贴士：我们如果直接调用 `send()` 的话，第一次请务必 `send(None)` 只有这样一个 **Generator** 才算是真正被激活了。我们才能进行下一步操作。
 
