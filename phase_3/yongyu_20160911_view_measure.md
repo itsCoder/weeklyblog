@@ -7,7 +7,7 @@
 ---
 #  1 前言
 
-View 是 Android 中所有控件的基类，例如 Button 和 TextView、ViewGroup 等常见控件他们的基类都是 View，View 是一种界面层的控件的一种抽象，代表了一个控件。View 本身可以是单个控件也可以是由多个控件组成的一组控件，通过这种关系就形成了View 树的结构。Android 系统本身就提供好了很多好用的 View，你也可以自己根据需求去自定义一个 View，拿最简单的一个例子来说，当我们想在界面上显示一行文字的时候，我们会在 xml 文件中写好布局然后在  Activity 中的 onCreate 方法中使用 setContentView 方法来加载布局就可以显示出我们想要的文字，这时候你是否有思考过这个过程是怎么完成的， View 是如何被显示到界面上的；还有一个我们经常遇到的问题是：当我们在一个 ScrollView 控件内部嵌套一个 ListView 的时候 ListView 只会显示一行；当使用自定义的View 的时候，View 可以显示到界面，但是当使用 WrapContent 属性的时候不起作用，这些问题笔者就曾都遇到过，如果你也曾有过这样的疑问，可以阅读以下这篇文章。
+View 是 Android 中所有控件的基类，例如 Button 和 TextView、ViewGroup 等常见控件他们的基类都是 View，View 是一种界面层的控件的一种抽象，代表了一个控件。View 本身可以是单个控件也可以是由多个控件组成的一组控件，通过这种关系就形成了 View 树的结构。Android 系统本身就提供好了很多好用的 View，你也可以自己根据需求去自定义一个 View，拿最简单的一个例子来说，当我们想在界面上显示一行文字的时候，我们会在 xml 文件中写好布局然后在  Activity 中的 onCreate 方法中使用 setContentView 方法来加载布局就可以显示出我们想要的文字，这时候你是否有思考过这个过程是怎么完成的， View 是如何被显示到界面上的；还有一个我们经常遇到的问题是：当我们在一个 ScrollView 控件内部嵌套一个 ListView 的时候 ListView 只会显示一行；当使用自定义的 View 的时候，View 可以显示到界面，但是当使用 WrapContent 属性的时候不起作用，这些问题笔者就曾都遇到过，如果你也曾有过这样的疑问，可以阅读以下这篇文章。
 
 ## 1.1 主要内容简介
 
@@ -19,19 +19,17 @@ View 的工作原理主要包含 View 的三大流程 onMeasure()、onLayout()�
 
 当调用 Activity 的  setContentView 方法后会调用  PhoneWindow 类 的 setContentView  方法，PhoneWindow 类是抽象类Window的实现类，Window 类用来描述 Activity 视图最顶端的窗口显示和行为操作，PhoneWindow 类 的 setContentView  方法中最终会 生成一个 DecorView 对象，DecorView 是 PhoneWindow类的内部类，继承自FrameLayout ，所以调用 Activity 方法 setContetnView 后最终会生成一个 FrameLayout 类型的 DecorView 组件，该组件将作为整个应用窗口的顶层图，然后在 DecorView 容器中添加根布局，根布局中包含一个 id 为 contnet 的 FrameLayout 内容布局，我们的 Activity 加载的布局 xml 最后通过LayoutInflater 将 xml 内容布局解析成 View 树形结构，最后添加到 id 为 content 的 FrameLayout布局当中，至此，View 最终就会显示到手机屏幕上，如果想详细了解出门右转[从ViewRootImpl类分析View绘制的流程——废墟的树](http://blog.csdn.net/feiduclear_up/article/details/46772477)。整理流程梳理可以参考下面这张图片：
 
-​                                     ![decorView_view](image\decorView_view.png)
+​                   ![decorView_view](https://github.com/yongyu0102/WeeklyBlogImages/blob/master/phase3_view_measure/decorView_view.png?raw=true)
 
 我们了解了上面得到流程后下面梳理一下如何进入到 view 的绘制流程：
 
 ViewRoot 对应的实现类是 ViewRootImpl 类，他是连接 WindowManager 和DecorView 的纽带，view 的三大 流程均是通过 ViewRoot 来完成的。在 ActivityThread 中，当 activity 对象被创建完毕后，会将 DecorView 添加到Window 中，同时会创建 ViewRootImpl 对象，并将 ViewRootImpl 对象和 DecorView 建立关联。这个流程可以参考下图，图片来自[从ViewRootImpl类分析View绘制的流程——废墟的树](http://blog.csdn.net/feiduclear_up/article/details/46772477)：
 
-![decorView](image\decorView.png)
+![decorView](https://github.com/yongyu0102/WeeklyBlogImages/blob/master/phase3_view_measure/decorView.png?raw=true)
 
 View 的绘制流程是从 ViewRoot 的 performTraversals 方法开始的，它经过 measure、layout、draw 三个过程才能最终将一个 View 绘制出来，其中 measure 用来测量 View 的宽和高，layout 用来确定 View 在父容器的放置位置，而 draw 则负责将 View 绘制在屏幕上，参考下图（来源艺术探索截图） ：
 
-![view](image\view.png)
-
-
+![view](https://github.com/yongyu0102/WeeklyBlogImages/blob/master/phase3_view_measure/view.png?raw=true)
 
 performTraversals 会依次调用 performMeasure、performLayout、performDraw 三个方法，这三个方法分别完成顶级 View 的 measure、layout 和 draw 这三大流程，其中 performMeasure 会调用 measure 方法，在measure 方法中又会调用 onMeasure 方法，在 onMeasure 方法中对所有的子元素进行 measure 过程，这个时候 measure 流程就会从父容器传递到子元素中了，这样就完成了一次 measure 过程。接着子元素就会重复父容器的 measure 过程，如此反复就完成了整个 View 树的遍历，同理 perFormLayout 和 performDraw 的流程也是类似。
 
@@ -112,15 +110,15 @@ protected void measureChildWithMargins(View child,
 ```java
     /*
      * @param spec 父容器的 MeasureSpec，是对子 View 的约束条件
-     * @param padding 当前 view 的 padding、margins 和父容器已经被占用空间值
-     * @param childDimension view 期望大小值，即layout文件里设置的大小:可以是MATCH_PARENT,
+     * @param padding 当前 View 的 padding、margins 和父容器已经被占用空间值
+     * @param childDimension View 期望大小值，即layout文件里设置的大小:可以是MATCH_PARENT,
      *WRAP_CONTENT或者具体大小, 代码中分别对三种做不同的处理
-     * @return 返回 view 的 MeasureSpec 值
+     * @return 返回 View 的 MeasureSpec 值
      */
 public static int getChildMeasureSpec(int spec, int padding, int childDimension) {
-  // 获取父容器的 specMode，父容器的测量模式影响子 view  的测量模式
+  // 获取父容器的 specMode，父容器的测量模式影响子 View  的测量模式
     int specMode = MeasureSpec.getMode(spec);
-         // 获取父容器的 specSize 尺寸，这个尺寸是父容器用来约束子 view 大小的
+         // 获取父容器的 specSize 尺寸，这个尺寸是父容器用来约束子 View 大小的
     int specSize = MeasureSpec.getSize(spec);
 // 父容器尺寸减掉已经被用掉的尺寸
     int size = Math.max(0, specSize - padding);
@@ -129,26 +127,26 @@ public static int getChildMeasureSpec(int spec, int padding, int childDimension)
     switch (specMode) {
     // 如果父容器是 EXACTLY 精准测量模式
     case MeasureSpec.EXACTLY:
-        //如果子 view 期望尺寸为大于0的固定值，对应着 xm 文件中给定了 view 的具体尺寸大小
+        //如果子 View 期望尺寸为大于 0 的固定值，对应着 xml 文件中给定了 View 的具体尺寸大小
         //如 android:layout_width="100dp"
         if (childDimension >= 0) {
-          //那么子 view 尺寸为期望值固定尺寸，测量模式为精准测量模式 EXACTLY
+          //那么子 View 尺寸为期望值固定尺寸，测量模式为精准测量模式 EXACTLY
             resultSize = childDimension;
             resultMode = MeasureSpec.EXACTLY;
-             //如果子 view 期望尺寸为 MATCH_PARENT 填充父布局
+             //如果子 View 期望尺寸为 MATCH_PARENT 填充父布局
         } else if (childDimension == LayoutParams.MATCH_PARENT) {
-            // 那么子 view 尺寸为 size 最大值，即父容器剩余空间尺寸，为精准测量模式 EXACTLY
-          //即子 View 填的是 Match_parent, 那么父 View 就给子 view 自己的size(去掉padding)，
-          //即剩余全部未占用的尺寸, 然后告诉子 view 这是 Exactly 精准的大小，你就按照这个大小来设定自己的尺寸
+            // 那么子 View 尺寸为 size 最大值，即父容器剩余空间尺寸，为精准测量模式 EXACTLY
+          //即子 View 填的是 Match_parent, 那么父 View 就给子 View 自己的size(去掉padding)，
+          //即剩余全部未占用的尺寸, 然后告诉子 View 这是 Exactly 精准的大小，你就按照这个大小来设定自己的尺寸
             resultSize = size;
             resultMode = MeasureSpec.EXACTLY;
-          //如果子 view 期望尺寸为 WRAP_CONTENT ，包裹内容
+          //如果子 View 期望尺寸为 WRAP_CONTENT ，包裹内容
         } else if (childDimension == LayoutParams.WRAP_CONTENT) {
-          //子 view 尺寸为 size  最大值，即父容器剩余空间尺寸 ，测量模式为 AT_MOST 最大测量模式
+          //子 View 尺寸为 size  最大值，即父容器剩余空间尺寸 ，测量模式为 AT_MOST 最大测量模式
           //即子 View 填的是 wrap_Content,那么父 View 就告诉子 View 自己的size(去掉padding),
           //即剩余全部未占用的尺寸,然后告诉子 View, 你最大的尺寸就这么多，不能超过这个值, 
-          //具体大小，你自己根据自身情况决定最终大小。一般当我们继承 View 基类进行自定义 view  的时候
-          //需要在这种情况下计算给定 view 一个尺寸，否则当使用自定义的 view 的时候，使用 
+          //具体大小，你自己根据自身情况决定最终大小。一般当我们继承 View 基类进行自定义 View  的时候
+          //需要在这种情况下计算给定 View 一个尺寸，否则当使用自定义的 View 的时候，使用 
           // android:layout_width="wrap_content" 属性就会失效
             resultSize = size;
             resultMode = MeasureSpec.AT_MOST;
@@ -157,15 +155,15 @@ public static int getChildMeasureSpec(int spec, int padding, int childDimension)
 
     // 父容器为 AT_MOST 最大测量模式
     case MeasureSpec.AT_MOST:
-           // 子 view 期望尺寸为一个大于 0的具体值，对应着 xm 文件中给定了 view 的具体尺寸大小
+           // 子 View 期望尺寸为一个大于 0的具体值，对应着 xml 文件中给定了 View 的具体尺寸大小
         //如 android:layout_width="100dp"
         if (childDimension >= 0) {
-           //那么子 view 尺寸为期望固定值尺寸，为精准测量模式 EXACTLY
+           //那么子 View 尺寸为期望固定值尺寸，为精准测量模式 EXACTLY
             resultSize = childDimension;
             resultMode = MeasureSpec.EXACTLY;
-          //如果子 view 期望尺寸为 MATCH_PARENT 最大测量模式
+          //如果子 View 期望尺寸为 MATCH_PARENT 最大测量模式
         } else if (childDimension == LayoutParams.MATCH_PARENT) {
-             //子 view 尺寸为 size，测量模式为 AT_MOST  最大测量模式
+             //子 View 尺寸为 size，测量模式为 AT_MOST  最大测量模式
           //即如果子 View 是 Match_parent,那么父 View 就会告诉子 View, 
           //你的尺寸最大为 size 这么大（父容器尺寸减掉已经被用掉的尺寸，即父容器剩余未占用尺寸），
           //你最多有父 View的 size 这么大，不能超过这个尺寸，至于具体多大，你自己根据自身情况决定。
@@ -180,20 +178,20 @@ public static int getChildMeasureSpec(int spec, int padding, int childDimension)
 
     // 父容器为 UNSPECIFIED 模式
     case MeasureSpec.UNSPECIFIED:
-           // 子 view 期望尺寸为一个大于 0的具体值
+           // 子 View 期望尺寸为一个大于 0的具体值
         if (childDimension >= 0) {
-             //那么子 view 尺寸为期望值固定尺寸，为精准测量模式 EXACTLY
+             //那么子 View 尺寸为期望值固定尺寸，为精准测量模式 EXACTLY
             resultSize = childDimension;
             resultMode = MeasureSpec.EXACTLY;
-           //如果子 view 期望尺寸为 MATCH_PARENT 最大测量模式
+           //如果子 View 期望尺寸为 MATCH_PARENT 最大测量模式
         } else if (childDimension == LayoutParams.MATCH_PARENT) {
-              //子 view 尺寸为0，测量模式为 UNSPECIFIED
+              //子 View 尺寸为 0，测量模式为 UNSPECIFIED
            // 父容器不对 View 有任何的限制，要多大给多大
             resultSize = View.sUseZeroUnspecifiedMeasureSpec ? 0 : size;
             resultMode = MeasureSpec.UNSPECIFIED;
-           //如果子 view 期望尺寸为 WRAP_CONTENT ，包裹内容
+           //如果子 View 期望尺寸为 WRAP_CONTENT ，包裹内容
         } else if (childDimension == LayoutParams.WRAP_CONTENT) {
-             //子 view 尺寸为0，测量模式为 UNSPECIFIED
+             //子 View 尺寸为 0，测量模式为 UNSPECIFIED
              // 父容器不对 View 有任何的限制，要多大给多大
             resultSize = View.sUseZeroUnspecifiedMeasureSpec ? 0 : size;
             resultMode = MeasureSpec.UNSPECIFIED;
@@ -206,9 +204,7 @@ public static int getChildMeasureSpec(int spec, int padding, int childDimension)
 
 以上代码主要作用就是根据父容器的  MeasureSpec 和 view 本身的 LayoutParams 来确定子元素的 MeasureSpec 的整个过程，这个过程清楚的展示了普通 view 的 MeasureSpec  的创建规则，整理一下可得到如下表格（来源艺术探索截图）：
 
-![mesureSpec](image\mesureSpec.png)
-
-总结：
+![mesureSpec](https://github.com/yongyu0102/WeeklyBlogImages/blob/master/phase3_view_measure/mesureSpec.png?raw=true)总结：
 
 1. 当 View 采用固定宽高时，不管父容器的 MeasureSpec 是什么，View 的 MeasureSpec 都是精确模式，并且大小是LayoutParams 中的大小。
 2. 当 View 的宽高是 match_parent 时，如果父容器的模式是精确模式，那么 View 也是精确模式，并且大小是父容器的剩余空间；如果父容器是最大模式，那么 View 也是最大模式，并且大小是不会超过父容器的剩余空间。
@@ -265,7 +261,7 @@ public static int getDefaultSize(int size, int measureSpec) {
     case MeasureSpec.AT_MOST:
     case MeasureSpec.EXACTLY:
         //如果测量模式为 AT_MOST 最大测量模式或者 EXACTLY 精准测量模式，
-        //那么 view 的测量尺寸为 MeasureSpec 的 specSize
+        //那么 View 的测量尺寸为 MeasureSpec 的 specSize
         //即父容器给定尺寸（父容器当前剩余全部空间大小）。
         result = specSize;
         break;
@@ -751,5 +747,9 @@ public void onWindowFocusChanged(boolean hasWindowFocus) {
   view.measure(widthMeasureSpec, heightMeasureSpec);
 ```
 
- 以上为本次笔记内同，如有理解错误，还望指出，谢谢！！！！！
+ 以上四种解决方法的代码和原理上面已经详细说明，大家可以根据需要进行选择使用。
+
+**结语：**
+
+本次笔记主要记录 View 三大流程中的 onMeasure() 测量原理部分，笔者感觉这一部分也是比较重要和难懂的部分，在我们实际中很多问题会涉及到，所以静下心来详细记录，如有理解错误，还望指出，谢谢！！！！！
 
