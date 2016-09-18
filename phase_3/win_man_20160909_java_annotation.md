@@ -47,7 +47,7 @@ categories:
 
 　　接着看 `public int id();` 和 `public String name()` 这是在定义注解中的元素，这和定义类的时候定义类中的属性是一个道理，用于定义这个注解中拥有哪些元素。定义注解的时候可以使用的元素类型包括：
 
-- 所有基本类型（int,float,boolean 等）
+- 所有基本类型 （int,float,boolean 等）
 - String
 - Class
 - enum
@@ -59,7 +59,7 @@ categories:
 
 ### 元注解
 
-　　接下来是看 `@Target(ElementType.METHOD)`,`@Target`注解是 Java 提供的四种用于定义注解的元注解之一。`@Target` 表示该注解可以使用在什么地方，`ElementType` 是一个 `enum` 类型的数据，其中包括：
+　　接下来是看 `@Target(ElementType.METHOD)` , `@Target` 注解是 Java 提供的四种用于定义注解的元注解之一。`@Target` 表示该注解可以使用在什么地方，`ElementType` 是一个 `enum` 类型的数据，其中包括：
 
 - CONSTRUCTOR：说明这个注解使用于构造器声明
 - FIELD: 说明这个注解用于域声明（包括enum）
