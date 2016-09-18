@@ -2,7 +2,7 @@
 
 RxJava 已经成为当前 Android 圈中很火的一门技术了，基于 Observable 的事件流配合上各种操作符黑魔法，让人爽到不能呼吸 😆。RxLifecycle 作为 RxJava 的扩展库，用起来也是很爽的。
 
-> 本文基于 RxLifecycle v0.5 进行的分析，最新版本已经是 v0.7 了，项目结构略有变化，但是原理部分基本相同。 
+> 本文基于 RxLifecycle v0.5 进行的分析，最新版本已经是 v0.7 了，项目结构略有变化，但是原理部分基本相同。
 
 ### 使用姿势
 [RxLifecycle](https://github.com/trello/RxLifecycle) 的使用姿势比较简单，而且项目文档也很清晰，直接让自己的 Activity 基类继承自 RxActivity 就 ok了。
@@ -35,7 +35,7 @@ RxActivity 在其内部维护了一个 BehaviorSubject 对象。Subject 对象�
 
 ![](http://ww2.sinaimg.cn/large/801b780ajw1f7wpv58ugmj21di0zg0yo.jpg)
 
-其次，在 Activity 到达各个声明周期的时候，`lifecycleSubject` 会接收到对应的生命周期事件。
+其次，在 Activity 到达各个生命周期的时候，`lifecycleSubject` 会接收到对应的生命周期事件。
 
 接下来看我们最常用的 `bindToLifecycle()` 方法。
 
@@ -47,7 +47,7 @@ RxActivity 在其内部维护了一个 BehaviorSubject 对象。Subject 对象�
 
 ![](http://ww2.sinaimg.cn/large/801b780ajw1f7wpwc3qocj21hk0kk79m.jpg)
 
-所谓的 `ACTIVITY_LIFECYCLE` 其实就是一个函数 Func1 而已，把 Activity 的生命周期事件进行一下变换，`CREATE` 对应 `DESTROY`，`RESUME` 对应 `PAUSE` 等等。看到这里是不是已经看出了一点端倪了，其含义就是 **把当前的 Activity 声明周期转换成对应的需要被销毁的时候的声明周期。**
+所谓的 `ACTIVITY_LIFECYCLE` 其实就是一个函数 Func1 而已，把 Activity 的生命周期事件进行一下变换，`CREATE` 对应 `DESTROY`，`RESUME` 对应 `PAUSE` 等等。看到这里是不是已经看出了一点端倪了，其含义就是 **把当前的 Activity 生命周期转换成对应的需要被销毁的时候的生命周期。**
 
 
 最后都走到了这个方法 `RxLifecycle#bind(rx.Observable<R>, rx.functions.Func1<R,R>)`。
@@ -57,7 +57,7 @@ RxActivity 在其内部维护了一个 BehaviorSubject 对象。Subject 对象�
 
 这里是整个代码中最核心、最巧妙的部分。
 
-首先第一个参数是 `lifecycle`，也就是 RxActivity 里的那个 BehaviorSubject 对象，这里作为 Observable 来使用。它会不断发射 **ActivityEvent**，也就是 Activity 的声明周期事件。
+首先第一个参数是 `lifecycle`，也就是 RxActivity 里的那个 BehaviorSubject 对象，这里作为 Observable 来使用。它会不断发射 **ActivityEvent**，也就是 Activity 的生命周期事件。
 
 先介绍下里面用到的几个操作符：
 
@@ -75,7 +75,7 @@ RxActivity 在其内部维护了一个 BehaviorSubject 对象。Subject 对象�
 
 首先是 `combineLatest` 操作符需要接收两个 Observable 和一个函数 Func2。
 
-- 第一个数据源由 `lifecycle` 只发射第一个元素，即当前所在的生命周期事件，然后进行一下 map 变换，得到应该被销毁的声明周期 (ActivityEvent)，并且这个 Observable 只有这一个元素；
+- 第一个数据源由 `lifecycle` 只发射第一个元素，即当前所在的生命周期事件，然后进行一下 map 变换，得到应该被销毁的生命周期 (ActivityEvent)，并且这个 Observable 只有这一个元素；
 - 第二个数据源由 `lifecycle` 跳过第一个元素构成，即后续生命周期事件所组成的数据流；
 - 处理函数：当两个数据源的数据相等时，即 Activity 到达需要被销毁的生命周期时，返回 **true**，发射出一个元素。
 
@@ -93,11 +93,11 @@ source 就是我们在正常代码中使用到的 Observable，我们希望自�
 
 通过以上的代码，就完成了 Observable 自动绑定到 Activity 的生命周期，并且自动结束。
 
-另外 `RxLifecycle#bindUntilEvent()` 方法，用于将 Observable 绑定到特定的声明周期上，原理跟前面所介绍的基本一样，或者说更为简单。
+另外 `RxLifecycle#bindUntilEvent()` 方法，用于将 Observable 绑定到特定的生命周期上，原理跟前面所介绍的基本一样，或者说更为简单。
 
 ![](http://ww2.sinaimg.cn/large/801b780ajw1f7wpwrm6oyj21c00iqgpn.jpg)
 
-判断后续的声明周期等于传入的生命周期时，就停止接收数据。
+判断后续的生命周期等于传入的生命周期时，就停止接收数据。
 
 对于 Fragmeng、View 等，原理和分析方法基本一致，不再详述了。
 
@@ -110,11 +110,11 @@ source 就是我们在正常代码中使用到的 Observable，我们希望自�
 
 #### 2. 在**界面切换**时使用 RxLifecycle 有个小坑
 
-比如从 ActivityA 启动 ActivityB， 声明周期如下：
+比如从 ActivityA 启动 ActivityB， 生命周期如下：
 > A.onPause -> B.onCreate -> B.onResume -> A.onStop
 
 如果 A 中启动 B 的同时，订阅了一个 Observable，同时调用了 `compose(bindToLifecycle())`，可能出现如下的 bug：
-订阅时，A 还处于 `RESUME` 周期，`bindToLifecycle()` 会对应到 `PAUSE` 周期给销毁掉。这个时候启动了 B，A 会进入 'PAUSE' 声明周期，这是前面的 Observable 会被停掉。如果任务还没有执行完成的话，结果会达不到我们的预期。
+订阅时，A 还处于 `RESUME` 周期，`bindToLifecycle()` 会对应到 `PAUSE` 周期给销毁掉。这个时候启动了 B，A 会进入 'PAUSE' 生命周期，这是前面的 Observable 会被停掉。如果任务还没有执行完成的话，结果会达不到我们的预期。
 
 所以这里应该使用 `bindUntilEvent(ActivityEvent.DESTROY)`。
 
