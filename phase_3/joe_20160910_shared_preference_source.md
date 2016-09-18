@@ -4,7 +4,7 @@
 >
 > 作者：[Joe](http://extremej.itscoder.com/about/)
 >
-> 审阅者：
+> 审阅者：[HugoXie](http://imxie.cc/)、 [allen](http://allenwu.itscoder.com/)
 
 ### 序言
 
@@ -299,7 +299,9 @@ private void enqueueDiskWrite(final MemoryCommitResult mcr,
 }
 ```
 
-再回去看 `commit()` 代码屌用该方法时第二个参数确实是传的 `null`，也就是会走同步提交的逻辑，好像解释了 `commit()` 同步写数据的原因，但是，等等！如果当前写文件的任务有多个呢？发现还是会加入到线程池里面啊，这不就异步了么？！
+再回去看 `commit()` 代码调用该方法时第二个参数确实是传的 `null`，也就是会走同步提交的逻辑，好像解释了 `commit()` 同步写数据的原因，但是，等等！如果当前写文件的任务有多个呢？发现还是会加入到线程池里面啊，这不就异步了么？！
+
+ps.如果你对线程池的原理感兴趣的话可以看看我这篇文章：[ThreadPoolExecutor源码学习笔记](http://extremej.itscoder.com/threadpoolexecutor_source/)。
 
 **没错，当有多个进行中的写任务时，`commit()` 确实会异步提交，但是！`commit()`会等待异步执行完毕。**
 
@@ -595,3 +597,7 @@ public File getSharedPrefsFile(String name) {
 - `commit()` 有返回值，而 `apply` 没有返回值。
 - 存在内存与磁盘数据不同步的情况，多进程共享需要注意数据安全。
 - `SP` 是可以注册监听的。
+
+**大部分同学可能都知道 `SP` 是基于 xml 进行读写的，自然会担心并发读写的效率问题，事实上通过源码分析可以发现，用 HashMap 作为内存缓存，而 HashMap 的读和写操作效率是非常高的，所以也不应该有 sp 读写耗时的担忧** — [allen](http://allenwu.itscoder.com/)
+
+最后感谢小刚和三弟的认真审阅和建设性意见。
