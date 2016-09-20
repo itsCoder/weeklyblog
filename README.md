@@ -8,6 +8,7 @@
 - 拥有个人博客
 - 认真
 - 热爱技术，愿意花时间提升自己
+- 无理由连续两期无产出成员，将从项目中移除
 
 ### 开展方式
 - 时间：每两周为一周期
@@ -135,8 +136,6 @@
 - Melo [@Melo](https://github.com/itsMelo)
 
 - shadow [@shaDowZwy](https://github.com/shaDowZwy)
-
-- 千百度 [@fq050766](https://github.com/fq050766) 
 
 - Win-Man [@Win-Man](https://github.com/Win-Man)
 
