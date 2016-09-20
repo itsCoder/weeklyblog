@@ -51,9 +51,9 @@
    }
    ```
 
-2. 我们修改 `showMsg()` 方法，让其显示正确的结果 “ meaasge”。
+2. 我们修改 `showMsg()` 方法，让其显示正确的结果 “meaasge”。
 
-   ```
+   ```java
    public void showMsg() {
        Toast.makeText(this, "message", Toast.LENGTH_SHORT).show();
    }
@@ -61,7 +61,7 @@
 
 3. 制作好补丁包，即 patch.jar 文件，该 patch.jar 文件中就包含已经修复了的 dex 文件，注意此时 patch.jar 会包含一个和原来安装 apk 文件中同样的类 `MainActivity` 。
 
-4. 在 Application 的 `onCreate` 方法中检测是否已经下载好补丁包，如果存在补丁包，就通过 DexClassLoader 加载 patct.jar，然后通过反射拿到 DexClassLoader 中的 DexPathList 对象，进而拿到 `Element[] dexElements` 数组，这里标记该 Element 数组为 **newDexElements** 。
+4. 在 Application 的 `onCreate` 方法中检测是否已经下载好补丁包，如果存在补丁包，就通过 DexClassLoader 加载 patch.jar，然后通过反射拿到 DexClassLoader 中的 DexPathList 对象，进而拿到 `Element[] dexElements` 数组，这里标记该 Element 数组为 **newDexElements** 。
 
 5. 还是通过反射，拿到 App 默认的 ClassLoader 即 PathClassLoader 的 DexPathList 对象，进而拿到  Element 数组，这里标记下该数组为 **baseDexElements** 。
 
