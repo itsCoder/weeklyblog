@@ -230,6 +230,7 @@ public static List<Store> selectStore(List<Store> stores,StoreSelect s){
 ```
 
 　　使用了一个 `(Store store) -> store.getAvePrice() <= 20.0` Lambda 表达式，可以看到在传入 Lambda表达式的时候，并不能乱写，我们 Lambda 表达式中的参数列表必须与函数式接口的方法的参数列表一致，Lambda 主体中的返回结果必须与函数式接口中的方法的返回类型一致。Java 程序在编译的过程中会检查我们的代码是否满足这些要求，不然编译不会通过。
+　　Java8 提出了一个新的概念：**方法引用**，这是一种 Lambda 表达式的简略写法。具体可以参照[这篇文章](https://win-man.github.io/2016/09/25/%E4%BB%8ELambda%E5%88%B0%E6%96%B9%E6%B3%95%E5%BC%95%E7%94%A8/)，我在这就不啰嗦了。
 
 ### 使用 Java8 为我们准备的函数式接口
 
