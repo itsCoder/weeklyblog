@@ -39,7 +39,7 @@ Nginx 作为 HTTP 服务器，有以下几项基本特性：
 本人使用的是腾讯云的服务器，版本为：  Ubuntu Server 14.04.1 LTS 32 位。
 
 ``` bash
-apt-get install nginx
+$ apt-get install nginx
 ```
 
 Mac OS 系统参考这篇文章：[Installing Nginx in Mac OS X](http://learnaholic.me/2012/10/10/installing-nginx-in-mac-os-x-mountain-lion/)
@@ -201,18 +201,18 @@ server {
 #### **Nginx 启动运行**
 
 ``` bash
-sudo nginx -s reload
+$ sudo nginx -s reload
 ```
 
 使用 reload 方法不用重启服务，直接重新加载配置文件，客户端感觉不到服务异常，实现平滑切换。当然你也可以重新启动 nginx 服务。
 
 ``` bash
-sudo service nginx restart
+$ sudo service nginx restart
 ```
 #### **Nginx 停止运行**
 
 ``` bash
-sudo nginx -s stop
+$ sudo nginx -s stop
 ```
 
 #### **参考资料**
