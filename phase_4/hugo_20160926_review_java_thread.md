@@ -2,6 +2,12 @@
 
 <!-- more -->
 
+>- 文章来源：itsCoder 的 [WeeklyBolg](https://github.com/itsCoder/weeklyblog) 项目
+>- itsCoder主页：[http://itscoder.com/](http://itscoder.com/)
+>- 作者：[谢三弟](https://github.com/xcc3641)
+>- 审阅者：[Jaeger](https://github.com/laobie)
+
+
 #### 目录
 
 - [目录](#目录)
@@ -136,15 +142,15 @@ public class Thread implements Runnable {
     线程礼让。目前线程由运行状态转换为就绪状态，也就是让出执行权限，让其他线程得以优先执行，但其他线程能否优先执行未知。
 
 在源码中，查看 Thread 里的 State ，对几种状态解释的很清楚。
-> NEW 状态是指线程刚创建, 尚未启动
+> NEW 状态是指线程刚创建，尚未启动
 >
-> RUNNABLE 状态是线程正在正常运行中, 当然可能会有某种耗时计算 / IO 等待的操作 / CPU 时间片切换等, 这个状态下发生的等待一般是其他系统资源, 而不是锁, Sleep 等
+> RUNNABLE 状态是线程正在正常运行中，当然可能会有某种耗时计算 / IO 等待的操作 / CPU 时间片切换等, 这个状态下发生的等待一般是其他系统资源, 而不是锁, Sleep 等
 >
-> BLOCKED  这个状态下, 是在多个线程有同步操作的场景, 比如正在等待另一个线程的 synchronized 块的执行释放, 或者可重入的 synchronized 块里别人调用 wait() 方法, 也就是这里是线程在等待进入临界区
+> BLOCKED  这个状态下，是在多个线程有同步操作的场景, 比如正在等待另一个线程的 synchronized 块的执行释放，或者可重入的 synchronized 块里别人调用 wait() 方法，也就是这里是线程在等待进入临界区
 >
-> WAITING  这个状态下是指线程拥有了某个锁之后, 调用了他的 wait 方法, 等待其他线程 / 锁拥有者调用 notify / notifyAll 一遍该线程可以继续下一步操作, 这里要区分 BLOCKED 和 WATING , 一个是在临界点外面等待进入, 一个是在临界点里面 wait 等待别人 notify, 线程调用了 join 方法 进入另外的线程的时候, 也会进入 WAITING 状态, 等待被他 join 的线程执行结束
+> WAITING  这个状态下是指线程拥有了某个锁之后，调用了他的 wait 方法，等待其他线程 / 锁拥有者调用 notify / notifyAll 一遍该线程可以继续下一步操作，这里要区分 BLOCKED 和 WATING ，一个是在临界点外面等待进入， 一个是在临界点里面 wait 等待别人 notify ， 线程调用了 join 方法 进入另外的线程的时候, 也会进入 WAITING 状态，等待被他 join 的线程执行结束
 >
-> TIMED_WAITING  这个状态就是有限的 (时间限制) 的 WAITING, 一般出现在调用 `wait(long), join(long)` 等情况下, 另外一个线程 sleep 后, 也会进入 TIMED_WAITING 状态
+> TIMED_WAITING  这个状态就是有限的 (时间限制) 的 WAITING， 一般出现在调用 `wait(long), join(long)` 等情况下，另外，一个线程 sleep 后, 也会进入 TIMED_WAITING 状态
 >
 > TERMINATED 这个状态下表示 该线程的 run 方法已经执行完毕了, 基本上就等于死亡了 (当时如果线程被持久持有, 可能不会被回收)
 
@@ -153,40 +159,42 @@ public class Thread implements Runnable {
 
 我们来看一段，`wait()` 的用途和效果。
 ```Java
-static void waitAndNotifyAll(){
+	static void waitAndNotifyAll() {
 
-    System.out.println("主线程运行");
+		System.out.println("主线程运行");
 
-    Thread thread = new WaitThread();
-    thread.start();
-    long startTime = System.currentTimeMillis();
-    try {
-        synchronized (sLockOject) {
-            System.out.println("主线程等待");
-            sLockOject.wait();
-        }
-    } catch (Exception e) {
-        // TODO: handle exception
-    }
-    long timeMs = System.currentTimeMillis()-startTime;
-    System.out.println("主线程继续 —-> 等待耗时："+timeMs+" ms");
-}
+		Thread thread = new WaitThread();
+		thread.start();
+		long startTime = System.currentTimeMillis();
+		try {
+			synchronized (sLockOject) {
+				System.out.println("主线程等待");
+				sLockOject.wait();
+			}
+		} catch (Exception e) {
+		}
 
-static class WaitThread extends Thread{
+		long timeMs = System.currentTimeMillis() - startTime;
+		System.out.println("主线程继续 —-> 等待耗时：" + timeMs + " ms");
 
-    @Override
-    public void run() {
-        try{
+	}
 
-            synchronized (sLockOject) {
-                Thread.sleep(3000);
-                sLockOject.notifyAll();
-            }
-        }catch(Exception e){
+	static class WaitThread extends Thread {
 
-        }
-    }
-}
+		@Override
+		public void run() {
+			try {
+				synchronized (sLockOject) {
+					System.out.println("进入子线程");
+					Thread.sleep(3000);
+					System.out.println("唤醒主线程");
+					sLockOject.notifyAll();
+				}
+			} catch (Exception e) {
+			}
+		}
+
+	}
 ```
 
 在 `waitAndNotifyAll()` 函数里，会启动一个 WaitThread 线程，在该线程中将会调用 sleep 函数睡眠 3 秒。线程启动之后在主线程调用 sLockOject 的 `wait()` 函数，使主线程进入等待状态，此时将不会继续执行。等 WaitThread 在 `run()` 函数沉睡了 3 秒后会调用 sLockOject 的 `notifyAll()` 函数，此时就会重新唤醒正在等待中的主线程，因此会继续往下执行。
@@ -195,9 +203,27 @@ static class WaitThread extends Thread{
 
 > 主线程运行
 > 主线程等待
+> 进入子线程
+> 唤醒主线程
 > 主线程继续 —-> 等待耗时：3005 ms
 
 `wait()、notify()` 机制通常用于等待机制的实现，当条件未满足时调用 wait 进入等待状态，一旦条件满足，调用 `notify` 或 `notifyAll` 唤醒等待的线程继续执行。
+
+
+
+<div class="tip">
+
+对于这里细节可能会有一些疑问。</br>
+
+在子线程启动的时候，`run()` 函数里面已经持有了该对象锁。</br>
+
+但是真实环境下，其实是主线程先持有对象锁，然后调用 `wait()` 进入等待区并且释放锁等待唤醒。
+
+</div>
+
+这个问题涉及到 JNI 代码，目前我只能从理论上来解释这个问题。
+我们都知道一个线程 `start()` 并不是马上启动，而是需要 CPU 分配资源的，根据目前运行来看，分配资源的时间大于 Java 虚拟机运行指令的时间，所以主线程比子线程先拿到锁。
+我们还可以知道一点，控制台打印出的时间是 **3005 ms** ，在代码里我们只等待了 3s 多出来的 5ms （这个数字会浮动）我们可以推断是，子线程获取 CPU 的时间加上唤醒主线程的时间。
 
 ##### Join() 的实践
 
@@ -338,3 +364,4 @@ public class YieldThreadTest {
 
 __参考读物__：
 - [Android 开发进阶 --- 从小工到专家](https://book.douban.com/subject/26744163/)
+- [我是一个线程](http://mp.weixin.qq.com/s?__biz=MzAxOTc0NzExNg==&mid=416915373&idx=1&sn=f80a13b099237534a3ef777d511d831a&scene=0#wechat_redirect)
