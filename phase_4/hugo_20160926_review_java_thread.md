@@ -122,9 +122,8 @@ public class Thread implements Runnable {
    public void run() {
        if (target != null) {
         target.run();
-    }
-}
-
+       }
+	}
 ```
 从上我们可以明白，最终被线程执行的任务是 Runnable ，Thread 只是对 Runnable 的一个包装，并且通过一些状态对 Thread 进行管理和调度。
 当启动一个线程时，如果 Thread 的 target 不为空，则会在子线程中执行这个 target 的 `run()` 函数，否则虚拟机就会执行该线程自身的 `run()` 函数。
