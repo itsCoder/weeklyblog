@@ -69,7 +69,7 @@ public static void main(String[] args){
 
 ### 用策略模式来解决点外卖的问题
 
-　　下面我们从新用策略模式来完成我们挑选外卖店铺的任务。我们将挑选店铺的策略抽象出来:
+　　下面我们重新用策略模式来完成我们挑选外卖店铺的任务。我们将挑选店铺的策略抽象出来:
 
 ``` java
 public interface Selector {
@@ -142,7 +142,7 @@ class TypeSelector implements  Selector{
 
 ### Lambda 在点外卖为题中的应用
 
-　　有什么办法可以让我们不用每次都写那么繁琐的代码呢，这个时候就需要 Lambda 表达式登场了。等了这么久，终于写到文章的主题了（我的文章就是这么又臭又长）。为什么 Lambda 表达式可以简化我们的代码呢，因为 Lambda 提出的是一个**行为参数化**的概念，首先**行为**就是我们上面讲到的 `select()` 方法中的代码，这是选择的具体行为，**参数化**就是想方法中传递参数一样。**行为参数化**就是定义了一种新的编程方式，让我们可以将代码像参数一样传递到方法中使用。
+　　有什么办法可以让我们不用每次都写那么繁琐的代码呢，这个时候就需要 Lambda 表达式登场了。等了这么久，终于写到文章的主题了（我的文章就是这么又臭又长）。为什么 Lambda 表达式可以简化我们的代码呢，因为 Lambda 提出的是一个**行为参数化**的概念，首先**行为**就是我们上面讲到的 `select()` 方法中的代码，这是选择的具体行为，**参数化**就是向方法中传递参数一样。**行为参数化**就是定义了一种新的编程方式，让我们可以将代码像参数一样传递到方法中使用。
 
 　　看一下我们使用 Lambda 表达式完成店铺选择的功能是怎么样的：
 
@@ -167,7 +167,7 @@ public static void main(String[] args){
 
 > Lambda 表达式可以理解为**简洁地表示可传递的匿名函数的一种方式**：他没有名称，但他有参数列表、函数主体、返回类型，还有一个可以抛出的异常列表。
 
-　　Lambda 表达式由三个部分组成：参数列表、箭头、Lambda主体。具体的形式表现为 `(parameters) -> expression` 或 `(parameters) -> {statements;}`。
+　　Lambda 表达式由三个部分组成：参数列表、箭头、Lambda 主体。具体的形式表现为 `(parameters) -> expression` 或 `(parameters) -> {statements;}`。
 
 　　可以看到我们之前的 `(Store o1,Store o2) -> Double.compare(o1.getAvePrice(),o2.getAvePrice())` 是 `(parameters) -> expression` 的形式，`(Store o1,Store o2)` 是参数列表 ，`Double.compare(o1.getAvePrice(),o2.getAvePrice())` 是表达式。当 Lambda 主体中有多条语句的时候，就需要符合 `(parameters) -> {statements;}` 的形式了（**注意{}**）。
 
@@ -194,7 +194,7 @@ public interface StoreSelect {
 
 ### 执行行为
 
-　　定义完函数式接口之后，我们需要定义一个方法来接受 Lambda 表达式的函数，不然我们应该从哪边传入 Lambda 参数呢。
+　　定义完函数式接口之后，我们需要定义一个方法来接受 Lambda 表达式的参数，不然我们应该从哪边传入 Lambda 参数呢。
 
 ``` java
 public static List<Store> selectStore(List<Store> stores,StoreSelect s){
