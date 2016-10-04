@@ -4,14 +4,13 @@ tags: [Android]
 toc: true
 ---
 
-了解 BroadcastReceiver 的注册过程以及广播的发送与接收的过程。
-
+《 Android开发艺术探索 》 笔记 - 了解 BroadcastReceiver 的注册过程以及广播的发送与接收的过程。
 <!--more-->
 
 >- 文章来源：itsCoder 的 [WeeklyBolg](https://github.com/itsCoder/weeklyblog) 项目
 >- itsCoder主页：[http://itscoder.com/](http://itscoder.com/)
 >- 作者：[Melodyxxx](http://melodyxxx.com/)
->- 审阅者：[暂无]()
+>- 审阅者：[JoeSteven](https://github.com/JoeSteven)
 
 
 在 Android 中，广播的注册分为静态注册和动态注册，静态注册是指在 AndroidManifest 文件中注册，动态注册是指在 Java 代码中通过 `registerReceiver` 方法注册的。静态注册的广播在应用安装时由系统自动完成注册，具体来说是由 PMS (PackageManagerService)来完成注册的。本文只分析广播的动态注册过程。
@@ -172,9 +171,16 @@ ReceiverDispatcher(BroadcastReceiver receiver, Context context,
 ``` java
 public Intent registerReceiver(IApplicationThread caller, String callerPackage,
         IIntentReceiver receiver, IntentFilter filter, String permission, int userId) {
+	...
+	ReceiverList rl = mRegisteredReceivers.get(receiver.asBinder());
 	....
 	// 将远程receiver(IIntentReceiver)对象保存起来
-    mRegisteredReceivers.put(receiver.asBinder(), rl);
+	if (rl == null) {
+		...
+		mRegisteredReceivers.put(receiver.asBinder(), rl);
+		...
+	}
+    
 	....
     BroadcastFilter bf = new BroadcastFilter(filter/*远程IntentFilter*/, rl, callerPackage,
             permission, callingUid, userId);
@@ -186,6 +192,9 @@ public Intent registerReceiver(IApplicationThread caller, String callerPackage,
     mReceiverResolver.addFilter(bf);
 	....
 ```
+
+rl 是一个 ReceiverList 对象，ReceiverList 继承自 ArrayList，只用于保存 BroadcastFilter 的。BroadcastFilter 看源码确实是封装了一些信息，有那个rl，还有包名，权限，UID , UserID什么之类的。因为一个 Receiver 可能被多个 IntentFilter 注册，所以 Android 采用了一个 HashMap 数据结构，key 就是那个传递到AMS的那个IIntentReceiver Binder(可以理解成一个Receiver，因为Receiver不能直接传，前面有说道)，value 就是这个rl ReceiverList 对象了(可以理解其里面全是这个 Receiver 注册的IntentFilter，BroadcastFilter 就是继承自 IntentFilter 的) ，所以AMS注册时，先会取出这个 Receiver 之前已注册过的所有的意图集合（ ReceiverList ) 
+
 最终在 AMS 内，将远程 receiver ( IIntentReceiver ) 对象和远程 IntentFilter 保存起来，完成动态广播的注册。
 
 ## 广播的发送与接收过程
@@ -219,7 +228,7 @@ intent.addFlags(Intent.FLAG_EXCLUDE_STOPPED_PACKAGES);
 - 应用被手动或者其他应用强行停止了
 
 从Android 3.1开始，为Intent添加了两个标记位：
-- **`FLAG_EXCLUDE_STOPPED_PACKAGES :** 表示不包含已经停止的应用，这个时候广播不会发送给已经停止的应用
+- **FLAG_EXCLUDE_STOPPED_PACKAGES :** 表示不包含已经停止的应用，这个时候广播不会发送给已经停止的应用
 - **FLAG_INCLUDE_STOPPED_PACKAGES :** 表示包含已经停止的应用，这个时候广播会发送给已经停止的应用
 
 从 Android 3.1 开始，系统为所有的广播默认添加了 `FLAG_EXCLUDE_STOPPED_PACKAGES` 标志，这样做是为了防止广播无意间或者在不必要的时候调起已经停止运行的应用。如果的确需要调起已经停止的应用，那么只需要为广播的Intent添加 `FLAG_INCLUDE_STOPPED_PACKAGES` 标记即可。当两个标记共存时，以 `FLAG_INCLUDE_STOPPED_PACKAGES` 为准。
@@ -227,6 +236,27 @@ intent.addFlags(Intent.FLAG_EXCLUDE_STOPPED_PACKAGES);
 下面继续分析发送流程，在 `broadcastIntentLocked` 内部，会根据 intent-filter 查找出匹配的广播接收者并经过一系列的过滤，最终会将满足条件的广播接收者添加到 BroadcastQueue 中，接着 BroadcastQueue 就会将广播发送给相应的广播接收者，过程如下：
 
 ``` java
+...
+if (!ordered && NR > 0) {
+    // If we are not serializing this broadcast, then send the
+    // registered receivers separately so they don't wait for the
+    // components to be launched.
+    final BroadcastQueue queue = broadcastQueueForIntent(intent);
+    BroadcastRecord r = new BroadcastRecord(queue, intent, callerApp,
+            callerPackage, callingPid, callingUid, resolvedType, requiredPermissions,
+            appOp, brOptions, registeredReceivers, resultTo, resultCode, resultData,
+            resultExtras, ordered, sticky, false, userId);
+    if (DEBUG_BROADCAST) Slog.v(TAG_BROADCAST, "Enqueueing parallel broadcast " + r);
+    final boolean replaced = replacePending && queue.replaceParallelBroadcastLocked(r);
+    if (!replaced) {
+		// 保存无序广播
+        queue.enqueueParallelBroadcastLocked(r);
+        queue.scheduleBroadcastsLocked();
+    }
+    registeredReceivers = null;
+    NR = 0;
+}
+...
 if ((receivers != null && receivers.size() > 0)
         || resultTo != null) {
     BroadcastQueue queue = broadcastQueueForIntent(intent);
@@ -242,11 +272,29 @@ if ((receivers != null && receivers.size() > 0)
 
     boolean replaced = replacePending && queue.replaceOrderedBroadcastLocked(r);
     if (!replaced) {
+		// 保存有序广播
         queue.enqueueOrderedBroadcastLocked(r);
         queue.scheduleBroadcastsLocked();
     }
 }
+...
 ```
+
+对应 BroadcastQueue 的 `enqueueParallelBroadcastLocked` 和 `enqueueOrderedBroadcastLocked` 两个方法实现：
+``` java
+public void enqueueParallelBroadcastLocked(BroadcastRecord r) {
+	// mParallelBroadcasts 集合保存无序广播
+    mParallelBroadcasts.add(r);
+    r.enqueueClockTime = System.currentTimeMillis();
+}
+
+public void enqueueOrderedBroadcastLocked(BroadcastRecord r) {
+	// mOrderedBroadcasts 集合保存有序广播
+    mOrderedBroadcasts.add(r);
+    r.enqueueClockTime = System.currentTimeMillis();
+}
+```
+
 在最后的 `queue.scheduleBroadcastsLocked();` 内看广播的发送过程，下面是 BroadcastQueue 的 `scheduleBroadcastsLocked` 方法：
 ``` java
 public void scheduleBroadcastsLocked() {
