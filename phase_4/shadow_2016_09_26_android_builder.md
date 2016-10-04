@@ -32,7 +32,7 @@ author: shaDowZwy
 
 ![](https://github.com/shaDowZwy/shaDowZwy.github.io/blob/master/images/builder_blog%E7%B4%A0%E6%9D%90/img2.png?raw=true)
 
-往下阅读它的源码，`AlertDialog`在`onCreate`中与`AlertController`建立了联系，从它的方法**命名**`installContent()`可以了解它是初始化`AlertDialog`内容实体的，那我们可以确定刚刚的推测，`AlertController`是负责`AlertDialog`组织内容逻辑的，而`AlertDialog`只是简单的”UI层“，
+往下阅读它的源码，`AlertDialog`在`onCreate`中与`AlertController`建立了联系，从它的方法**命名**`installContent()`可以了解它是初始化`AlertDialog`内容实体的，那我们可以确定刚刚的推测，`AlertController`是负责`AlertDialog`组织内容逻辑的，而`AlertDialog`只是简单的”UI层“。
 
 
 **再往下就是`AlertDialog`中静态内部类，也是我们要说的重点`Builder`**
@@ -54,7 +54,7 @@ author: shaDowZwy
 在`create()`方法中的`apply()`是将`AlertDialog`中的`AlertController`与`AlertController.AlertParams`建立联系，其实就是控制层与逻辑层相通，最后会由
 `AlertController`控制要显示的视图内容。
 
-`AlertDialog`的源码基本上我们过了一遍，了解它的模式思路，那我们再从`apply()`进去，看看`AlertController`与`AlertController.AlertParams`是怎么建立联系的
+`AlertDialog`的源码基本上我们过了一遍，了解它的模式思路，那我们再从`apply()`进去，看看`AlertController`与`AlertController.AlertParams`是怎么建立联系的。
 
 #### 2.AlertController.AlertParams源码
 
@@ -70,7 +70,7 @@ author: shaDowZwy
 
 ![](https://github.com/shaDowZwy/shaDowZwy.github.io/blob/master/images/builder_blog%E7%B4%A0%E6%9D%90/img8.png?raw=true)
 
-这是之前介绍过的初始化实体内容的方法，显然是负责构建视图的
+这是之前介绍过的初始化实体内容的方法，显然是负责构建视图的。
 
 ![](https://github.com/shaDowZwy/shaDowZwy.github.io/blob/master/images/builder_blog%E7%B4%A0%E6%9D%90/img11.png?raw=true)
 
