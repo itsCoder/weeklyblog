@@ -6,7 +6,7 @@ tags: [Android, vector-drawable, animated-vector-drawable, dpi]
 ---
 
 # 引言
-Android 开发中，屏幕适配一直是一个令人头疼的工作，就应用图标资源而言便需要准备 N 套以适配不同分辨率的屏幕。当然，随着手机硬件的飞速发展，曾经的 320*480、640*480 的手机现在已经基本被淘汰，可以说目前市场上手机几乎都是 1k+ 屏幕，并且向着 3k、4k 进军。这也意味着我们曾经的`drawable-hdpi`现在已经不适用了，细心的你肯定会发现现在新建的项目多了一个`drawable-xxxhdpi`文件夹，这是 Android4.2 引进的，是用来适配平板和电视的 4k 屏幕的。我们知道了这些，那么就会做图标适配了，但是不得不说，准备 N 套小图标确实很烦，还很浪费空间。幸运的是，我们可以使用 Vector Drawable 来代替那 N 套图标，还可以用它来做一些有趣的动画。
+Android 开发中，屏幕适配一直是一个令人头疼的工作，就应用图标资源而言便需要准备 N 套以适配不同分辨率的屏幕。当然，随着手机硬件的飞速发展，曾经的 320x480、640x480 的手机现在已经基本被淘汰，可以说目前市场上手机几乎都是 1k+ 屏幕，并且向着 3k、4k 进军。这也意味着我们曾经的`drawable-hdpi`现在已经不适用了，细心的你肯定会发现现在新建的项目多了一个`drawable-xxxhdpi`文件夹，这是 Android4.2 引进的，是用来适配平板和电视的 4k 屏幕的。我们知道了这些，那么就会做图标适配了，但是不得不说，准备 N 套小图标确实很烦，还很浪费空间。幸运的是，我们可以使用 Vector Drawable 来代替那 N 套图标，还可以用它来做一些有趣的动画。
 
 # 什么是 Vector Drawable
 Vector Drawable 就是矢量图的意思，也就是 svg 图片，其实它并不是图片，而是一个文本文件，将图片的线条和土块用一种标记语言记录下来，然后就可以在支持矢量图的软件上使用它了。矢量图最突出的优点就是体积小、无限放大不失真等。当然 Android 也支持矢量图了，只不过目前只能在 [LOLLIPOP](https://www.android.com/versions/lollipop-5-0/) 及以上系统使用，使用 Vector Drawable 可以让你只使用一套体积极小的 xml 文件来代替那 N 套 PNG 图片，不仅仅减小了 app 体积，其显示效果要比 PNG 图片好很多。
@@ -20,7 +20,7 @@ Vector Drawable 就是矢量图的意思，也就是 svg 图片，其实它并�
 4.  通过解压一些大公司的 apk 你会发现，他们的 app 普遍只用了2套图，那就是`drawable-xxhdpi`和`drawable-nodpi`，Android 系统在低分辨屏幕上会自动将图片进行压缩，以达到显示效果，毕竟压缩比放大产生的显示效果影响要小一点。所以我们可以在第3条建议的基础上再删除一些没必要的 drawable，或者只让 UI 准备一套`drawable-xxhdpi`图标，以达到节省体积的效果，对显示效果的影响并不大。
 
 # 如何使用 Vector Drawable
-1： 如果你的设备最低支持 Android5.0 及以上，那就可以直接在项目中使用 VectorDrawable，如同使用普通图片一样，比如 xml 文件中使用`android:src="@drawable/ic_action_find"`，其中 ic_action_find 就是一个 VectorDrawable,它不是一个 png 图片，而是一个 xml 文件。
+1： 如果你的设备最低支持 Android5.0 及以上，那就可以直接在项目中使用 VectorDrawable，如同使用普通图片一样，比如 xml 文件中使用`android:src="@drawable/ic_action_pet"`，其中 ic_action_find 就是一个 VectorDrawable,它不是一个 png 图片，而是一个 xml 文件。
 
 ![lizi](http://ww3.sinaimg.cn/mw690/005X6W83jw1f8vi4nn7udj3044048mx5.jpg)
 
@@ -123,7 +123,8 @@ Vector Drawable 就是矢量图的意思，也就是 svg 图片，其实它并�
 首先让我们看看上面这两个动画，一个是脚指头上下跳动动画，一个是分享按钮的路径跳动动画。通过 Android 属性动画或者帧动画都可以实现，帧动画需要提供图片资源，属性动画写起来应该很烦。如果考虑用`animated vector drawable`,那就很简单了。
 
 1. 在`drawable-v21`新建`ic_action_pet`,即上面举得那个例子，脚掌的原始图片，即 VectorDrawable。
-2. 在`drawable-v21`新建`ic_action_pet_anim.xml`，即 AnimatedVectorDrawable，带有动画效果的 drawable。
+2. 在`drawable-v21`新建`ic_action_pet_anim.xml`，即 AnimatedVectorDrawable，带有动画效果的 drawable.xml
+
     ```xml
     <animated-vector xmlns:android="http://schemas.android.com/apk/res/android"
         android:drawable="@drawable/ic_action_pet">
@@ -142,7 +143,9 @@ Vector Drawable 就是矢量图的意思，也就是 svg 图片，其实它并�
     </animated-vector>
     ```
 3. 在`anim`文件夹下新建`anim_path_translate1`,`anim_path_translate2`,`anim_path_translate3`,`anim_path_translate4`四个局部动画文件，用于对4个脚趾头进行动画。以下按顺序列出。
+
 anim_path_translate1
+
     ```xml
         <?xml version="1.0" encoding="utf-8"?>
         <set xmlns:android="http://schemas.android.com/apk/res/android"
