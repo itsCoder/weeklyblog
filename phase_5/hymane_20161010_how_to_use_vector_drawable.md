@@ -1,5 +1,5 @@
 ---
-title: Android 如何使用矢量图片以及使用矢量动画
+title: Android 矢量图片以及矢量动画
 date: 2016-10-09 12:50:20
 categories: Android
 tags: [Android, vector-drawable, animated-vector-drawable, dpi]
