@@ -1,12 +1,12 @@
 >- 文章来源：itsCoder 的 [WeeklyBolg](https://github.com/itsCoder/weeklyblog) 项目
 >- itsCoder主页：[http://itscoder.com/](http://itscoder.com/)
 >- 作者：[Melo](https://itsmelo.github.io/)
->- 审阅者：[暂无]()
+>- 审阅者：[暂无](旋风)
 
 **写在前面：**
 为了使用户的交互更加流畅自然，动画也就成为了一个应用中必不可少的元素之一。在 Android 中常用的动画分类无外乎三种，最早的 **帧动画** 、**补间动画**，以及 3.0 之后加入的 **属性动画**，是它们组成了 Android 中各种炫酷亮眼的动画效果。
 
-关于动画相关的博文说实话很多，但是为什么要写这篇文章呢？因为我发现很多博客都上来就“翻译”了一通 **API** ，这对很多没有建立起 Android 动画体系概念的新人来说，非常不友好。既没有说明各种动画的应用场景，也没有横向对比动画的优缺点。对于刚学习动画的同学来说，他们读起来心里就更没底了，面对稍微复杂的动画就无从下手，就好比那句歌词“懂得很多道理，却仍过不好这一生”。所以本文要有更多思考分析之外，也会教大家一些关于动画的小技巧和可能踩到的坑。本文我们就先来研究 帧动画 和 补间动画，话不多说，现在开始我们的内容吧。
+关于动画相关的博文说实话很多，但是为什么要写这篇文章呢？因为我发现很多博客都上来就“翻译”了一通 **API** ，这对很多没有建立起 Android 动画体系概念的新人来说，非常不友好。既没有说明各种动画的应用场景，也没有横向对比动画的优缺点。对于刚学习动画的同学来说，他们读起来心里就更没底了，面对稍微复杂的动画就无从下手，就好比那句歌词“懂得很多道理，却仍过不好这一生”。所以本文要有更多思考分析之外，也会教大家一些关于动画的小技巧和可能踩到的坑。本文我们就先来研究**帧动画**和**补间动画**，话不多说，现在开始我们的内容吧。
 
 帧动画
 --
@@ -30,9 +30,9 @@
 
 准备一个帧动画的图片资源：
 
-![这里写图片描述](http://upload-images.jianshu.io/upload_images/1915184-40afdfa768a4557f?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![帧动画的图片资源](http://upload-images.jianshu.io/upload_images/1915184-40afdfa768a4557f?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
 
-可以通过 代码 或者 xml 方式来使用**帧动画**
+可以通过代码或者 xml 方式来使用**帧动画**
 
 **XML**
 新建工程，然后在 drawable 目录下新建一个 xml 文件，名字是 bear_anim ，代码如下：
@@ -71,7 +71,7 @@
         android:duration="200" />
 </animation-list>
 ```
-需要注意的是，根节点必须为 `<animation-list>`，`oneshot`属性代表是否循环播放一次，true 为一次，false 为循环播放。`duration`属性表示此张图片滞留的时间，然后注意从上到下依次引用图片即可。
+需要注意的是，根节点必须为 `<animation-list>`，`oneshot`属性代表是否只播放一次，true 为一次，false 为循环播放。`duration`属性表示此张图片滞留的时间，然后注意从上到下依次引用图片即可。
 
 接着给一个 ImageView 设置这个动画：
 
@@ -94,11 +94,12 @@
             animationDrawable.stop();
         }
 ```
+在此补充下，bear_anim 同样可以设置给 src 属性，然后调用 `getDrawble().start()` 来播放动画，不过不推荐，具体原因自行查找下 `src` 和 `background` 属性的区别。
 自然我们也可以用纯代码的方式实现，不过在此真的不推荐，显然 xml 的方式更省力，并且维护起来更方便。
 
 补间动画
 --
-tween 动画也叫作补间动画，它可以在一定的时间内使 View 完成四种基本的动画，即**平移、缩放、透明度、旋转**，也可以将它们组合到一起播放出来。这里先提一下未来会研究的 **属性动画**，也许从上面可以观察到， 无论是**帧动画**还是**补间动画**，都是把动画效果作用到 View 上，如果一个不是 View 的元素想实现动画，那这两种就无能为力了，只能请 **属性动画** 帮忙了。
+tween 动画也叫作补间动画，它可以在一定的时间内使 View 完成四种基本的动画，即**平移、缩放、透明度、旋转**，也可以将它们组合到一起播放出来。这里先提一下未来会研究的 **属性动画**，值得注意的是， 无论是**帧动画**还是**补间动画**，都是把动画效果作用到 View 上，如果一个不是 View 的元素想实现动画，那这两种就无能为力了，只能请 **属性动画** 帮忙了。
 
 并且补间动画仅仅是给 View 增加了动画的“假象”，比如一个按钮从左侧跑到了右侧，你在右侧是无法点击它的，但是这不代表 补间动画就没有用武之地了，当你需要的动画效果无外乎上面那四种动画，并且仅仅是展示的时候，补间动画就再合适不过了。
 
@@ -271,6 +272,10 @@ alpha.setAnimationListener(new Animation.AnimationListener() {
 ```
 给动画设置一个侦听，在一些回调中做你的操作。
 
+经过朋友的提醒，事实上 `onAnimationEnd` 并不可靠，有时候动画结束时候并不会调用，详情请看 SO 上的一个提问：
+
+http://stackoverflow.com/questions/5474923/onanimationend-is-not-getting-called-onanimationstart-works-fine
+
 **停止一个补间动画的正确姿势：**
 
 ```
@@ -282,8 +287,19 @@ public void stopAnimation(View v) {
     animation.setAnimationListener(null);
 	v.setAnimation(null);
 }
+
+/**
+ * Returns true if the API level supports canceling existing animations via the
+ * ViewPropertyAnimator, and false if it does not
+ * @return true if the API level supports canceling existing animations via the
+ * ViewPropertyAnimator, and false if it does not
+ */
 public static boolean canCancelAnimation() {
     return Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH;
 }
 ```
+问题详情看这里：
+
+http://stackoverflow.com/questions/4112599/how-to-stop-an-animation-cancel-does-not-work
+
 啊哈，终于完成本文了，希望大家遇到动画的需求不要怂，拿起键盘开写就对了，未来会给大家带来**属性动画**的教程。
