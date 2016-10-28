@@ -5,7 +5,7 @@
 
 因为`php`支持的密钥格式是`.pem`所以`web`和`java`端都要将`pem`格式转换成其语言平台支持的格式。 比如，`java`支持的格式默认是`.asn`。   
 ### 密钥对的生成( php )
-如果系统是`Linux`的话，可以使用`openssl`命令来生成。这里展示的是在`Windows`系统下的操作(因为当时做这个东西的时候是在 Windows 8.1 系统下完成的)，使用 [xampp](https://www.apachefriends.org/zh_cn/index.html) 集成好的`openssl`(其配置文件路径在xampp的安装路径下的php\extras\openssl\openssl.cnf，我们这次使用的就是这个文件)，下面展示用`php`来生成密钥对：(n 和 e 组成公钥，n 和 d 组成私钥)  
+如果系统是`Linux`的话，可以使用`openssl`命令来生成。这里展示的是在`Windows`系统下的操作(因为当时做这个东西的时候是在 Windows 8.1 系统下完成的)，使用 [xampp](https://www.apachefriends.org/zh_cn/index.html) 集成好的`openssl`(其配置文件路径在 xampp 的安装路径下的php\extras\openssl\openssl.cnf，我们这次使用的就是这个文件)，下面展示用`php`来生成密钥对：(n 和 e 组成公钥，n 和 d 组成私钥)  
 ```php
 <?php
 //OPENSSL_CNF为 openssl.cnf 的路径
