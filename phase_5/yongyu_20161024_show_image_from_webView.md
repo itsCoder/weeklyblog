@@ -6,7 +6,11 @@
  tags:  Android WebView
 ---
 
+-文章来源：itsCoder 的 [WeeklyBolg](https://github.com/itsCoder/weeklyblog) 项目
 
+- itsCoder主页：[http://itscoder.com/](http://itscoder.com/)
+- 作者：[yongyu0102](https://github.com/yongyu0102)
+- 审阅者：[wuchangfeng](https://github.com/wuchangfeng)
 
 # 一、概要
 
@@ -20,17 +24,17 @@
 
     ![showpop](https://github.com/yongyu0102/WeeklyBlogImages/blob/master/phase5/showpop.gif)
 
-拿到这个需求笔者第一反应是没做过 WebView 相关的交互，甚至分不清这个需求是否需要服务端配合完成 Java 与 JavaScripe 的互相调用，一脸茫然。遇到这种情况笔者的解决思路一般**分两个方向**：
+拿到这个需求笔者第一反应是没做过 WebView 相关的交互，甚至分不清这个需求是否需要服务端配合完成 Java 与 JavaScript 的互相调用，一脸茫然。遇到这种情况笔者的解决思路一般**分两个方向**：
 
-1. 找一个比较出名的客户端有类似功能的，然后 google 搜索，仿 XXXX，先粗略看一下有没有现成的 Demo 可以参考，比如我这个需要，先去搜索一下 ”Android 仿微信朋友圈浏览图片效果“ （这个搜索关键字很关键啊），可是笔者没找到符合该需要的 Demo。
+1. 找一个比较出名的客户端有类似功能的，然后 Google 搜索，仿 XXXX，先粗略看一下有没有现成的 Demo 可以参考，比如我这个需要，先去搜索一下 ”Android 仿微信朋友圈浏览图片效果“ （这个搜索关键字很关键啊），可是笔者没找到符合该需要的 Demo。
 
 2. 在第一个方案不好使的情况下，我们没有了参考，那么咱们就得自己思考这个大概实现思路，然后把这个需求进行拆分，逐一击破。所以思考大概如下：
 
-   （1）要想展示图片那么就得先拿到图片，要拿到图片只有两种可能，第一种可能是 WebView 本身缓存了图片，我们去缓存中读取图片进行显示，可是想一下，咱们浏览微博看图的时候如果没有网，这时候去点击图片那么图片是加载不出来的，所以这种可能否定了；所以只有第二种可能就是点击图片的时候拿到该图片对应的 URL 网址，然后咱们自己去网络加载图片进行显示，所以这个点我们 get 到了。
+   （1）要想展示图片那么就得先拿到图片，要拿到图片只有两种可能，第一种可能是 WebView 本身缓存了图片，我们去缓存中读取图片进行显示，可是想一下，咱们浏览微博看图的时候如果没有网，这时候去点击图片那么图片是加载不出来的，所以这种可能否定了；所以只有第二种可能就是点击图片的时候拿到该图片对应的 URL 网址，然后咱们自己去网络加载图片进行显示，所以这个点我们 Get 到了。
 
-   （2）要滑动图片进行显示下一张，那么就需要我们能拿到所有要显示的图片的 URL ，然后放到一个数组里面，每次滑动就进行加载一张图片，那么也就是我们一次性拿到所有 WebView 包含图片的 URL，这个就不是在点击图片的时候去获取，而是在 WebView 加载完成后获取到，这怎么能拿到？再想一下，WebView  进行加载显示的时候其实是加载html（比如 assets 目录中的文件）文本的字符串，然后进行渲染处理显示出来，所以 html 文本文件里面包含了我们想要的图片网址，大家看一下下面这张截图就是一个带图片的 WebView 对应加载的 html 文本文件部分截图，
+   （2）要滑动图片进行显示下一张，那么就需要我们能拿到所有要显示的图片的 URL ，然后放到一个数组里面，每次滑动就进行加载一张图片，那么也就是我们一次性拿到所有 WebView 包含图片的 URL，这个就不是在点击图片的时候去获取，而是在 WebView 加载完成后获取到，这怎么能拿到？再想一下，WebView  进行加载显示的时候其实是加载 HTML（比如 Assets 目录中的文件）文本的字符串，然后进行渲染处理显示出来，所以 HTML文本文件里面包含了我们想要的图片网址，大家看一下下面这张截图就是一个带图片的 WebView 对应加载的 HTML文本文件部分截图，
 
-   ![webViewSrc](image\webViewSrc.png)
+   ![webViewSrc](https://github.com/yongyu0102/WeeklyBlogImages/blob/master/phase5/webViewSrc.png?raw=true)
 
    其中标签 src 对象的内容就是我们想要的图片 URL，所以到这里我们就有了思路，我们先拿到 WebView 加载的 HTML 内容，然后在从 HTML 里面提取我要想要的 URL。
 
@@ -49,19 +53,24 @@
 
 ## 2.1 获取 WebView 页面所有图片对应地址
 
-### 2.1.1 解析 WebView 页面加载的 Html 文本文件
+### 2.1.1 解析 WebView 页面加载的 HTML文本文件
 
    **定义供 JavaScript 调用的交互接口**
 
 ```java
-   private class InJavaScriptLocalObj {
+  /**
+  *这个接口就是给 JavaScript 调用的,调用结果就是返回 HTML 文本，
+  *然后 getAllImageUrlFromHtml(HTML) 
+  *从 HTML文件中提取页面所有图片对应的地址对象
+  **/
+private class InJavaScriptLocalObj {
        /**
-        * 获取 WebView 加载对应的 Html 文本
-        * @param html WebView 加载对应的 Html 文本
+        * 获取 WebView 加载对应的 HTML 文本
+        * @param HTML WebView 加载对应的 HTML 文本
         */
        @android.webkit.JavascriptInterface
        public void showSource(String html) {
-         //从 Html 文件中提取页面所有图片对应的地址对象
+         //从 HTML 文件中提取页面所有图片对应的地址对象
            getAllImageUrlFromHtml(html);
        }
    }
@@ -83,33 +92,33 @@
                @Override
                public void onPageFinished(WebView view, String url) {
                    super.onPageFinished(view, url);
-                   //解析 Html
+                   //解析 HTML
                    parseHTML(view);
                }
        /**
-        *  java 调取 js 代码,
+        *  Java 调取 js 代码,
         * @param view WebView
         */
    private void parseHTML(WebView view) {
-     //这段 js 代码是解析获取到了 Html 文本文件，然后调用本地定义的 Java 代码返回
-     //解析出来的 Html 文本文件
+     //这段 js 代码是解析获取到了 HTML 文本文件，然后调用本地定义的 Java 代码返回
+     //解析出来的 HTML 文本文件
        view.loadUrl("javascript:window.local_obj.showSource('<head>'+"
                + "document.getElementsByTagName('html')[0].innerHTML+'</head>');");
    }
 ```
 
-### 2.1.2 从获取到的 Html 文本文件中提取页面所有图片对应的地址对象
+### 2.1.2 从获取到的 HTML文本文件中提取页面所有图片对应的地址对象
 
 ```java
     // 获取 img 标签正则
        private static final String IMAGE_URL_TAG = "<img.*src=(.*?)[^>]*?>";
-     // 获取src路径的正则
+     // 获取 src 路径的正则
        private static final String IMAGE_URL_CONTENT = "http:\"?(.*?)(\"|>|\\s+)";
 
    /***
     * 获取页面所有图片对应的地址对象，
     * 例如 <img src="http://sc1.hao123img.com/data/f44d0aab7bc35b8767de3c48706d429e" />
-    * @param html WebView 加载的 html 文本
+    * @param HTML WebView 加载的 HTML 文本
     * @return
     */
    private List<String> getAllImageUrlFromHtml(String html) {
@@ -269,7 +278,7 @@ mWebView.setOnLongClickListener(new View.OnLongClickListener() {
 
 ## 2.3 ViewPaper 滑动显示每一张图片，PhotoView  实现自由缩放功能
 
-由于这部分代码比较简单，这里就直接贴出部分代码，如文章中所用的 Demo 代码最终会上传到 github 上，有兴趣可以去瞧一瞧完整的代码，这里简单介绍几个类，ShowImageFromWebActivity.java 这个类内部就包含一个 ViewPaper 和两个按钮， ViewPaper 用来滑动显示每一张图片，按钮用来显示滑动的页数和实现点击保存图片功能，代码如下：
+由于这部分代码比较简单，这里就直接贴出部分代码，文章中所用的 Demo 代码最终会上传到 GitHub上，有兴趣可以去瞧一瞧完整的代码，这里简单介绍几个类，ShowImageFromWebActivity.java 这个类内部就包含一个 ViewPaper 和两个按钮， ViewPaper 用来滑动显示每一张图片，按钮用来显示滑动的页数和实现点击保存图片功能，代码如下：
 
 ```java
 public class ShowImageFromWebActivity extends Activity implements View.OnClickListener {
@@ -356,8 +365,9 @@ public class ShowImageFromWebActivity extends Activity implements View.OnClickLi
    }
 ```
 
-```java
-//ShowImageFromWebActivity.java 对应 xml 文件
+**ShowImageFromWebActivity.java 对应 xml 文件**
+
+```xml
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
@@ -406,10 +416,9 @@ public class ShowImageFromWebActivity extends Activity implements View.OnClickLi
             android:textColor="@color/white" />
     </LinearLayout>
 </RelativeLayout>
-
 ```
 
-ImageBrowserAdapter.java 类：
+**ImageBrowserAdapter.java 类代码如下：**
 
 ```java
 public class ImageBrowserAdapter extends PagerAdapter {
@@ -439,8 +448,6 @@ public class ImageBrowserAdapter extends PagerAdapter {
       String picUrl = picUrls.get(position);
       final  PhotoViewAttacher photoViewAttacher=new PhotoViewAttacher(iv_image_browser);
       photoViewAttacher.setScaleType(ImageView.ScaleType.FIT_CENTER);
-     //禁止缩放
-      photoViewAttacher.setZoomable(false);
      //显示图片
       Glide.with(context).
             load(picUrl)
@@ -452,8 +459,6 @@ public class ImageBrowserAdapter extends PagerAdapter {
                public void onResourceReady(GlideDrawable resource, GlideAnimation<? super GlideDrawable> animation) {
                   super.onResourceReady(resource, animation);
                      photoViewAttacher.update();
-                 //开启缩放
-                     photoViewAttacher.setZoomable(true);
                }
             });
 
@@ -467,9 +472,9 @@ public class ImageBrowserAdapter extends PagerAdapter {
    }
 ```
 
-上面代码也很简单，就是根据 URL 来加载显示图片，但是笔者在使用 PhtoView 时候遇到一个奇怪问题未能搞懂，这里说一下，希望大家看到能帮忙分析下，上面代码大家可能会发现，我在 instantiateItem 方法中开始用 Glide 加载显示图片之前调用了一遍  photoViewAttacher.setZoomable(false) 方法禁止了图片缩放，然后在用 Glide 加载完成图片之后又在 onResourceReady 内部又调用了一遍   photoViewAttacher.setZoomable(true) 方法开启图片缩放功能，之所以这里这么做是因为上面代码在注释掉这两行代码之后，在加载图片的时候，显示图片时候图片会被莫名的放大，显示不正常，笔者没找到原因，所以这里就采用这种笨方法手动控制下解决了这个问题，希望有人帮忙分析下，谢谢了。
+上面代码也很简单，就是根据 URL 来加载显示图片，然后利用 PhotoView 进行缩放。
 
-```java
+```xml
 //ImageBrowserAdapter Item 布局文件
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -482,25 +487,19 @@ public class ImageBrowserAdapter extends PagerAdapter {
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:gravity="center_vertical">
-            <uk.co.senab.photoview.PhotoView
-                android:layout_centerVertical="true"
+             <uk.co.senab.photoview.PhotoView
                 android:id="@+id/pv_show_image"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_centerInParent="true"
-                android:layout_gravity="center"
-                android:adjustViewBounds="true"
                 android:background="@android:color/white"
-                android:scaleType="fitXY"
                 android:src="@drawable/image_default_rect" />
         </RelativeLayout>
 </RelativeLayout>
-
 ```
 
 以上为本次学习内容，如有错误还望指正，谢谢！
 
-文章中 Demo 已经上传在 github 上，地址为[**ShowImageFromWebView**](https://github.com/yongyu0102/ShowImageFromWebView)
+文章中 Demo 已经上传在 GitHub上，地址为[**ShowImageFromWebView**](https://github.com/yongyu0102/ShowImageFromWebView)
 
 参考文章：
 
