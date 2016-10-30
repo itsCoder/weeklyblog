@@ -8,6 +8,11 @@ toc: true
 
 <!--more-->
 
+>- 文章来源：itsCoder 的 [WeeklyBolg](https://github.com/itsCoder/weeklyblog) 项目
+>- itsCoder主页：[http://itscoder.com/](http://itscoder.com/)
+>- 作者：[Melodyxxx](http://melodyxxx.com/)
+>- 审阅者：[Hymanme](https://github.com/Hymanme)
+
 ## RenderScript 介绍
 
 在开始之前，先看下 RenderScript 的[官方介绍](https://developer.android.com/guide/topics/renderscript/compute.html)：
@@ -126,7 +131,7 @@ public class MainActivity extends Activity implements Runnable {
      * @param targetView  需要被模糊背景的 View
      */
     public void blur(Bitmap inputBitmap, View targetView) {
-        // 创建一个和目标View(需要背景被模糊的View)宽高一样的控的 outputBitmap
+        // 创建一个和目标View(需要背景被模糊的View)宽高一样的空的 outputBitmap
         Bitmap outputBitmap = Bitmap.createBitmap((int) (targetView.getMeasuredWidth()),
                 (int) (targetView.getMeasuredHeight()), Bitmap.Config.ARGB_8888);
         // 将 outputBitmap 关联在 canvas 上
@@ -148,7 +153,7 @@ public class MainActivity extends Activity implements Runnable {
         // 使用 ScriptIntrinsicBlur 类来模糊图片
         ScriptIntrinsicBlur blur = ScriptIntrinsicBlur.create(
                 rs, Element.U8_4(rs));
-        // 设置模糊半径 ( 取值范围为( 0.0f , 25f ] )
+        // 设置模糊半径 ( 取值范围为( 0.0f , 25f ] ，半径越大，模糊效果也越大)
         blur.setRadius(25f);
         blur.setInput(input);
         // 模糊计算
@@ -227,13 +232,14 @@ canvas.drawBitmap(mInputBitmap, 0, 0, paint);
 
 根据压缩比例配合不同的模糊半径可以达到不同模糊效果。
 
-再来看 Demo 效果图中拖动 SeekBar 可以动态的实现模糊效果，首先想到的方法是每次拖动然后在里脊模糊一次？这样的效率肯定不行，还会造成卡顿，我这里的方法是先将图片最大化模糊一次设给上方 ImageView 的背景即可，然后 SeekBar 拖动时，只需要改变最上方或者下方图片的透明度就可以达到上面的效果。
+再来看 Demo 效果图中拖动 SeekBar 可以动态的实现模糊效果，首先想到的方法是每次拖动时实时计算模糊，这样的效率肯定不行，还会造成卡顿，我这里的方法是先将图片最大化模糊一次设给上方 ImageView 的背景即可，然后 SeekBar 拖动时，只需要改变最上方或者下方图片的透明度就可以达到上面的效果。
 
 Demo apk 下载：http://fir.im/snmb
+Demo 地址：https://github.com/melodyxxx/BlurDemo
 
 ## 总结
 
-除了 RenderScript 以外还有一些其他的方法也可以实现高斯模糊，例如 FastBlur 等，只要在模糊的时候将不要将原图直接模糊处理，可采取先缩放然后再模糊，这样可以大大提高模糊的速度。
+除了 RenderScript 以外还有一些其他的方法也可以实现高斯模糊，例如 FastBlur 等，在模糊的时候不要将原图直接模糊处理，可采取先缩放然后再模糊，这样可以大大提高模糊的速度。
 
 > 参考资料：
 > https://developer.android.com/guide/topics/renderscript/compute.html
