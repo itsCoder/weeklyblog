@@ -162,5 +162,3 @@
 - showzeng [@showzeng](https://github.com/showzeng)
 
 - Ahmed Zetao Yang [@zetaoyang](https://github.com/zetaoyang)
-
-- JasonThink [@JasonThink](https://github.com/jasonim)
