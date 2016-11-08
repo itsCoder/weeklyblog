@@ -100,10 +100,10 @@ protected void onCreate(Bundle savedInstanceState) {
 ```
 这里有四个方法：
 
-- StatusBarUtil.setImmersiveStatusBar(this);
-- StatusBarUtil.setStatusBarDarkIcon(this);
-- StatusBarUtil.addColorStatusView(this, R.color.very_dark_grayish_blue_26);
-- StatusBarUtil.addTranslucentView(this, 0);
+- StatusBarUtil.setImmersiveStatusBar(this);  // 添加全屏/透明状态栏的 Flag
+- StatusBarUtil.setStatusBarDarkIcon(this); // 设置状态栏 Icon 为黑色
+- StatusBarUtil.addColorStatusView(this, R.color.very_dark_grayish_blue_26); // 添加一个带颜色的矩形块
+- StatusBarUtil.addTranslucentView(this, 0); // 添加一个透明状态栏
 
 主要是这里的逻辑需要说明
 
