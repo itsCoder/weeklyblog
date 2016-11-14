@@ -18,34 +18,34 @@ tags: [Android, Bezier, animation]
 
 ## 一介贝塞尔曲线（直线）
 方程：
-[bezier1](http://a.hiphotos.baidu.com/baike/s%3D325/sign=391820be267f9e2f74351b0a2a31e962/91529822720e0cf34f59dca30b46f21fbe09aa38.jpg)
+![bezier1](http://a.hiphotos.baidu.com/baike/s%3D325/sign=391820be267f9e2f74351b0a2a31e962/91529822720e0cf34f59dca30b46f21fbe09aa38.jpg)
 
 曲线：
-[bezier1_line](http://ww1.sinaimg.cn/mw690/005X6W83jw1f9rzdypx1vg306o02s74z.gif)
+![bezier1_line](http://ww1.sinaimg.cn/mw690/005X6W83jw1f9rzdypx1vg306o02s74z.gif)
 
 一介贝塞尔曲线就是一条直线，确定两个点，得到一条直线。Android 中对应的方法为`lineTo(float x, float y)`
 
 ## 二介贝塞尔曲线
 方程：
-[bezier2](http://c.hiphotos.baidu.com/baike/s%3D317/sign=9aefef4b08f79052eb1f413f3bf2d738/11385343fbf2b21129581916cb8065380cd78e70.jpg)
+![bezier2](http://c.hiphotos.baidu.com/baike/s%3D317/sign=9aefef4b08f79052eb1f413f3bf2d738/11385343fbf2b21129581916cb8065380cd78e70.jpg)
 
 曲线：
-[bezier2_line](http://ww3.sinaimg.cn/mw690/005X6W83jw1f9rzdz67fgg306o02sgnc.gif)
+![bezier2_line](http://ww3.sinaimg.cn/mw690/005X6W83jw1f9rzdz67fgg306o02sgnc.gif)
 
 二介贝塞尔曲线需要一对起始点以及一个控制点，如图控制点 p1 控制着曲线的拉伸程度。对应于 Android 中方法`quadTo(float x1, float y1, float x2, float y2)`
 
 ## 三介贝塞尔曲线
 方程：
-[bezier3](http://e.hiphotos.baidu.com/baike/s%3D421/sign=9a6521eab8014a90853e47bf98763971/f603918fa0ec08fad54f8dff58ee3d6d55fbda1f.jpg)
+![bezier3](http://e.hiphotos.baidu.com/baike/s%3D421/sign=9a6521eab8014a90853e47bf98763971/f603918fa0ec08fad54f8dff58ee3d6d55fbda1f.jpg)
 
 曲线：
-[bezier3_line](http://ww2.sinaimg.cn/mw690/005X6W83jw1f9rzdzqbqlg306o02s76z.gif)
+![bezier3_line](http://ww2.sinaimg.cn/mw690/005X6W83jw1f9rzdzqbqlg306o02s76z.gif)
 
 三介贝塞尔曲线需要一对起始点以及两个额外的控制点，控制点 p1,p2 控制着曲线的弯曲程度以及弯曲方向。对应于 Android 中方法`cubicTo(float x1, float y1, float x2, float y2,float x3, float y3)`
 
 ## 任意介贝塞尔曲线
 方程：
-[bezierx](http://f.hiphotos.baidu.com/baike/s%3D801/sign=a9e1f30835a85edffe8cf323785509d8/f9dcd100baa1cd11675be878b812c8fcc2ce2dfc.jpg)
+![bezierx](http://f.hiphotos.baidu.com/baike/s%3D801/sign=a9e1f30835a85edffe8cf323785509d8/f9dcd100baa1cd11675be878b812c8fcc2ce2dfc.jpg)
 
 高阶实际用的不多，可以通过多次低阶来实现。
 
