@@ -909,11 +909,11 @@ public final class OnSubscribeLift<T, R> implements OnSubscribe<R> {
 3. 下游的 OnSubscribe 先调用 Operator 拿到针对上游的 Subscriber，然后就可以调用上游OnSubscribe.call() 方法了。
    **流程图（代码分解）：**
 
-   ![map](image\map.png)
+   ![map](https://github.com/yongyu0102/WeeklyBlogImages/blob/master/phase6/map.png?raw=true)
 
    **当 Subscribe 订阅时代码执行流程：**
 
-    ![map2](image\map2.png)
+    ![map2](https://github.com/yongyu0102/WeeklyBlogImages/blob/master/phase6/map2.png?raw=true)
 
 ## 2.5 Observable.flatMap(Func1<? super T, ? extends Observable<? extends R>> func)
 
