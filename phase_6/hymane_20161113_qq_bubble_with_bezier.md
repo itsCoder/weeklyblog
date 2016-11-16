@@ -55,6 +55,135 @@ tags: [Android, Bezier, animation]
 
 # 计算连接线算法
 算法产考了一篇博客，原文网址找不到了，找了一个内容一样的博客，应该也是原作者博客，在此先贴出[博客地址](http://blog.csdn.net/xieyupeng520/article/details/50374561)，根据博客介绍，总结出几个重要控制点的计算公式，如下图（凑合着看，呵呵）
+![source](http://ww3.sinaimg.cn/mw690/005X6W83jw1f9u8et0kh4j30sg0lcgn2.jpg)
 
 ![no diao use](http://ww3.sinaimg.cn/mw690/005X6W83jw1f9s1bl264yj30eo0ag40d.jpg)
+
+其中两条拉伸的曲线 p12、p34,和两个圆，分别是跟随手指一动的圆或椭圆(显示消息数目的 view)，和原始位置处的随着拖拽距离加大圆半径越来越小的圆。
+
+# 实现思路
+1. 开始显示消息数目的 view，可以是一个带背景的 TextView
+2. 手指触摸该 view 时记录状态
+3. 手指拖着 view 滑动时，计算触摸点和原始点距离，是否大于临界距离
+    - 大于最大值：断裂链接曲线，并停止绘制
+    - 不大于：计算2对顶点以及对应的控制点坐标
+4. 使用计算好的坐标等，重绘 view，包括曲线和原始点的圆，其中原始点的圆半径根据拖拽距离进行动态计算
+5. 重复3,4步
+
+# 代码
+```java
+    @Override
+    protected void onDraw(Canvas canvas) {
+        //计算曲线路径，可能距离超过，曲线已经断裂
+        calculatePath();
+        if (isTouch && !isBroken) {
+            //绘制曲线path
+            canvas.drawPath(mPath, mPaint);
+            canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.OVERLAY);
+            canvas.drawCircle(mStartX, mStartY, mDotRadius, mPaint);
+//触摸点的圆            canvas.drawCircle(mTextView.getX() + mTextView.getWidth() / 2, mTextView.getY() + mTextView.getHeight() / 2, mDefaultDotRadius, mPaint);
+        } else {
+            //曲线断裂，清楚曲线
+            canvas.drawCircle(mStartX, mStartY, 0, mPaint);
+            canvas.drawCircle(mTouchX, mTouchY, 0, mPaint);
+            canvas.drawLine(0, 0, 0, 0, mPaint);
+            canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.OVERLAY);
+        }
+        super.onDraw(canvas);
+    }
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        mTouchX = (int) event.getX();
+        mTouchY = (int) event.getY();
+        Log.d("mTouchX=", mTouchX + "");
+        Log.d("mTouchY=", mTouchY + "");
+        switch (event.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+                isBroken = false;
+                mDotRadius = mDefaultDotRadius;
+                break;
+            case MotionEvent.ACTION_UP:
+            case MotionEvent.ACTION_CANCEL:
+                //清楚消息动画或者返回远处反弹动画
+                isTouch = false;
+                if (isBroken) {
+                    disappearAnim();
+                } else {
+                    returnBackAnim(mTextView.getX(), mTextView.getY());
+                }
+                break;
+            case MotionEvent.ACTION_MOVE:
+                if (Math.abs(mTouchX - mStartX) < TOUCH_SLOP && Math.abs(mTouchY - mStartY) < TOUCH_SLOP) {
+                    isTouch = false;
+                } else {
+                    mTextView.setX(mTouchX - mTextView.getWidth() / 2);
+                    mTextView.setY(mTouchY - mTextView.getHeight() / 2);
+                    isTouch = true;
+                }
+                break;
+        }
+        invalidateView();
+        return true;
+    }
+    //重绘视图
+    public void invalidateView() {
+        if (Looper.myLooper() == Looper.getMainLooper()) {
+            invalidate();
+        } else {
+            postInvalidate();
+        }
+    }
+    //计算绘制区域的 path 路径
+    private void calculatePath() {
+        int dragLen = (int) Math.sqrt(Math.pow(mTouchX - mStartX, 2) + Math.pow(mStartY - mTouchY, 2));
+        if (dragLen > mMaxDragLen) {
+            isBroken = true;
+        } else {
+            //未达到最大断裂距离，计算path: 四个顶点p1,p2,p3,p4 => 控制点 anchor1,anchor2
+            //得到绘制贝塞尔曲线需要的四个点
+            mDotRadius = Math.max(mDefaultDotRadius * (1.0f - dragLen / mMaxDragLen), 12);
+
+            float r = (float) Math.asin((mDefaultDotRadius - mDotRadius) / dragLen);
+            float a = (float) Math.atan((mStartY - mTouchY) / (mTouchX - mStartX));
+
+            float offset1X = (float) Math.cos(Math.PI / 2 - r - a);
+            float offset1Y = (float) Math.sin(Math.PI / 2 - r - a);
+
+            float offset2X = (float) Math.cos(Math.PI / 2 + r - a);
+            float offset2Y = (float) Math.sin(Math.PI / 2 + r - a);
+
+            //第一条曲线
+            float x1 = mStartX - offset1X * mDotRadius;
+            float y1 = mStartY - offset1Y * mDotRadius;
+
+            float x2 = mTouchX - offset1X * mDefaultDotRadius;
+            float y2 = mTouchY - offset1Y * mDefaultDotRadius;
+
+            //第二条曲线
+            float x3 = mStartX + offset2X * mDotRadius;
+            float y3 = mStartY + offset2Y * mDotRadius;
+
+            float x4 = mTouchX + offset2X * mDefaultDotRadius;
+            float y4 = mTouchY + offset2Y * mDefaultDotRadius;
+
+            //控制点1,2
+            float mAnchor1X = (x1 + x4) / 2;
+            float mAnchor1Y = (y1 + y4) / 2;
+            float mAnchor2X = (x2 + x3) / 2;
+            float mAnchor2Y = (y2 + y3) / 2;
+
+
+            mPath.reset();
+            mPath.moveTo(x1, y1);
+            mPath.quadTo(mAnchor1X, mAnchor1Y, x2, y2);
+            mPath.lineTo(x4, y4);
+            mPath.quadTo(mAnchor2X, mAnchor2Y, x3, y3);
+            mPath.lineTo(x1, y1);
+        }
+    }
+```
+
+# 总结
+动画可以给交互带来很大的好处，提高用户体验，之前在使用 QQ 气泡功能时候也感到此功能很神奇，查阅一些质料后发现，实现出来也不是很难，主要是点坐标的计算问题，这也牵扯到数学知识，还有有学霸提供了公式，方便了功能的实现。通过这个实例，也不难发现学好数学是很有必要的。最后贴上项目地址[BezierAnimation](https://github.com/hymanme/BezierAnimation)。
+
 
