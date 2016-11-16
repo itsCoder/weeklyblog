@@ -8,7 +8,7 @@ tags: [Android, Bezier, animation]
 # 前言
 什么是“一键下班”？
 
-![qq bubble](http://ww2.sinaimg.cn/mw690/005X6W83jw1f9qtzfqtj2j30ge07x0sw.jpg)
+![QQbubble](http://ww2.sinaimg.cn/mw690/005X6W83jw1f9qtzfqtj2j30ge07x0sw.jpg)
 
 就是这个 QQ 消息气泡清除效果, QQ 气泡拖拽会产生粘性效果，拖拽到一定长度之后，连线断裂，气泡随之消失。大家都知道这用到了贝塞尔曲线，用来画链接线部分，ok，来学习一下贝塞尔曲线吧。
 
