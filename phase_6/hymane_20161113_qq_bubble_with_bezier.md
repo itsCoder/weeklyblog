@@ -183,6 +183,9 @@ tags: [Android, Bezier, animation]
     }
 ```
 
+效果图：
+![example](http://ww1.sinaimg.cn/mw690/005X6W83jw1f9u8phvgxyj307i0dc0sv.jpg)
+
 # 总结
 动画可以给交互带来很大的好处，提高用户体验，之前在使用 QQ 气泡功能时候也感到此功能很神奇，查阅一些质料后发现，实现出来也不是很难，主要是点坐标的计算问题，这也牵扯到数学知识，还有有学霸提供了公式，方便了功能的实现。通过这个实例，也不难发现学好数学是很有必要的。最后贴上项目地址[BezierAnimation](https://github.com/hymanme/BezierAnimation)。
 
