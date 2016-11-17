@@ -14,7 +14,7 @@ tags: [Android, Bezier, animation]
 
 # 贝塞尔曲线
 如果想用计算机来画一条直线，很简单，只要确定两个点，起点和终点就可以了，但是如果想要让计算机画一条曲线，那计算机该如何做呢？咳咳，肯定是通过数学公式来呗，
-1962年，法国数学家Pierre Bézier第一个研究了这种矢量绘制曲线的方法，并给出了详细的计算公式，因此按照这样的公式绘制出来的曲线就用他的姓氏来命名是为贝塞尔曲线。那么可以说贝塞尔曲线就是通过某种公式绘制出的一条光滑曲线
+1962年，法国数学家 Pierre Bézier 第一个研究了这种矢量绘制曲线的方法，并给出了详细的计算公式，因此按照这样的公式绘制出来的曲线就用他的姓氏来命名的，叫做贝塞尔曲线。那么可以说贝塞尔曲线就是通过某种公式绘制出的一条光滑曲线
 
 ## 一介贝塞尔曲线（直线）
 方程：
@@ -54,7 +54,7 @@ tags: [Android, Bezier, animation]
 详见[QQ手机版 5.0“一键下班”设计小结](http://isux.tencent.com/qq-mobile-off-duty.html)
 
 # 计算连接线算法
-算法产考了一篇博客，原文网址找不到了，找了一个内容一样的博客，应该也是原作者博客，在此先贴出[博客地址](http://blog.csdn.net/xieyupeng520/article/details/50374561)，根据博客介绍，总结出几个重要控制点的计算公式，如下图（凑合着看，呵呵）
+算法参考了一篇博客，原文网址找不到了，找了一个内容一样的博客，应该也是原作者博客，在此先贴出[博客地址](http://blog.csdn.net/xieyupeng520/article/details/50374561)，根据博客介绍，总结出几个重要控制点的计算公式，如下图（凑合着看，呵呵）
 ![source](http://ww3.sinaimg.cn/mw690/005X6W83jw1f9u8et0kh4j30sg0lcgn2.jpg)
 
 ![no diao use](http://ww3.sinaimg.cn/mw690/005X6W83jw1f9s1bl264yj30eo0ag40d.jpg)
@@ -187,6 +187,6 @@ tags: [Android, Bezier, animation]
 ![example](http://ww1.sinaimg.cn/mw690/005X6W83jw1f9u8phvgxyj307i0dc0sv.jpg)
 
 # 总结
-动画可以给交互带来很大的好处，提高用户体验，之前在使用 QQ 气泡功能时候也感到此功能很神奇，查阅一些质料后发现，实现出来也不是很难，主要是点坐标的计算问题，这也牵扯到数学知识，还有有学霸提供了公式，方便了功能的实现。通过这个实例，也不难发现学好数学是很有必要的。最后贴上项目地址[BezierAnimation](https://github.com/hymanme/BezierAnimation)。
+动画可以给交互带来很大的好处，提高用户体验，之前在使用 QQ 气泡功能时候也感到此功能很神奇，查阅一些资料后发现，实现出来也不是很难，主要是点坐标的计算问题，这也牵扯到数学知识，还有有学霸提供了公式，方便了功能的实现。通过这个实例，也不难发现学好数学是很有必要的。最后贴上项目地址[BezierAnimation](https://github.com/hymanme/BezierAnimation)。
 
 
