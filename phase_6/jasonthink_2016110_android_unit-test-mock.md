@@ -59,7 +59,7 @@ verify(mock, times(10)).someMethod();
 verify(mock, atLeastOnce()).someMethod();
 ```
 
-这就是mock的第误区一：
+这就是mock的误区一：
 **Mockito.mock()并不是mock一整个类，而是根据传进去的一个类，mock出属于这个类的一个对象，并且返回这个mock对象；而传进去的这个类本身并没有改变，用这个类new出来的对象也没有受到任何改变！**
 
 结合上面的例子，Mockito.mock(ArrayList.class);只是返回了一个属于ArrayList这个类的一个mock对象。ArrayList这个类本身没有受到任何影响，而 list 不是一个mock对象。Mockito.verify()的参数必须是mock对象，也就是说，Mockito只能验证mock对象的方法调用情况。因此，上面那种写法就出错了。
@@ -78,7 +78,7 @@ public class LoginPresenter {
     }
 }
 ```
-上面是一个登录操作， 现在我们来验证 login() 函数， 因为它没有返回值，这时候我们只要验证 execute() 有没有执行进行了。
+上面是一个登录操作， 现在我们来验证 login() 函数， 因为它没有返回值，这时候我们只要验证 execute() 有没有执行就可以了。
 
 ```java
     @Test
@@ -91,7 +91,7 @@ public class LoginPresenter {
         verify(mockLoginTask).excute();
     }
 ```
-由于 UserLoginTask 继承 AsyncTask， 所有会报错 误区一中的问题（not  mock），这时候我们需要用到 Robolectric 框架，这个可以参考我**[以前写的](http://hujiandong.com/2016/05/20/android-unit-test/)**。解决这个问题以后你会发现，fuck，怎么还有问题， 什么鬼。。
+由于 UserLoginTask 继承 AsyncTask， 所以会报错，同误区一中的问题一样（not  mock），这时候我们需要用到 Robolectric 框架，这个可以参考我**[以前写的](http://hujiandong.com/2016/05/20/android-unit-test/)**。解决这个问题以后你会发现，fuck，怎么还有问题， 什么鬼。。
 
 ![](http://7xnilf.com1.z0.glb.clouddn.com/mock_wanted.png)
 
