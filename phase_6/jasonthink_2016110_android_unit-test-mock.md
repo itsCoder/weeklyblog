@@ -1,6 +1,12 @@
+
 title: Android 单元测试-Mockito
 Date: 2016-11-08 06:30:16
 ---
++>- 文章来源：itsCoder 的 [WeeklyBolg](https://github.com/itsCoder/weeklyblog) 项目
++>- itsCoder主页：[http://itscoder.com/](http://itscoder.com/)
++>- 作者：[JasonThink](http://hujiandong.com)
++>- 审阅者：[@Melo](https://github.com/itsMelo)
+
 
 以前我在**[内功之自动化测试](http://hujiandong.com/2016/04/10/how_code_auto_test/)**中说到测试在项目中的重要性。单元测试是一个个「点」（细胞）的重构，是重构的基石，今天我们说单元测试中如何使用 **[Mock](https://en.wikipedia.org/wiki/Mock_object)** 及 **[Mockito](http://mockito.org/)** 的。
 ## Mock 概念
