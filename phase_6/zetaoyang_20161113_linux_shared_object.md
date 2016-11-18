@@ -8,7 +8,7 @@ Windows： `.lib` 和 `.dll`(Dynamic-link library)
 ### 先编写一个库试试  
 首先用 Clion 新建一个项目 "hello"，main.cpp 的内容为：  
 
-```
+```c++
 #include <iostream>
 using namespace std;
 
@@ -22,7 +22,7 @@ int add(int a,int b)
 }
 ```
 
-CMakeLists.txt 的内容：  
+CMakeLists.txt (学名：组态档)的内容：  
 ```
 cmake_minimum_required(VERSION 3.6)
 project(hello)
@@ -80,7 +80,7 @@ add_library(hell ${SOURCE_FILES})
 
 ### 动态库显式调用(运行时装入)  
 新建一个项目 "openso"，以下是`main.cpp`的内容：  
-```
+```c++
 #include <iostream>
 #include "dlfcn.h"//显式调用的头文件
 
@@ -152,9 +152,25 @@ target_link_libraries(openso ${CMAKE_DL_LIBS})
 ```
 编译，也可以在项目的根目录下执行`g++ -o main main.cpp -ldl`。
 
+程序运行结果如下：  
+
+```
+C++ dlopen
+Opening libhello.so...
+Loading symbol hi...
+Calling hi()...
+Hello,nihao
+Loading symbol add...
+Calling the add()...
+5 is the result
+Closing library...
+```
+
+
+
 ### 动态库隐式调用(编译时装入)  
 新建一个项目 "hideso"，以下是`main.cpp`的内容：  
-```
+```c++
 #include <iostream>
 using namespace std;
 
@@ -193,8 +209,11 @@ export LD_LIBRARY_PATH=.
 ./main
 ```
 还可直接用`ldd`命令查看其所隐式调用的库。  
-对于C语言编译的库，C++ 调用时需要这样做(保证C/C++ 兼容性，注意`cplusplus`前面是两个'_')：    
-```
+
+
+对于 C 语言编译的库，C++ 调用时需要这么做(保证C/C++ 兼容性，注意`cplusplus`前面是两个'_')：    
+
+```c++
 #include <iostream>
 using namespace std;
 
@@ -202,8 +221,8 @@ using namespace std;
 extern "C"
 {
 #endif
-void hi();
-int add(int,int);
+	void hi();
+	int add(int,int);
 #ifdef __cplusplus
 }
 #endif
@@ -216,9 +235,80 @@ int main(int argc,char *argv[])
     return 0;
 }
 ```
-当然了，C++ 编写的库，C 是无法调用的。
+当然了，C++ 编写的库，C 是无法直接调用的。那如果 C 想调用 C++的库， 应该怎么做呢？请接着往下看。
+
+### C 调用 C++ 库
+
+C 调用 C++ 的库，一般不能直接调用，需要将 C++ 库转换成 C 接口(也就是要用`extern "C"`)输出，才可以用 C 来调用，这里举个例子(比如 C++ 中的“类”)：  
+
+```c++
+#include <iostream>
+
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+    int here();
+#ifdef __cplusplus
+}
+#endif
+
+using namespace std;
+
+class Hi {
+    public:
+    int hello() {
+        cout << "here() is called" << endl;
+    }
+};
+
+int here() {
+    Hi hh;
+    hh.hello();
+    return 0;
+}
+
+```
+
+CMakeLists.txt 内容不再赘述。  
+
+接下来只简单说一下它的显示调用：  
+
+```c
+#include <stdio.h>
+#include <dlfcn.h>
+
+int main()
+{
+    int (*dlfunc)();
+    void *handle;  //定义一个句柄
+    handle = dlopen("./libcppso.so", RTLD_LAZY);//获得库句柄
+    dlfunc = dlsym(handle, "here"); //获得函数入口
+    (*dlfunc)();
+    dlclose(handle); 
+
+    return 0;
+}
+```
+
+运行输出如下：  
+
+```
+here() is called
+```
+
+
 
 ### CMake 相关:       
 > [CMake Wiki](https://cmake.org/Wiki/CMake)  
 > [CMake 常用命令和变量](http://elloop.github.io/tools/2016-04-10/learning-cmake-2-commands)  
-> [CMake使用进阶](http://linghutf.github.io/2016/06/16/cmake/)  
+> [CMake使用进阶](http://linghutf.github.io/2016/06/16/cmake/)    
+> [CMake 简要教程--相关工具对比](http://reyoung.me/post/cmake_talk_1/)    
+
+### Make 相关
+
+Makefile + make 为 Unix-like 环境下的项目管理工具(抽象程度低)。对于如何使用 Makefile 编译动态库和静态库，可参考这篇文章：[linux编译动态库和静态库的makefile示例](http://blog.csdn.net/shaoxiaohu1/article/details/46943417) 。需要说明一点：**cmake 也是根据 CMakeLists.txt 文件去生成 Makefile 的** (可以跨平台生成对应平台能用的 Makefile) 。而且 cmake 是抽象层次更高的项目管理工具。当你需要编译一个大项目，而大项目各文件的依赖关系复杂，Makefile 并不好写，这时使用 cmake 则很方便。
+
+### 链接、装载与库相关
+
+可以看看《程序员的自我修养——链接、装载与库》这本书。
