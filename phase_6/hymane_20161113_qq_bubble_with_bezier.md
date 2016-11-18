@@ -24,6 +24,7 @@ tags: [Android, Bezier, animation]
 ![bezier1_line](http://ww1.sinaimg.cn/mw690/005X6W83jw1f9rzdypx1vg306o02s74z.gif)
 
 一介贝塞尔曲线就是一条直线，确定两个点，得到一条直线。Android 中对应的方法为`lineTo(float x, float y)`
+x:终点 x 坐标，y:终点 y 坐标
 
 ## 二介贝塞尔曲线
 方程：
@@ -32,7 +33,8 @@ tags: [Android, Bezier, animation]
 曲线：
 ![bezier2_line](http://ww3.sinaimg.cn/mw690/005X6W83jw1f9rzdz67fgg306o02sgnc.gif)
 
-二介贝塞尔曲线需要一对起始点以及一个控制点，如图控制点 p1 控制着曲线的拉伸程度。对应于 Android 中方法`quadTo(float x1, float y1, float x2, float y2)`
+二介贝塞尔曲线需要一对起点和终点以及一个控制点，如图控制点 p1 控制着曲线的拉伸程度。对应于 Android 中方法`quadTo(float x1, float y1, float x2, float y2)`
+x1,y1:控制点 x,y 坐标，x2,y2:终点 x,y 坐标。
 
 ## 三介贝塞尔曲线
 方程：
@@ -41,7 +43,8 @@ tags: [Android, Bezier, animation]
 曲线：
 ![bezier3_line](http://ww2.sinaimg.cn/mw690/005X6W83jw1f9rzdzqbqlg306o02s76z.gif)
 
-三介贝塞尔曲线需要一对起始点以及两个额外的控制点，控制点 p1,p2 控制着曲线的弯曲程度以及弯曲方向。对应于 Android 中方法`cubicTo(float x1, float y1, float x2, float y2,float x3, float y3)`
+三介贝塞尔曲线需要一对起点和终点以及两个额外的控制点，控制点 p1,p2 控制着曲线的弯曲程度以及弯曲方向。对应于 Android 中方法`cubicTo(float x1, float y1, float x2, float y2,float x3, float y3)`
+x1,y1:控制点1 x,y 坐标，x2,y2:控制点2 x,y 坐标，x3,y3:终点 x,y 坐标。
 
 ## 任意介贝塞尔曲线
 方程：
@@ -104,7 +107,7 @@ tags: [Android, Bezier, animation]
                 break;
             case MotionEvent.ACTION_UP:
             case MotionEvent.ACTION_CANCEL:
-                //清楚消息动画或者返回远处反弹动画
+                //清除消息动画或者返回远处反弹动画
                 isTouch = false;
                 if (isBroken) {
                     disappearAnim();
@@ -134,50 +137,63 @@ tags: [Android, Bezier, animation]
         }
     }
     //计算绘制区域的 path 路径
+    //每次手指按住气泡在屏幕上滑动都计算一下 path，来确定状态
     private void calculatePath() {
+        //气泡拖拽的距离
         int dragLen = (int) Math.sqrt(Math.pow(mTouchX - mStartX, 2) + Math.pow(mStartY - mTouchY, 2));
         if (dragLen > mMaxDragLen) {
+            //如果大于最大拖拽距离，则改变状态为 isBroken：断裂
             isBroken = true;
         } else {
             //未达到最大断裂距离，计算path: 四个顶点p1,p2,p3,p4 => 控制点 anchor1,anchor2
-            //得到绘制贝塞尔曲线需要的四个点
+            //初始位置点圆半径，根据气泡拖拽偏离距离改变原始气泡的大小，即越网远处滑动，初始的圆就越小
             mDotRadius = Math.max(mDefaultDotRadius * (1.0f - dragLen / mMaxDragLen), 12);
 
+            //伽马角和阿尔法角度
             float r = (float) Math.asin((mDefaultDotRadius - mDotRadius) / dragLen);
             float a = (float) Math.atan((mStartY - mTouchY) / (mTouchX - mStartX));
 
+            //几个偏移量，中间数据用来确定4个顶点坐标
             float offset1X = (float) Math.cos(Math.PI / 2 - r - a);
             float offset1Y = (float) Math.sin(Math.PI / 2 - r - a);
 
             float offset2X = (float) Math.cos(Math.PI / 2 + r - a);
             float offset2Y = (float) Math.sin(Math.PI / 2 + r - a);
 
-            //第一条曲线
+
+            //得到绘制贝塞尔曲线需要的四个点，p1,p2,p3,p4
+            //第一条曲线:p1~~~p2
             float x1 = mStartX - offset1X * mDotRadius;
             float y1 = mStartY - offset1Y * mDotRadius;
 
             float x2 = mTouchX - offset1X * mDefaultDotRadius;
             float y2 = mTouchY - offset1Y * mDefaultDotRadius;
 
-            //第二条曲线
+            //第二条曲线:p3~~~p4
             float x3 = mStartX + offset2X * mDotRadius;
             float y3 = mStartY + offset2Y * mDotRadius;
 
             float x4 = mTouchX + offset2X * mDefaultDotRadius;
             float y4 = mTouchY + offset2Y * mDefaultDotRadius;
 
-            //控制点1,2
+            //两个控制点,anchor1：p1,p4点的重心,anchor2：p2,p3点的重心,
             float mAnchor1X = (x1 + x4) / 2;
             float mAnchor1Y = (y1 + y4) / 2;
+
             float mAnchor2X = (x2 + x3) / 2;
             float mAnchor2Y = (y2 + y3) / 2;
 
-
+            //重置路径
             mPath.reset();
+            //路径移动到起点，p1
             mPath.moveTo(x1, y1);
+            //画曲线p1~~~p2,二介贝塞尔，参数一个控制点，一个重点
             mPath.quadTo(mAnchor1X, mAnchor1Y, x2, y2);
+            //此时路径已经到p2点了，画直线p2---p4
             mPath.lineTo(x4, y4);
+            //画曲线p4~~~p3
             mPath.quadTo(mAnchor2X, mAnchor2Y, x3, y3);
+            //封闭曲线，画直线p3---p1，到此画了一个沙漏的形状，接下来只要画两头的圆就可以了
             mPath.lineTo(x1, y1);
         }
     }
@@ -187,6 +203,6 @@ tags: [Android, Bezier, animation]
 ![example](http://ww1.sinaimg.cn/mw690/005X6W83jw1f9u8phvgxyj307i0dc0sv.jpg)
 
 # 总结
-动画可以给交互带来很大的好处，提高用户体验，之前在使用 QQ 气泡功能时候也感到此功能很神奇，查阅一些资料后发现，实现出来也不是很难，主要是点坐标的计算问题，这也牵扯到数学知识，还有有学霸提供了公式，方便了功能的实现。通过这个实例，也不难发现学好数学是很有必要的。最后贴上项目地址[BezierAnimation](https://github.com/hymanme/BezierAnimation)。
+动画可以给交互带来很大的好处，提高用户体验，之前在使用 QQ 气泡功能时候也感到此功能很神奇，查阅一些资料后发现，实现出来也不是很难，主要是点坐标的计算问题，这也牵扯到数学知识，还好有学霸提供了公式，方便了功能的实现。通过这个实例，也不难发现学好数学是很有必要的。最后贴上项目地址[BezierAnimation](https://github.com/hymanme/BezierAnimation)。
 
 
