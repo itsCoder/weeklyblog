@@ -215,7 +215,7 @@ public interface Cache<K, V> {
 Cache 接口定义了缓存类型需要实现的最小接口，依赖缓存类的对象只需要知道该接口即可。例如，需要将 Http Response 缓存到内存中，并且按照 LRU 的规则进行存储。我们需要 LruCache 类实现这个功能。代码如下：
 
 ```
-// 讲请求结果缓存到内存中
+// 将请求结果缓存到内存中
 public class LruMemCache implements Cache<String, Response> {
 
     /**
@@ -229,13 +229,13 @@ public class LruMemCache implements Cache<String, Response> {
 
     public LruMemCache() {
         //计算可使用的最大内存
-        final intmaxMemory=(int) (Runtime.getRuntime().maxMemory() / 1024);
+        final int maxMemory=(int) (Runtime.getRuntime().maxMemory() / 1024);
 
         //取八分之一的可用最大内存为缓存
-        final intCacheSize=intmaxMemory / 8;
-        mResponseCache = new LruCache<String, Response>(intCacheSize) {
+        final int CacheSize = int maxMemory / 8;
+        mResponseCache = new LruCache<String, Response>(int CacheSize) {
             @Override
-            protected intSizeOf(String key, Response response) {
+            protected int SizeOf(String key, Response response) {
                 return response.rawData.length / 1024;
             }
         };
