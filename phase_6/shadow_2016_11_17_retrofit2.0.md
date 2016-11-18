@@ -16,7 +16,7 @@ author: shaDowZwy
 我就开始从自己的应用场景说起吧。
 
 
-### **Retrofit 2.0 接入**
+### **`Retrofit 2.0` 接入**
 首先，我们应该是添加依赖，这应该大家都很熟悉吧，我就添加了我项目中需要用的依赖。
 
 ```java
@@ -26,7 +26,7 @@ author: shaDowZwy
 ```
 添加了这三个依赖我们就可以正常的耍起来了，当然如果你要用`rxJava`别忘了添加相关依赖，这里我就不说了。
 
-#### 1.先把RetrofitClient搞起来
+#### **1.先把`RetrofitClient`搞起来**
 我们要先知道`Retrofit`其实一个对`okhttp`的一个封装，它是基于`okhttp`的，所以`okhttp`的有些特性也可以使用。不多说，我们先把`Retrofit`封装起来使用。
 
 
@@ -84,10 +84,10 @@ Call<ResponseBody> getUser(@Header("header1") String header)
     }
 ```
 
-`baseUrl()`是你的基础网络请求接口，例如是"www.shadow.com/user",那个"baseUrl"就是"www.shadow.com"。`addConverterFactory(GsonConverterFactory.create())`是吧json结果并解析成DAO，也可以添加其他的解析方式，但是必须换其他方式的依赖。
+`baseUrl()`是你的基础网络请求接口，例如是"www.shadow.com/user",那个"baseUrl"就是"www.shadow.com"。`addConverterFactory(GsonConverterFactory.create())`是吧`json`结果并解析成`DAO`，也可以添加其他的解析方式，但是必须换其他方式的依赖。
 
 
-#### 2.定义Retrofit网络接口
+#### **2.定义`Retrofit`网络接口**
 
 首先是一个简单的`Get`请求
 网络接口是这样的”www.shadow.com/xxx/session“
@@ -110,7 +110,6 @@ Call<ResponseBody> getSession();
 Call<ResponseBody> book(@Query("pageIndex") String pageIndex, @Query("pageSize") String pageSize);
 
 ```
-
 
 
 还有`Get`请求 "www.shadow.com/xxxx/bookname" 通过替换`bookname`来请求接口,
@@ -140,7 +139,7 @@ Call<ResponseBody> booklist(@Field("booklist") String booklist);
 Call<ResponseBody> booklist(@Field("booklist") String booklist);
 ```
 
-**其实Retrofit的请求方式很灵活，几乎能满足你想要的各种姿势。**
+**其实`Retrofit`的请求方式很灵活，几乎能满足你想要的各种姿势。**
 
 例如是这样的`Get`请求 
 "www.shadow.com/xxxx/bookname/book?pageIndex=1&pageSize=20"
@@ -170,13 +169,13 @@ Call<ResponseBody> bonusAutoInvest(@Path("bookname") int bookname, @Field("bookl
 按照以上说的，我们已经把网络接口定义好了，那现在需要封装通用网络库。
 上面的代码，可以发现我的网络接口返回的都是`Call<ResponseBody>`，而不是`Observable<T>`
 
-`Call<T>`是Retrofit的一个Call形式的参数回调,T是任意泛型，这个`Call<T>`有一个网络发送请求的方法，是同步的。
+`Call<T>`是`Retrofit`的一个`Callback`形式的参数回调,T是任意泛型，这个`Call<T>`有一个网络发送请求的方法，是同步的。
 
-`ResponseBody`是okhttp的一个请求体，可以封装json。
+`ResponseBody`是`okhttp`的一个请求体，可以封装json。
 
-这样使用，是因为我不想直接获取已经解析好的bean，而是拿到json，更加的灵活判断网络请求的各种状况。
+这样使用，是因为我不想直接获取已经解析好的`bean`，而是拿到`json`，更加的灵活判断网络请求的各种状况。
 
-以下代码是用RxJava封装的网络库
+以下代码是用`RxJava`封装的网络库
 
 ```java
 
@@ -193,7 +192,8 @@ private Observable<String> getResults(Call<ResponseBody> call, int delay) {
                    
                     if (response.isSuccessful()) {  //返回值在200至300之间表示返回成功
                         //根据某种约定的特殊处理 没有返回值
-                        if (!result.startsWith("{") && (!result.startsWith("[")) || code == 204 || result.equals("{}")) {                               subscriber.onNext("ok");
+                        if (!result.startsWith("{") && (!result.startsWith("[")) || code == 204 || result.equals("{}"){ 
+                            subscriber.onNext("ok");
                         } else {    //有返回值
                             subscriber.onNext(result);
                         }
@@ -216,19 +216,20 @@ private Observable<String> getResults(Call<ResponseBody> call, int delay) {
 
 ```
 
-如代码，我可以吧网络接口`Call<ResponseBody>`传参进去，执行网络请求，然后根据返回回来的json，不同的情况做不同的处理，最后用`subscriber`回调正确或者错误的结果。正确的json可以解析成我们需要的bean，错误的json可以根据不同的状况作出不同的错误处理，这样一来比较灵活和解耦，能处理各种不同的网络请求的需求。
+如代码，我可以把网络接口`Call<ResponseBody>`传参进去，执行网络请求，然后根据返回的json，不同的情况做不同的处理，最后用`subscriber`回调正确或者错误的结果。正确的json可以解析成我们需要的bean，错误的json可以根据不同的状况作出不同的错误处理，这样一来比较灵活和解耦，能处理各种不同的网络请求的需求。
 
-**最外层的就是普通的Rxjava调用了，这里就不描述了。**
-
-
-最后，这就是我使用的Retrofit 2.0网络库的封装和各种应用场景，给我的感觉就是Retrofit非常的简洁和高效。
+**最外层的就是普通的`Rxjava`调用了，这里就不描述了。**
 
 
+最后，这就是我使用的`Retrofit 2.0`网络库的封装和各种应用场景，给我的感觉就是`Retrofit`非常的简洁和高效。
 
 
 
 
-### 最后
+
+### **最后** 
+
+
 
 这是一个简洁实用的网络封装，记录一下思路。
 
