@@ -4,11 +4,11 @@ Date: 2016-11-08 06:30:16
 
 以前我在**[内功之自动化测试](http://hujiandong.com/2016/04/10/how_code_auto_test/)**中说到测试在项目中的重要性。单元测试是一个个「点」（细胞）的重构，是重构的基石，今天我们说单元测试中如何使用 **[Mock](https://en.wikipedia.org/wiki/Mock_object)** 及 **[Mockito](http://mockito.org/)** 的。
 ## Mock 概念
-所谓的mock就是创建一个类的虚假的对象，在测试环境中，用来替换掉真实的对象，主要提供两大功能：
+所谓的 Mock 就是创建一个类的虚假的对象，在测试环境中，用来替换掉真实的对象，主要提供两大功能：
 + 验证这个对象的某些方法的调用情况，调用了多少次，参数是什么等等
 + 指定这个对象的某些方法的行为，返回特定的值，或者是执行特定的动作
 
-要使用Mock，一般需要用到mock框架，这篇文章我们使用 Mockito 这个框架，这个是Java界使用最广泛的一个mock框架。
+要使用 Mock，一般需要用到 Mock 框架，这篇文章我们使用 Mockito 这个框架，这个是Java界使用最广泛的一个mock框架。
 ## 在 Gradle 添加 Mockito 依赖
 ```
 repositories { jcenter() }
@@ -123,11 +123,20 @@ LoginPresenter loginPresenter = new LoginPresenter(mockLonginTask); //==>
 Mockito.verify(objectToVerify).methodToVerify(arguments);
 其中 objectToVerify 和 methodToVerify 对应上面的 mockedList 和 add，表示验证 mockedList 的 add 方法是否传入参数是 one。
 
-很多时候你并不关心被调用方法的参数具体是什么，或者是你也不知道，你只关心这个方法得到调用了就行。这种情况下，Mockito提供了一系列的any方法，来表示任何的参数都行。
+很多时候你并不关心被调用方法的参数具体是什么，或者是你也不知道，你只关心这个方法得到调用了就行。这种情况下，Mockito 提供了一系列的 any 方法，来表示任何的参数都行。
 
-anyString()表示任何一个字符串都可以。类似anyString，还有anyInt, anyLong, anyDouble等等。anyObject表示任何对象，any(clazz)表示任何属于clazz的对象。
-### 指定mock对象的某些方法的行为
-那么接下来，我们就来介绍mock的第二大作用，先介绍其中的第一点：指定mock对象的某个方法返回特定的值。
+anyString() 表示任何一个字符串都可以。类似 anyString，还有 anyInt, anyLong, anyDouble 等等。anyObject 表示任何对象，any(clazz) 表示任何属于clazz的对象。 举个栗子：
+```java
+    @Test
+	public void testDoGet() throws IOException {
+		Http http = spy(new Http(5000, 5000));
+		URL url = createUrlConnection();
+		http.doGet(url, ContentType.HTML.str);
+		verify(http).createHttpUrlConnection(any(URL.class), any(Http.Method.class), anyString());
+	}
+```
+### 指定 Mock 对象的某些方法的行为
+那么接下来，我们就来介绍 Mock 的第二大作用，先介绍其中的第一点：指定 Mock 对象的某个方法返回特定的值。
 我们见面的 login() 进行修改， 添加对网络的判断， 代码如下：
 
 ```java
@@ -147,8 +156,8 @@ public void login(String email, String password) {
 NetManagerWraper netManagerWraper = mock(NetManagerWraper.class); //==>
 when(netManagerWraper.isConnected()).thenReturn(false); ==>
 ```
-下面我们说说怎么样指定一个方法执行特定的动作，这个功能一般是用在目标的方法是void类型的时候。
-现在假设我们的LoginPresenter的login()方法是这样的：
+下面我们说说怎么样指定一个方法执行特定的动作，这个功能一般是用在目标的方法是 void 类型的时候。
+现在假设我们的 LoginPresenter 的 login() 方法是这样的：
 ```java
 //执行登录操作, 并且处理网络返回
 mAuthTask.execute(email, password, new NetworkCallBack() {
@@ -165,7 +174,7 @@ mAuthTask.execute(email, password, new NetworkCallBack() {
 ```
 
 我们想进一步测试传给 NetworkCallback 里面的代码，验证 view 得到了更新等等。在测试环境下，我们并不想依赖 excute 的真实逻辑，而是让 mAuthTask
-直接调用传入的NetworkCallback的onSuccess或onFailed方法。这种指定mock对象执行特定的动作的写法如下：
+直接调用传入的 NetworkCallback 的 onSuccess 或 onFailed 方法。这种指定 Mock 对象执行特定的动作的写法如下：
 `Mockito.doAnswer(desiredAnswer).when(mockObject).targetMethod(args);
 测试代码如下：
 
@@ -185,12 +194,12 @@ doAnswer(new Answer() {
              }).when(mockLonginTask).execute(anyString(), anyString(), any(NetworkCallBack.class));
 ```
 
-我们想在调用某些无返回值函数的时候抛出异常，那么可以使用doThrow 方法。如果想简单的指定目标方法“什么都不做”，那么可以使用Mockito.doNothing()。如果你想让目标方法调用真实的逻辑，可以使用Mockito.doCallRealMethod()（默认不是的， 请看下文）。
+我们想在调用某些无返回值函数的时候抛出异常，那么可以使用 doThrow 方法。如果想简单的指定目标方法“什么都不做”，那么可以使用 Mockito.doNothing()。如果你想让目标方法调用真实的逻辑，可以使用 Mockito.doCallRealMethod()（默认不是的， 请看下文）。
 
 ## Spy
-如果我们不指定 mock 对象方法的行为， 那么他是不是走真实逻辑呢？ 答案是否定的。如果没我们不指定它的行为，对于mock对象的所有非void方法都将返回默认值int，long类型方法将返回0，boolean方法将返回false，对象方法将返回null等等；而void方法将什么都不做。
+如果我们不指定 Mock 对象方法的行为， 那么他是不是走真实逻辑呢？ 答案是否定的。如果没我们不指定它的行为，对于 Mock 对象的所有非 void 方法都将返回默认值 int，long 类型方法将返回0，boolean 方法将返回 false，对象方法将返回 null 等等；而 void 方法将什么都不做。
 
-然而很多时候，你希望达到这样的效果：除非指定，否者调用这个对象的默认实现，同时又能拥有验证方法调用的功能。这正好是spy对象所能实现的效果。
+然而很多时候，你希望达到这样的效果：除非指定，否者调用这个对象的默认实现，同时又能拥有验证方法调用的功能。这正好是 spy 对象所能实现的效果。
 创建Spy方式：
 + Mockito.spy(toMockObject);
 + 通过注解的方式@Spy
