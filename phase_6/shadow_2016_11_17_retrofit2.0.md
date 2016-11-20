@@ -11,7 +11,7 @@ author: shaDowZwy
 >- 文章来源：itsCoder 的 [WeeklyBolg](https://github.com/itsCoder/weeklyblog) 项目
 >- itsCoder主页：[http://itscoder.com/](http://itscoder.com/)
 >- 作者：[Shadow]( https://github.com/shaDowZwy )
->- 审阅者：
+>- 审阅者：[ZetaoYang](https://github.com/ZetaoYang)
 
 我就开始从自己的应用场景说起吧。
 
@@ -84,7 +84,7 @@ Call<ResponseBody> getUser(@Header("header1") String header)
     }
 ```
 
-`baseUrl()`是你的基础网络请求接口，例如是"www.shadow.com/user",那个"baseUrl"就是"www.shadow.com"。`addConverterFactory(GsonConverterFactory.create())`是吧`json`结果并解析成`DAO`，也可以添加其他的解析方式，但是必须换其他方式的依赖。
+`baseUrl()`是你的基础网络请求接口，例如是 "www.shadow.com/user" ，那个 "baseUrl" 就是 "www.shadow.com"。`addConverterFactory(GsonConverterFactory.create())`是吧`json`结果并解析成`DAO`，也可以添加其他的解析方式，但是必须换其他方式的依赖。
 
 
 #### **2.定义`Retrofit`网络接口**
@@ -216,7 +216,7 @@ private Observable<String> getResults(Call<ResponseBody> call, int delay) {
 
 ```
 
-如代码，我可以把网络接口`Call<ResponseBody>`传参进去，执行网络请求，然后根据返回的json，不同的情况做不同的处理，最后用`subscriber`回调正确或者错误的结果。正确的json可以解析成我们需要的bean，错误的json可以根据不同的状况作出不同的错误处理，这样一来比较灵活和解耦，能处理各种不同的网络请求的需求。
+如代码，我可以把网络接口`Call<ResponseBody>`传参进去，执行网络请求，然后根据返回的`json`，不同的情况做不同的处理，最后用`subscriber`回调正确或者错误的结果。正确的`json`可以解析成我们需要的`bean`，错误的`json`可以根据不同的状况作出不同的错误处理，这样一来比较灵活和解耦，能处理各种不同的网络请求的需求。
 
 **最外层的就是普通的`Rxjava`调用了，这里就不描述了。**
 
