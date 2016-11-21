@@ -18,7 +18,7 @@ tags: [Android, Bezier, animation]
 
 ## 一介贝塞尔曲线（直线）
 方程：
-![bezier1](http://a.hiphotos.baidu.com/baike/s%3D325/sign=391820be267f9e2f74351b0a2a31e962/91529822720e0cf34f59dca30b46f21fbe09aa38.jpg)
+![bezier1](http://ww4.sinaimg.cn/mw690/005X6W83jw1fa019aw3z7j309100iq2s.jpg)
 
 曲线：
 ![bezier1_line](http://ww1.sinaimg.cn/mw690/005X6W83jw1f9rzdypx1vg306o02s74z.gif)
@@ -28,7 +28,7 @@ x:终点 x 坐标，y:终点 y 坐标
 
 ## 二介贝塞尔曲线
 方程：
-![bezier2](http://c.hiphotos.baidu.com/baike/s%3D317/sign=9aefef4b08f79052eb1f413f3bf2d738/11385343fbf2b21129581916cb8065380cd78e70.jpg)
+![bezier2](http://ww1.sinaimg.cn/mw690/005X6W83jw1fa0199q31pj308t00l3yd.jpg)
 
 曲线：
 ![bezier2_line](http://ww3.sinaimg.cn/mw690/005X6W83jw1f9rzdz67fgg306o02sgnc.gif)
@@ -38,7 +38,7 @@ x1,y1:控制点 x,y 坐标，x2,y2:终点 x,y 坐标。
 
 ## 三介贝塞尔曲线
 方程：
-![bezier3](http://e.hiphotos.baidu.com/baike/s%3D421/sign=9a6521eab8014a90853e47bf98763971/f603918fa0ec08fad54f8dff58ee3d6d55fbda1f.jpg)
+![bezier3](http://ww2.sinaimg.cn/mw690/005X6W83jw1fa019a5jfaj30bp00lq2u.jpg)
 
 曲线：
 ![bezier3_line](http://ww2.sinaimg.cn/mw690/005X6W83jw1f9rzdzqbqlg306o02s76z.gif)
@@ -48,7 +48,7 @@ x1,y1:控制点1 x,y 坐标，x2,y2:控制点2 x,y 坐标，x3,y3:终点 x,y 坐
 
 ## 任意介贝塞尔曲线
 方程：
-![bezierx](http://f.hiphotos.baidu.com/baike/s%3D801/sign=a9e1f30835a85edffe8cf323785509d8/f9dcd100baa1cd11675be878b812c8fcc2ce2dfc.jpg)
+![bezierx](http://ww2.sinaimg.cn/mw690/005X6W83jw1fa019aivwpj30m901cjri.jpg)
 
 高阶实际用的不多，可以通过多次低阶来实现。
 
