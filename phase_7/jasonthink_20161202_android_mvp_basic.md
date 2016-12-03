@@ -13,6 +13,7 @@
 全称 Model-View-Presenter，其中 Presenter 解耦了 Model 与 View，使得每个模块的职责更加单一，Model 负责获取数据，View 只关心视图的绘制，Presenter 关联 Model 和 View 处理业务逻辑。
 
 需要注意的是，「Model」 这个词并不正确。严格意义上来说，它指的应该是检索或控制一个 Model 的业务逻辑层。举个例子，比如你的数据库里面包含了 User，而你的 View 想要显示一个 User 列表，那么 Presenter 会引用数据库中的业务逻辑层，查询一个 User 列表，如下图：
+
 ![](http://7xnilf.com1.z0.glb.clouddn.com/mvp.png)
 
 有兴趣的大家可以参考下面的文章， 概念写的比较详细，里面讲到了， 它的的发展历程、MVX  解析。
