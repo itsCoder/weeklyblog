@@ -17,7 +17,8 @@
 
 有兴趣的大家可以参考下面的文章， 概念写的比较详细，里面讲到了， 它的的发展历程、MVX  解析。
 > Android MVP 详解（上）
->[*http://www.jianshu.com/p/9a6845b26856*]
+
+>*http://www.jianshu.com/p/9a6845b26856*
 
 我们把 MVP 的优缺点单独说一下， 「知己知彼，访客百战不殆」，不然想想下面场景：
 >女朋友：你喜欢我什么？
@@ -42,13 +43,15 @@
 ## DEMO 展示
 我最开始看的 Demo 就是 Google 官网提供的，给我很多启发，项目主要展示类似便签的应用。
 >项目地址:
+
 > *https://github.com/googlesamples/android-architecture*
 
 下面是它框图：
-![](http://7xnilf.com1.z0.glb.clouddn.com/google-arch.png)
+![](http://7xnilf.com1.z0.glb.clouddn.com/google-arch.jpg)
 
 本来想拿官方源码进行剖析的，发现以及有人已经写了， 而且还写比我要好， 你说气人不， 下面是它的分析。
 > Android官方MVP架构示例项目解析
+
 >[*http://www.infoq.com/cn/articles/android-official-mvp-architecture-sample-project-analysis*]
 
 ## 实践项目使用
@@ -100,6 +103,7 @@ public abstract class MVPActivity<V extends IView, P extends IPresenter<V>>
 主要思想是 IView 会关联一个 IPresenter, 并且管理 IPresenter 的生命周期。大家从上面的代码片段可以看到， 通常 presenter 是绑定在该生命周期上。所有的初始化或者清理工作都放在 `presenter.onAttach()` 和 `presenter.detach()` 上进行。想大家注意到 IPresenter 是一个接口。 我们还提供一个 **BasePresenter**,  它只持有 View 的弱引用， 从而避免内存泄漏。所有，当 presenter 想要调用 view 的方法是， 我们需要判断 `isViewPresenter()` 并使用 `getView()`来获取引用，以坚持view是否连接当了 presenter。
 
 ![](http://7xnilf.com1.z0.glb.clouddn.com/mvparch.png)
+
 看一下上图我项目结构， 其中 BaseLib 下有两个库，分别是 baseapp、mvplib。
 + baseapp：主要包含BaseActiviy、AppMain 类
 + mvplib： 主要是时 MVP 封装框架，更高效开发
