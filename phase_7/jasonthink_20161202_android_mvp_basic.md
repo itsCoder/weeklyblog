@@ -21,8 +21,11 @@
 
 我们把 MVP 的优缺点单独说一下， 「知己知彼，访客百战不殆」，不然想想下面场景：
 >女朋友：你喜欢我什么？
+
 >我：(⊙v⊙)嗯，。。。
+
 >女朋友：连喜欢我什么都不知道， 走跟我回去跪方便面。
+
 >我：。。。。。
 
 **优点**：
@@ -96,7 +99,7 @@ public abstract class MVPActivity<V extends IView, P extends IPresenter<V>>
 
 主要思想是 IView 会关联一个 IPresenter, 并且管理 IPresenter 的生命周期。大家从上面的代码片段可以看到， 通常 presenter 是绑定在该生命周期上。所有的初始化或者清理工作都放在 `presenter.onAttach()` 和 `presenter.detach()` 上进行。想大家注意到 IPresenter 是一个接口。 我们还提供一个 **BasePresenter**,  它只持有 View 的弱引用， 从而避免内存泄漏。所有，当 presenter 想要调用 view 的方法是， 我们需要判断 `isViewPresenter()` 并使用 `getView()`来获取引用，以坚持view是否连接当了 presenter。
 
-![])(http://7xnilf.com1.z0.glb.clouddn.com/mvparch.png)
+![](http://7xnilf.com1.z0.glb.clouddn.com/mvparch.png)
 看一下上图我项目结构， 其中 BaseLib 下有两个库，分别是 baseapp、mvplib。
 + baseapp：主要包含BaseActiviy、AppMain 类
 + mvplib： 主要是时 MVP 封装框架，更高效开发
