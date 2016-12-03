@@ -24,7 +24,7 @@ RecyclerView 是 V7 包下新增的控件，它是 ListView、GridView 控件的
 > RecyclerView, A flexible view for providing a limited window into a large data set.  --Android
 
 # 使用
-1. 初始化并设置设置项
+1、 初始化并设置设置项
 ```java
     //定义全局变量
     @BindView(R.id.recyclerView)
@@ -65,7 +65,7 @@ RecyclerView 是 V7 包下新增的控件，它是 ListView、GridView 控件的
     //监听下拉刷新
     mSwipeRefreshLayout.setOnRefreshListener(this);
 ```
-2. 编写 Adapter 代码
+2、 编写 Adapter 代码
 ```java
     //创建 item 视图
     @Override
@@ -182,12 +182,12 @@ RecyclerView 是 V7 包下新增的控件，它是 ListView、GridView 控件的
         }
     }
 ```
-3. 请求数据
+3、 请求数据
 ```java
     //调用网络请求
     bookListPresenter.loadBooks(null, tag, 0, count, fields);
 ```
-4. 数据请求成功，刷新视图
+4、 数据请求成功，刷新视图
 ```java
     bookInfoResponses.clear();
     bookInfoResponses.addAll(((BookListResponse) result).getBooks());
@@ -195,7 +195,7 @@ RecyclerView 是 V7 包下新增的控件，它是 ListView、GridView 控件的
     //mListAdapter.notifyItemRangeInserted(0,bookInfoResponses.size());
     page++;
 ```
-5. enjoy it
+5、 enjoy it
 
 # Tips
 RecyclerView 固然好用，但是在使用过程中还是会出现一些问题，接下来，我介绍下我在日常使用 RecyclerView 过程中遇到的一些问题，已经自己的一些解决方法和建议。
