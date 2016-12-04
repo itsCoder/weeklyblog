@@ -123,7 +123,7 @@
 
      ```
      >- 文章来源：itsCoder 的 [WeeklyBolg](https://github.com/itsCoder/weeklyblog) 项目
-     >- itsCoder 主页：[http://itscoder.com/](http://itscoder.com/)
+     >- itsCoder主页：[http://itscoder.com/](http://itscoder.com/)
      >- 作者：[]()
      >- 审阅者：[]()
      ```
