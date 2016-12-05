@@ -125,7 +125,8 @@ proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pr
 
 -ignorewarnings  # 忽略警告，避免打包时某些警告出现，没有这个的话，构建报错
 
--optimizations !code/simplification/arithmetic,!code/simplification/cast,!field/*,!class/merging/*  # 混淆时所采用的算法
+# 混淆时所采用的算法
+-optimizations !code/simplification/arithmetic,!code/simplification/cast,!field/*,!class/merging/*  
 
 -keepattributes *Annotation* # 不混淆注解相关
 
