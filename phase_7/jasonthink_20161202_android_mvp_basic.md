@@ -110,6 +110,49 @@ public abstract class MVPActivity<V extends IView, P extends IPresenter<V>>
 + mvplib： 主要是时 MVP 封装框架，更高效开发
 + app: 主要是我们的演示程序
 
+那么我们看 app 中演示程序，这里本身只是简单通过 Activity 自举， 别的类似。
+```java
+public class MainActivity extends MVPActivity<MainActivity, HelloPresenter> implements IView {
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        final EditText editText = (EditText) findViewById(R.id.editText);
+        Button button = (Button) findViewById(R.id.button);
+        final TextView textview = (TextView)findViewById(R.id.textView);
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String str = editText.getText().toString().trim();
+                presenter.submit();
+            }
+        });
+    }
+
+    @Override
+    public HelloPresenter createPresenter() {
+        return new HelloPresenter();
+    }
+}
+```
+
+从上面代码中我们可以看到 MainActivity 继承了 MVPActivity ，实现了 IView， 其中 `createPresenter()`负责创建对应的 Presenter，下面我们看 HelloPresenter 的实现。
+
+```java
+public class HelloPresenter extends BasePresenter<MainActivity> {
+
+    public void submit() {
+        MainActivity view = getView();
+        TextView textView = (TextView) view.findViewById(R.id.textView);
+        EditText editText = (EditText) view.findViewById(R.id.editText);
+        assert editText != null;
+        textView.setText(editText.getText().toString().trim());
+    }
+}
+```
+我们可以看到 HelloPresenter 负责进行 UI 的更新， 这里只是简单举例， 实际项目中我们可以配合 RxJava 进行实现。
+
 >项目GitHub：
 >*https:/github.com/jasonim/mvparchitecture*
 
