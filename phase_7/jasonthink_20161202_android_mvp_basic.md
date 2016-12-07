@@ -154,7 +154,7 @@ public class HelloPresenter extends BasePresenter<MainActivity> {
 我们可以看到 HelloPresenter 负责进行 UI 的更新， 这里只是简单举例， 实际项目中我们可以配合 RxJava 进行实现。
 
 >项目GitHub：
->*https:/github.com/jasonim/mvparchitecture*
+>*https://github.com/jasonim/mvparchitecture*
 
 这样我们上面基本上解决上面我们提出的问题， 当然我们经常可能遇到屏幕旋转的问题， 这样一般处理数据持久化问题， 一般的做法是在 `onSaveInstanceState()`处理， 简单做法记录数据。当然我们可以通过状态来修复view的状态。就不在这里说了， 感兴趣的可以参考 **mosby** 的做法。
 
