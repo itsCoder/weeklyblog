@@ -152,7 +152,7 @@ public class HelloPresenter extends BasePresenter<MainActivity> {
 }
 ```
 我们可以看到 HelloPresenter 负责进行 UI 的更新， 这里只是简单举例， 实际项目中我们可以配合 RxJava 进行实现。
-
+具体实现可以看一下本人的Github的实现。
 >项目GitHub：
 >*https://github.com/jasonim/mvparchitecture*
 
