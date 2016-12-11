@@ -2,9 +2,9 @@
 
 用代码来替代任何重复性的工作，一直是我的追求。这周，我又写了一段脚本，让我从无尽的重复工作中解脱了出来。
 
-## 问题 & 需求
+# 问题 & 需求
 
-最近在修 bug 的时候，为了达到一个合适的测试环境，我需要一直要重复执行这些操作：
+最近在修 bug 的时候，为了准备一个合适的测试环境，我需要一直要重复执行这些操作：
 
 - 完全关闭 App
 - 打开应用设置页清空 App 数据
@@ -20,9 +20,29 @@
 - 执行输入操作
 - 启动一些界面
 
-## 解决方案
+# 解决方案
 
-要用命令来控制 Android 设备，那肯定是选用 adb 了。GitHub 上有个叫 [awesome-adb](https://github.com/mzlogin/awesome-adb) 的项目，列举了 `adb` 的各种用法，其中有提到 [调起 Activity](https://github.com/mzlogin/awesome-adb#%E8%B0%83%E8%B5%B7-activity) 和 [模拟按键输入](https://github.com/mzlogin/awesome-adb#%E6%A8%A1%E6%8B%9F%E6%8C%89%E9%94%AE%E8%BE%93%E5%85%A5) 的操作。另外查阅资料得知 `uiautomator` 命令可以获取屏幕中的控件信息，从中可以提取到控件的位置，用于模拟点击。下面用 Python 来实现整个流程。
+要用命令来控制 Android 设备，那肯定是选用 adb 了。GitHub 上有个叫 [awesome-adb](https://github.com/mzlogin/awesome-adb) 的项目，列举了 `adb` 的各种用法，其中有提到 [调起 Activity](https://github.com/mzlogin/awesome-adb#%E8%B0%83%E8%B5%B7-activity) 和 [模拟按键输入](https://github.com/mzlogin/awesome-adb#%E6%A8%A1%E6%8B%9F%E6%8C%89%E9%94%AE%E8%BE%93%E5%85%A5) 的操作。
+
+另外查阅[资料](https://testerhome.com/topics/1047)得知了一个命令—— `uiautomator`。
+
+```
+$ adb shell uiautomator -h
+
+Usage: uiautomator <subcommand> [options]
+
+Available subcommands:
+
+    help: displays help message
+
+    runtest: executes UI automation tests
+
+    dump: creates an XML dump of current UI hierarchy
+
+    events: prints out accessibility events until terminated
+```
+
+可以看到它可以通过子命令 `runtest` 进行 UI 自动化测试，还可以通过子命令 `dump` 将当前屏幕的 UI 层级信息输出到 XML 文件中去。后者是这里需要关注的功能，将屏幕信息输出到 XML 中之后，可以根据关键字等去提取到具体的控件节点，从而获取到它在屏幕上显示的位置，用于模拟点击。下面用 Python 来实现整个流程。
 
 这里先提一下两个工具函数，方便后续的代码展示。一个是用来执行 `adb`的，另外一个是装饰器，在目标函数执行完之后休眠一会，等待 UI 的响应。
 
@@ -47,7 +67,7 @@ def sleep_later(duration=0.5):
     return wrapper
 ```
 
-### 根据文本信息点击屏幕
+## 根据文本信息点击屏幕
 
 需要先用 `uiautomator` 命令来获取屏幕信息。
 
@@ -110,7 +130,6 @@ def point_in_bounds(bounds):
     return (points[0] + points[2]) / 2, (points[1] + points[3]) / 2
 ```
 
-
 再用 `input` 命令，结合上面的几个函数，可以完成这个需求了。
 
 ```python
@@ -127,12 +146,11 @@ def click_with_keyword(keyword, dump=True, **kwargs):
     run('shell input tap %d %d' % point)
 ```
 
-### 模拟输入
+## 模拟输入
 
 这个比较简单，直接使用 `input text` 命令。另外还实现了模拟按返回键。
 
-``` python
-
+```python
 @sleep_later()
 def keyboard_input(text):
     # adb shell input text <string>
@@ -145,11 +163,11 @@ def keyboard_back():
     run('shell input keyevent 4')
 ```
 
-### 停止应用、清除数据、启动 Activity
+## 停止应用、清除数据、启动 Activity
 
 这一些命令操作，按照 [awesome-adb](https://github.com/mzlogin/awesome-adb) 的文档执行就好。
 
-``` python
+```python
 @sleep_later()
 def force_stop(package):
     print 'Force stop %s' % package
@@ -184,7 +202,7 @@ def open_app_detail(package):
     run('shell am start -a %s -d %s' % (intent_action, intent_data))
 ```
 
-### 拼装整个流程
+## 拼装整个流程
 
 ```python
 target_package = 'com.mingdao'
@@ -222,18 +240,18 @@ def main():
 
 前面把各种操作写好，主流程就很清晰啦，照着手动操作的过程，一步一步调函数就好了。
 
-### 效果图
+## 效果图
 
 ![screenshot](http://ww2.sinaimg.cn/large/65e4f1e6jw1faf8l8gwbng20ry0i2e7c.gif)
 
-
-## 后记
+# 后记
 
 脚本实现后的第二天，我就用了它不下 20 次，感觉爽极了。不用做那么多重复的操作，趁着空闲喝点水，刷个知乎，太美好了😄~
 
 > 源码地址：[ui_automator.py · brucezz/SomeScripts](https://github.com/brucezz/SomeScripts/blob/master/ui_automator.py)
 
-## Reference
+# Reference
 
 - [awesome-adb](https://github.com/mzlogin/awesome-adb)
 - [通过 python 调用 adb 命令实现用元素名称、id、class 定位元素 · TesterHome](https://testerhome.com/topics/1047)
+
