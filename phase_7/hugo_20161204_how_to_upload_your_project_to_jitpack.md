@@ -5,7 +5,7 @@ date: 2016-12-04 16:02:31
 >- 文章来源：itsCoder 的 [WeeklyBolg](https://github.com/itsCoder/weeklyblog) 项目
 >- itsCoder主页：[http://itscoder.com/](http://itscoder.com/)
 >- 作者：[谢三弟](https://github.com/xcc3641)
->- 审阅者：[]()
+>- 审阅者：[JoeSteven](https://github.com/JoeSteven)
 
 ### 目录
 
@@ -79,6 +79,10 @@ artifacts {
 ![](http://ww2.sinaimg.cn/large/006y8lVagw1faerhpbkemj318u0v0gpe.jpg)
 
 别人就可以用到你写的裤子了 (๑•̀ㅂ•́) ✧
+
+3. 删除 Tag
+
+更新你的裤子，发布新版的时候，最好删除原来的 Tag 。
 
 ### 参考
 
