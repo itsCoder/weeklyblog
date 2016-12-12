@@ -9,6 +9,7 @@
 
 本文例子中 github 地址：
 [github BuzzerBeater 项目链接](https://github.com/itsMelo/BuzzerBeater)
+（第一个开源项目，目前在逐步更新一些知识点，希望对你有所帮助）
 
 曾经在北京拥挤的13号线地铁上，一名背着双肩包穿着格子衫带着鸭舌帽脚踏帆布鞋的程序员讲了一句：
 “我觉得 Fragment 真的太难用了”。从而引起一阵躁动激烈的讨论。
@@ -90,15 +91,14 @@ BottomNavigationView 本身有一套 Material Design 的设计规范如下：
 
                 if (position == 0) {// 导航
                     clickSearchLayout();
-                }
-                if (position == 1) {// 音乐
+                } else if (position == 1) {// 音乐
                     clickMusicLayout();
-                }
-                if (position == 2) {// OBD
+                } else if (position == 2) {// 车辆
                     clickCarLayout();
-                }
-                if (position == 3) {
+                } else if (position == 3) {
                     clickSettingLayout();
+                } else if (position == 4) {
+                    clickToysLayout();
                 }
                 return true;
             }
@@ -225,7 +225,7 @@ ViewPager 和 Fragment 配合使用相信大多数人都很熟悉了，所以来
 
 ![首页和 Tab 页生命周期方法](http://upload-images.jianshu.io/upload_images/1915184-06aec47f6157e0aa?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
 
-可以看到，当我进入 app 的时候，所有 Tab 的父容器 SearchFragment 创建，调用了 onAttach --> onResume 这当然是我们预料之中的，我们 ViewPager 第一个装载并展示的是 ScienceFragment，ScienceFragment 创建没有问题，可是第二个 tab GameFragment 为什么加载了呢？
+可以看到，当我进入 app 的时候，所有 TabLayout 所在的父容器 SearchFragment 创建，调用了 onAttach --> onResume 这当然是我们预料之中的，我们 ViewPager 第一个装载并展示的是 ScienceFragment，ScienceFragment 创建没有问题，可是第二个 tab GameFragment 为什么加载了呢？
 
 没错这就是 ViewPager 的预加载机制。
 
@@ -370,7 +370,7 @@ public class ScienceFragment extends BaseFragment {
 
 此时无论是我滑动还是点击上方 tab 跳转到任意一个页面，`lazyLoadData` 方法都会调用，我们可以先加载布局出来，然后可见时刷新数据就 OK 了。
  
-关于 Fragment 的管理，主要就是上文的两种方式，当然具体到每个人自己的项目时，需要分析需求和产品思路找到一个适合自己的方式。当我们知道原理时，做操作就心里有底多了，出了问题也可以快速定位。
+关于 Fragment 的管理，主要就是上文的两种方式，一是 add 和 hide 管理，二是 ViewPager + Fragment，当然具体到每个人自己的项目时，需要分析需求和产品思路找到一个适合自己的方式。当我们知道原理时，做操作就心里有底多了，出了问题也可以快速定位。
 
 上面我们 ViewPager 的 adapter 使用的是 FragmentStatePagerAdapter，还有一个 FragmentPagerAdapter，因为本文的篇幅有些过长，下次会总结出它们在源码角度的区别，以及使用过程中踩到的一些坑。（如果有一些奇怪的问题无法解决，建议先使用 FragmentStatePagerAdapter）。
 
