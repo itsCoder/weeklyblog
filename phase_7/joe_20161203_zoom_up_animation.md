@@ -2,7 +2,7 @@
 
 - itsCoder主页：[http://itscoder.com/](http://itscoder.com/)
 - 作者：[Joe](http://extremej.itscoder.com/)
-- 审阅者：
+- 审阅者：[Brucezz](http://brucezz.itscoder.com/)
 
 ### 前言
 
@@ -143,11 +143,11 @@ animator.setDuration(ANIMATION_DURATION)
         .scaleX(1f)
         .scaleY(1f)
         .translationX(0)
-        .translationY(0)
-        .start();
+        .translationY(0);
 if (listener != null) {
     animator.setListener(listener);
 }
+animator.start();
 ```
 
 放大的动画就写完了～接下来我们写缩小的动画，思路与放大一样，但是有个小区别，我们缩小的动画实际也是大的那个 `View`  来执行，这个 `View` 当前的状态就是动画开始的初始状态，因此不需要做初始化：
@@ -177,11 +177,11 @@ public static void startZoomDownAnim(ZoomInfo preViewInfo, final View targetView
             .scaleX(endScaleX)
             .scaleY(endScaleY)
             .translationX(translationX)
-            .translationY(translationY)
-            .start();
+            .translationY(translationY);
     if (listener != null) {
         animator.setListener(listener);
     }
+  	animator.start();
 }
 ```
 
@@ -250,7 +250,7 @@ private void tryEnterAnimation() {
 }
 ```
 
-到这里，转场动画的进入部分就写完了，但是我们发现个问题～，那就是因为 `Activity` 是透明的，图片没有盖住的部分是能看到上一个 `Activity` 的，为了让动画效果更好，我们再加一个背景渐变的动画
+到这里，转场动画的进入部分就写完了，但是我们发现个问题～，那就是因为 `Activity` 是透明的，图片没有盖住的部分是能看到上一个 `Activity` 的，为了让动画效果更好，我们再加一个背景渐变的动画。
 
 在 `ZoomAnimationUtils` 中添加一个方法
 
