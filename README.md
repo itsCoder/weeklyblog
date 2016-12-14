@@ -14,7 +14,7 @@
 | [学习给 AS 和 IDEA 开发一个翻译插件](http://allenwu.itscoder.com/write-a-plugin-for-idea-and-as) | 插件 | [allenwu](https://github.com/wuchangfeng) |7|
 | [Android 项目框架--MVP 基础](http://hujiandong.com/2016/12/13/android-mvp-basic/) | Android | [Jasonim](https://github.com/Jasonim) |7|
 | [死磕 Fragment 的生命周期](https://itsmelo.github.io/2016/12/12/%E6%AD%BB%E7%A3%95%20Fragment%20%E7%9A%84%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F/) | Android | [melo](https://github.com/itsMelo) |7|
-| [Activity 共享元素转场动画实践](http://extremej.itscoder.com/android_long_picture_process/) | Android | [Joe](http://extremej.itscoder.com/) |7|
+| [Activity 共享元素转场动画实践](http://extremej.itscoder.com/zoom-up-animation/) | Android | [Joe](http://extremej.itscoder.com/) |7|
 | [RecyclerView 入门其实很简单](http://hymane.itscoder.com/2016/12/03/hymane_20161204_how_to_controll_recyclerview/) | Android | [hymane](https://github.com/hymanme) |7|
 | [JitPack 指南](http://imxie.cc/2016/12/04/how_to_upload_your_project_to_jitpack/) | Android | [谢三弟](https://github.com/xcc3641) |7|
 | [使用 SpannableString 格式化微博内容](http://melodyxxx.com/2016/12/04/use_spannablestring_format_weibo/) | Android | [Melodyxxx](https://github.com/melodyxxx) |7|
