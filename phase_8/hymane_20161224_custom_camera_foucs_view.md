@@ -15,9 +15,11 @@ tags: [custom camera ,animation]
 
 # 效果展示
 谷歌相机聚焦效果
+
 ![googlefocusview](http://ww3.sinaimg.cn/mw690/005X6W83jw1fb3ci3davwg308w0fsqv5.gif)
 
 自定义相机聚焦效果
+
 ![customfocusview](http://ww1.sinaimg.cn/mw690/005X6W83jw1fb3ci0ugf0g308w0fs7wi.gif)
 
 # 分析
@@ -30,7 +32,7 @@ tags: [custom camera ,animation]
 ps：当用户点击屏幕时，重复以上动画。动画开始时需要重置动画各个状态，不然会出现动画错乱。
 
 # 实现
-## 初始化变量、状态以及画笔
+### 初始化变量、状态以及画笔
 ```java
   private void init() {
         this.mPaint = new Paint();
@@ -46,7 +48,7 @@ ps：当用户点击屏幕时，重复以上动画。动画开始时需要重置
     }
 ```
 
-## 重写 onMeasure() 方法
+### 重写 onMeasure() 方法
 不重写该方法，我们的 view 宽高则为屏幕宽高，在计算以及设置视图位置时会不方便，所以让 view 宽高保持一致，呈现一个正方形区域。
 ```java
     @Override
@@ -56,7 +58,7 @@ ps：当用户点击屏幕时，重复以上动画。动画开始时需要重置
     }
 ```
 
-## 重写 OnDraw() 方法
+### 重写 OnDraw() 方法
 根据当前状态绘制 view。
 ```java
     @Override
@@ -79,7 +81,7 @@ ps：当用户点击屏幕时，重复以上动画。动画开始时需要重置
     }
 ```
 
-## 暴露一个共有方法供外界调用
+### 暴露一个共有方法供外界调用
 ```java
     /***
      * 开始动画
@@ -95,7 +97,7 @@ ps：当用户点击屏幕时，重复以上动画。动画开始时需要重置
     }
 ```
 
-## 开启动画
+### 开启动画
 ```java
     /**
      * 开启动画
