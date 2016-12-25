@@ -4,6 +4,8 @@ date: 2016-12-24 14:50:11
 categories: Git
 tags: [git ,itscoder]
 ---
+# 引言
+给 itscoder 开发步骤做一个笔记，我先抛砖迎玉了。
 
 # 1. 查看分支
   包括上源分支和本地分支，上源分支会有两个，一个是个人 fork 下来的 origin 源，还有一个是主项目 upstream 源，该源主要为了以后新的一期开始时候，进行更新源。如果没有 upstream 源，请跳至 4,5,6 步。
