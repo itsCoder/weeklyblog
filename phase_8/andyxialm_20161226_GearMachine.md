@@ -67,27 +67,36 @@
 
 **使用 Canvas 的相关 API 绘制左上角齿轮**
 最上方两个齿轮效果除了动画转动的方向不同，其他的相同，所以我们现在以左上角的齿轮为例。
+
 ```java
-// 左上齿轮
-// 最底层(半径最大)的红色圆的背景
-canvas.drawCircle(mLeftTopCentre[X], mLeftTopCentre[Y], mTopCircleRadius, mRedPaint); 
-// 半径第二大的深红色圆背景
-canvas.drawCircle(mLeftTopCentre[X], mLeftTopCentre[Y], mTopCircleRadius / 4 * 3, mDarkRedPaint); 
-canvas.save();
-// 动画需要，根据mCurProgress的值来做画布旋转
-canvas.rotate(mCurProgress * 360, mLeftTopCentre[X], mLeftTopCentre[Y]);
-// 绘制24个三角齿轮
-for (int i = 0; i < 24; i ++) {
-    // 齿轮的三角 path
-    canvas.drawPath(mLeftTopTrianglePath, mRedPaint);
-    // 旋转角为15度，绘制24个三角形
-    canvas.rotate(15.0f, mLeftTopCentre[X], mLeftTopCentre[Y]);
-}
-canvas.restore();
-// 绘制其他圆形
-canvas.drawCircle(mLeftTopCentre[X], mLeftTopCentre[Y], mTopCircleRadius / 2, mRedPaint);
-canvas.drawCircle(mLeftTopCentre[X], mLeftTopCentre[Y], mTopCircleRadius / 5 * 2, mDarkRedPaint);
-canvas.drawCircle(mLeftTopCentre[X], mLeftTopCentre[Y], mTopCircleRadius / 4, mRedPaint);
+
+    // 左上齿轮
+    // 最底层(半径最大)的红色圆的背景
+    canvas.drawCircle(mLeftTopCentre[X], mLeftTopCentre[Y], mTopCircleRadius, mRedPaint); 
+
+    // 半径第二大的深红色圆背景
+    canvas.drawCircle(mLeftTopCentre[X], mLeftTopCentre[Y], mTopCircleRadius / 4 * 3, mDarkRedPaint); 
+    canvas.save();
+    
+    // 动画需要，根据mCurProgress的值来做画布旋转
+    canvas.rotate(mCurProgress * 360, mLeftTopCentre[X], mLeftTopCentre[Y]);
+    
+    // 绘制24个三角齿轮
+    for (int i = 0; i < 24; i ++) {
+    
+        // 齿轮的三角 path
+        canvas.drawPath(mLeftTopTrianglePath, mRedPaint);
+    
+        // 旋转角为15度，绘制24个三角形
+        canvas.rotate(15.0f, mLeftTopCentre[X], mLeftTopCentre[Y]);
+    }
+    canvas.restore();
+    
+    // 绘制其他圆形
+    canvas.drawCircle(mLeftTopCentre[X], mLeftTopCentre[Y], mTopCircleRadius / 2, mRedPaint);
+    canvas.drawCircle(mLeftTopCentre[X], mLeftTopCentre[Y], mTopCircleRadius / 5 * 2, mDarkRedPaint);
+    canvas.drawCircle(mLeftTopCentre[X], mLeftTopCentre[Y], mTopCircleRadius / 4, mRedPaint);
+    
 ```
 **注意**
 下方最大的齿轮相对特殊，原因是有一个 130 度的缺口，并且锯齿也需要转动的动画，所以此处我先绘制了一个大空心圆，并使用 drawArc() 绘制扇形以初始角度为 180 度，扇形圆心角 130 度再搭配使用 PorterDuffXfermode(PorterDuff.Mode.CLEAR) 来进行叠加，此时就可以绘制出 130 度缺口的大齿轮了。
