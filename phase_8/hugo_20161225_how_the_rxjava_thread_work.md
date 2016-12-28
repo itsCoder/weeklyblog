@@ -86,9 +86,11 @@ RxJava 对于 Android 来说，最直观地便利就在于线程切换。所以�
       方法注释上说明，当订阅者订阅之后，该函数会返回将会执行具体功能的流。像新手向[操作符](https://mcxiaoke.gitbooks.io/rxdocs/content/Operators.html)      ```just/map/...``` 进入源码会发现他们最终都会调用到 ```create()``` 函数。
 
 2.    OnSubscribe
-         接着讲
+
+      接着讲
+
       ```java
-       /**
+         /**
       * Invoked when Observable.subscribe is called.
       * @param <T> the output value type
       */
@@ -100,12 +102,13 @@ RxJava 对于 Android 来说，最直观地便利就在于线程切换。所以�
 
 3.    Operator
 
-         简单理解就是对这个流进行改变，然后返回一个新的流，通常是跟 ```lift()``` 操作符一起。
+      ```java
+            public interface Operator<R, T> extends Func1<Subscriber<? super R>, Subscriber<? super T>> {
+              // cover for generics insanity
+            }
+      ```
 
-
-      > Lifts a function to the current Observable and returns a new Observable
-
-
+      简单来说它的职责就是将一个 ```Subscriber``` 变成另外一个 ```Subscriber```。
 
 
 
@@ -198,15 +201,138 @@ source.unsafeSubscribe(s);
 
 > `subscribeOn` 的调用，改变了调用前序列所运行的线程。
 
-
-
 #### ObserveOn
 
+同样的方法来分析，最终的回调会到：
+
+```java
+public final Observable<T> observeOn(Scheduler scheduler, boolean delayError, int bufferSize) {
+  if (this instanceof ScalarSynchronousObservable) {
+    return ((ScalarSynchronousObservable<T>)this).scalarScheduleOn(scheduler);
+  }
+  return lift(new OperatorObserveOn<T>(scheduler, delayError, bufferSize));
+}
+
+```
+
+其实看到关键字 lift 和 operator 就可以想到很多了。
+
+接下来我们进入到 ```OperatorObserveOn``` 类中：
+
+```java
+public final class OperatorObserveOn<T> implements Operator<T, T> {
+
+    private final Scheduler scheduler;
+  	// 省略不必要的代码
+      
+    @Override
+    public Subscriber<? super T> call(Subscriber<? super T> child) {
+        	// 省略 ···
+            ObserveOnSubscriber<T> parent = new ObserveOnSubscriber<T>(scheduler, child, delayError, bufferSize);
+            parent.init();
+            return parent;
+        }
+    }
+}
+```
+
+我们首先会注意到它是一个 ```Operator``` ，并且没有对上层 Observale 做任何修改和包装。那么它的作用就是将一个 ```Subscriber``` 变成另外一个 ```Subscriber```。所以接下来我们的首要任务就是看转换后的 ```Subscriber``` 做了什么改变。
+
+关键代码在
+
+```java
+ObserveOnSubscriber<T> parent = new ObserveOnSubscriber<T>(scheduler, child, delayError, bufferSize);
+parent.init();
+```
+
+**child** 是改变前的 ```Subscriber``` ，最后返回了 **parent** 。
+
+我们发现 ```ObserveOnSubscriber``` 同样也是一个 ```Subscriber``` 类，所以肯定含有 ```onNext/onError/onComplete``` 这三个标准方法，重要的肯定是 ```onNext``` ，所以我只贴上了该类三个有关函数。
+
+```java
+void init() {
+    Subscriber<? super T> localChild = child;
+    
+    localChild.setProducer(new Producer() {
+
+        @Override
+        public void request(long n) {
+            if (n > 0L) {
+                BackpressureUtils.getAndAddRequest(requested, n);
+              	// 执行
+                schedule();
+            }
+        }
+
+    });
+    // recursiveScheduler 这个是构造函数时传入调度器创建的 worker
+    localChild.add(recursiveScheduler);
+    localChild.add(this);
+}
+
+@Override
+public void onNext(final T t) {
+  if (isUnsubscribed() || finished) {
+    return;
+  }
+  // 条件判断里先将之前流的结果缓存进队列
+  if (!queue.offer(on.next(t))) {
+    onError(new MissingBackpressureException());
+    return;
+  }
+  // 执行
+  schedule();
+}
+
+
+protected void schedule() {
+	if (counter.getAndIncrement() == 0) {
+      	// 在当前 worker 上执行该类的 call 方法
+		recursiveScheduler.schedule(this);
+	}
+}
+```
 
 
 
+```call()``` 方法有点冗长，做的事情其实很简单，就是取出我们之前流的所有缓存值，然后在 Worker 工作线程中传下去。
 
 
+
+总结：
+
+> 1. ObserveOn 不会关心之前的流的线程
+> 2. ObserveOn 会先将之前的流的值缓存起来，然后再在指定的线程上，将缓存推送给后面的 ```Subscriber```
+
+
+
+### 思考
+
+
+
+#### 为什么``` subscribeOn ``` 只有第一次调用生效？
+
+我的理解如下：
+
+```subscribeOn``` 的作用域就是调用前序列中所有的 **Todo List 任务清单**（Observable.OnSubscribe），当我们执行 ```subscribe()``` 时，这些任务清单就会执行在 ```subscribeOn```  指定的工作线程，而第二个 ```subscribeOn``` 早就没有任务可做了，所以无法生效。
+
+
+
+------
+
+
+
+*知乎里这段说的比我专业：*
+
+> 正像 StackOverflow 上那段描述的，整个 Observable 数据流工作起来是分为两个阶段（或者说是两个 lifecycle）：upstream 的 subscription-time 和 downstream 的 runtime。
+>
+> subscription-time 的阶段，是为了发起和驱动数据流的启动，在内部实现上体现为 OnSubscribe 向上游的逐级调用（控制流向上游传递）。支持 backpressure 的 producer request 也属于这个阶段。除了 producer request 的情况之外，subscription-time 阶段一般就是从下游到上游调用一次就结束了，最终到达生产者（以最上游的那个 OnSubscribe 来体现）。接下来数据流就开始向下游流动了。
+
+[Rxjava 中， subscribeOn 及 oberveOn 方法切换线程发生的位置为什么设计为不同的？ \- 知乎](https://www.zhihu.com/question/41779170)
+
+
+
+#### doOnSubscribe
 
 
 
@@ -214,9 +340,7 @@ source.unsafeSubscribe(s);
 
 [Thomas Nield: RxJava\- Understanding observeOn\(\) and subscribeOn\(\)](http://tomstechnicalblog.blogspot.jp/2016/02/rxjava-understanding-observeon-and.html)
 
-[Rxjava 中， subscribeOn 及 oberveOn 方法切换线程发生的位置为什么设计为不同的？ \- 知乎](https://www.zhihu.com/question/41779170)
-
-
+[SubscribeOn 和 ObserveOn |Piasy Blog](http://blog.piasy.com/AdvancedRxJava/2016/09/16/subscribeon-and-observeon/)
 
 1. ​
 
