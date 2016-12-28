@@ -1,5 +1,5 @@
 ---
-title: RxJava 线程切换源码
+title: RxJava 线程切换源码的一些体会和思考
 date: 2016-12-25 16:02:31
 ---
 >- 文章来源：itsCoder 的 [WeeklyBolg](https://github.com/itsCoder/weeklyblog) 项目
