@@ -17,7 +17,7 @@ RxJava 对于 Android 来说，最直观地便利就在于线程切换。所以�
 
 **希望读者阅读此篇文章，是有用过 RxJava 的童鞋。**
 
-<--! more -->
+<!-- more -->
 
 > 本章内容基于源码版本
 >
@@ -310,21 +310,20 @@ protected void schedule() {
 
 ```java
  Observable.just() //1
+            .subscribeOn(Schedulers.newThread())
             .map() //2
             .observeOn(Schedulers.computation())
             .map() //3
-            .subscribeOn(Schedulers.newThread())
             .map() //4
             .observeOn(Schedulers.newThread())
             .subscribe() //5
 ```
-如果分析这个流各个操作符的执行线程，我们先把第一个 ```subscribeOn()``` 之前的 Todo Item 找出来：
+如果分析这个流各个操作符的执行线程，我们先把第一个 ```subscribeOn()``` 之前和第一个 ```observeOn()``` 之前的 Todo Items 然后求并集：
+
+得到的结果就是 ```subscribeOn()``` 的作用域。
 
 ![](http://ww1.sinaimg.cn/large/006y8lVagw1fb80zs48yrj30yc0fcwg4.jpg)
 
-接下来看，这些操作符队列中是否有 ```observeOn()``` ，若有，则将 ```observeOn()``` 之后的 item 剔除。
-
-![](http://ww3.sinaimg.cn/large/006y8lVagw1fb8173p8i1j30z60eignb.jpg)
 
 之后的线程切换简单了，遇到 ```observeOn()``` 就切换一次。
 
@@ -392,6 +391,7 @@ Observable.just()
 
 这个问题会拓展到 RxJava 流的一个执行顺序，我准备下次开篇来和大家学习探讨。
 
+> 对了，老司机说 RxJava 很像洋葱，一层一层。
 
 
 ### 参考
