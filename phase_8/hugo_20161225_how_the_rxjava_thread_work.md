@@ -13,7 +13,9 @@ date: 2016-12-25 16:02:31
 
 RxJava 是在今年年初的时候上的车，接触也快要满一年了。从最初只知道几个操作符，写写 Demo ，或者跟着别人的项目和经验依葫芦画瓢，到目前终于有点初窥门径的地步。
 
-RxJava 对于 Android 来说，最直观地便利就在于线程切换。所以本篇内容就是学习 **RxJava 是如何实现切换线程**。
+RxJava 对于 Android 来说，最直观地便利就在于线程切换。所以本篇内容就是学习 **RxJava 是如何实现切换线程**。 
+
+**希望读者阅读此篇文章，是有用过 RxJava 的童鞋。**
 
 <--! more -->
 
@@ -28,8 +30,8 @@ RxJava 对于 Android 来说，最直观地便利就在于线程切换。所以�
 先来一道开胃菜：
 
 ```java
- Observable.just(1) //1
-   			.subscribeOn(Schedulers.newThread())
+ Observable.just() //1
+   			    .subscribeOn(Schedulers.newThread())
             .map() //2
             .subscribeOn(Schedulers.io())
             .map() //3
@@ -42,14 +44,14 @@ RxJava 对于 Android 来说，最直观地便利就在于线程切换。所以�
 我们再改动下：
 
 ```java
- Observable.just(1) //1
-   			.subscribeOn(Schedulers.newThread())
+ Observable.just() //1
+   			    .subscribeOn(Schedulers.newThread())
             .map() //2
             .subscribeOn(Schedulers.io())
             .map() //3
             .observeOn(Schedulers.computation())
             .map() //4
-   			.doOnSubscribe() //6
+   			    .doOnSubscribe() //6
             .observeOn(Schedulers.newThread())
             .subscribe() //5
 ```
@@ -83,7 +85,7 @@ RxJava 对于 Android 来说，最直观地便利就在于线程切换。所以�
       }
       ```
 
-      方法注释上说明，当订阅者订阅之后，该函数会返回将会执行具体功能的流。像新手向[操作符](https://mcxiaoke.gitbooks.io/rxdocs/content/Operators.html)      ```just/map/...``` 进入源码会发现他们最终都会调用到 ```create()``` 函数。
+      方法注释上说明，当订阅者订阅之后，该函数会返回将会执行具体功能的流。像新手向[操作符](https://mcxiaoke.gitbooks.io/rxdocs/content/Operators.html)      ```(just/map/...)``` 进入源码会发现他们最终都会调用到 ```create()``` 函数。
 
 2.    OnSubscribe
 
@@ -96,7 +98,7 @@ RxJava 对于 Android 来说，最直观地便利就在于线程切换。所以�
       ```
       首先我们知道这是一个继承 ```Action1``` 的接口，并且是在 ```Observable.subscribe``` 流进行订阅操作后回调。而且回顾刚刚 ```create()``` 源码中也发现参数就是这个 ```OnSubscribe``` 。 ```Action``` 的作用就是执行其中的 ```call()``` 方法。
 
-      **Observable.OnSubscribe** 有点像 Todo List ，里面都是一个一个待处理的事务。
+      **Observable.OnSubscribe** 有点像 Todo List ，里面都是一个一个待处理的事务，并且这个 List 是有序的（这个很关键）。
 
 3.    Operator
 
@@ -293,7 +295,6 @@ protected void schedule() {
 ```
 
 
-
 ```call()``` 方法有点冗长，做的事情其实很简单，就是取出我们缓存之前流的所有值，然后在 Worker 工作线程中传下去。
 
 
@@ -304,6 +305,28 @@ protected void schedule() {
 > 2. ObserveOn 会先将之前的流的值缓存起来，然后再在指定的线程上，将缓存推送给后面的 ```Subscriber```
 
 
+#### 共用的作用域
+
+
+```java
+ Observable.just() //1
+            .map() //2
+            .observeOn(Schedulers.computation())
+            .map() //3
+            .subscribeOn(Schedulers.newThread())
+            .map() //4
+            .observeOn(Schedulers.newThread())
+            .subscribe() //5
+```
+如果分析这个流各个操作符的执行线程，我们先把第一个 ```subscribeOn()``` 之前的 Todo Item 找出来：
+
+![](http://ww1.sinaimg.cn/large/006y8lVagw1fb80zs48yrj30yc0fcwg4.jpg)
+
+接下来看，这些操作符队列中是否有 ```observeOn()``` ，若有，则将 ```observeOn()``` 之后的 item 剔除。
+
+![](http://ww3.sinaimg.cn/large/006y8lVagw1fb8173p8i1j30z60eignb.jpg)
+
+之后的线程切换简单了，遇到 ```observeOn()``` 就切换一次。
 
 ### 思考
 
@@ -327,11 +350,47 @@ protected void schedule() {
 >
 > subscription-time 的阶段，是为了发起和驱动数据流的启动，在内部实现上体现为 OnSubscribe 向上游的逐级调用（控制流向上游传递）。支持 backpressure 的 producer request 也属于这个阶段。除了 producer request 的情况之外，subscription-time 阶段一般就是从下游到上游调用一次就结束了，最终到达生产者（以最上游的那个 OnSubscribe 来体现）。接下来数据流就开始向下游流动了。
 
-[Rxjava 中， subscribeOn 及 oberveOn 方法切换线程发生的位置为什么设计为不同的？ \- 知乎](https://www.zhihu.com/question/41779170)
+[Rxjava 中， subscribeOn 及 observeOn 方法切换线程发生的位置为什么设计为不同的？ \- 知乎](https://www.zhihu.com/question/41779170)
 
 
 
 #### doOnSubscribe 的例外
+
+```java
+public class OperatorDoOnSubscribe<T> implements Operator<T, T> {
+    private final Action0 subscribe;
+
+    public OperatorDoOnSubscribe(Action0 subscribe) {
+        this.subscribe = subscribe;
+    }
+
+    @Override
+    public Subscriber<? super T> call(final Subscriber<? super T> child) {
+        // 执行我们的 Action
+        subscribe.call();
+        // Wrap 里面是包装成一个新的 Subscriber 返回，不对这个流做任何改变
+        return Subscribers.wrap(child);
+    }
+}
+```
+
+doOnSubscribe 执行的线程其实就是 ```subscribe.call();``` 所在的线程。这里触发的时机就是，当我们进行 ```Observable.subscribe()``` 时，如果我们没有在紧接之后```SubscribeOn``` 指定线程，那么它就会运行在默认线程，然后返回一个新的流。
+
+
+------
+
+**关于 ```doOnSubscribe()``` 留一个问题**
+
+```java
+Observable.just()
+          .doOnSubscribe() // 1
+          .doOnSubscribe() // 2
+          .subscribe()
+```
+> 问题是，对于 1 和 2 的执行顺序？
+
+
+这个问题会拓展到 RxJava 流的一个执行顺序，我准备下次开篇来和大家学习探讨。
 
 
 
