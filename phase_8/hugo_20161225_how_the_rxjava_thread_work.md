@@ -19,7 +19,7 @@ RxJava 对于 Android 来说，最直观地便利就在于线程切换。所以�
 
 > 本章内容基于源码版本
 >
-> **RxJava: 1.1.5**
+> **RxJava: 1.2.4**
 
 ### 准备
 
@@ -68,15 +68,15 @@ RxJava 对于 Android 来说，最直观地便利就在于线程切换。所以�
 - OnSubscribe
 - Operator
 
-*如果你特别明白这几个 RxJava 类/方法的作用，可以直接跳过看 **[切换](#切换)** 这部分。*
+*如果你特别明白这几个 RxJava 类/方法的作用，可以直接跳过看[切换](#切换)这部分。*
 
 1.    Create()
 
       ```java
       /**
-      * Returns an Observable that will execute the specified function when a {@link Subscriber} subscribes to
-      * it.
-      */
+       * Returns an Observable that will execute the specified function when a {@link Subscriber} subscribes to
+       * it.
+       */
 
       public static <T> Observable<T> create(OnSubscribe<T> f) {
          return new Observable<T>(RxJavaHooks.onCreate(f));
@@ -87,25 +87,23 @@ RxJava 对于 Android 来说，最直观地便利就在于线程切换。所以�
 
 2.    OnSubscribe
 
-      接着讲
-
       ```java
-         /**
-      * Invoked when Observable.subscribe is called.
-      * @param <T> the output value type
-      */
+      /**
+       * Invoked when Observable.subscribe is called.
+       * @param <T> the output value type
+       */
       public interface OnSubscribe<T> extends Action1<Subscriber<? super T>> {}
       ```
       首先我们知道这是一个继承 ```Action1``` 的接口，并且是在 ```Observable.subscribe``` 流进行订阅操作后回调。而且回顾刚刚 ```create()``` 源码中也发现参数就是这个 ```OnSubscribe``` 。 ```Action``` 的作用就是执行其中的 ```call()``` 方法。
 
-      **Observable.OnSubscribe** 有点像 Todo list ，里面都是一个一个待处理的事务。
+      **Observable.OnSubscribe** 有点像 Todo List ，里面都是一个一个待处理的事务。
 
 3.    Operator
 
       ```java
-            public interface Operator<R, T> extends Func1<Subscriber<? super R>, Subscriber<? super T>> {
-              // cover for generics insanity
-            }
+      public interface Operator<R, T> extends Func1<Subscriber<? super R>, Subscriber<? super T>> {
+        // cover for generics insanity
+      }
       ```
 
       简单来说它的职责就是将一个 ```Subscriber``` 变成另外一个 ```Subscriber```。
@@ -115,6 +113,7 @@ RxJava 对于 Android 来说，最直观地便利就在于线程切换。所以�
 ### 切换
 
 
+上面知识点是一些小铺垫，因为后面的内容的核心其实就是上面几个类的作用。
 
 #### SubscribeOn()
 
@@ -199,7 +198,7 @@ source.unsafeSubscribe(s);
 
 总结：
 
-> `subscribeOn` 的调用，改变了调用前序列所运行的线程。
+> `subscribeOn` 其实是改变了调用前序列所运行的线程。
 
 #### ObserveOn
 
@@ -215,7 +214,7 @@ public final Observable<T> observeOn(Scheduler scheduler, boolean delayError, in
 
 ```
 
-其实看到关键字 lift 和 operator 就可以想到很多了。
+其实看到关键字 lift 和 operator 就大约可以猜到是做什么的了。
 
 接下来我们进入到 ```OperatorObserveOn``` 类中：
 
@@ -295,7 +294,7 @@ protected void schedule() {
 
 
 
-```call()``` 方法有点冗长，做的事情其实很简单，就是取出我们之前流的所有缓存值，然后在 Worker 工作线程中传下去。
+```call()``` 方法有点冗长，做的事情其实很简单，就是取出我们缓存之前流的所有值，然后在 Worker 工作线程中传下去。
 
 
 
@@ -332,7 +331,7 @@ protected void schedule() {
 
 
 
-#### doOnSubscribe
+#### doOnSubscribe 的例外
 
 
 
