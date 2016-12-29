@@ -31,13 +31,13 @@ RxJava 对于 Android 来说，最直观地便利就在于线程切换。所以�
 
 ```java
  Observable.just() //1
-   			    .subscribeOn(Schedulers.newThread())
+   			  .subscribeOn(Schedulers.newThread())
             .map() //2
-            .subscribeOn(Schedulers.io())
+          .subscribeOn(Schedulers.io())
             .map() //3
-            .observeOn(Schedulers.computation())
+          .observeOn(Schedulers.computation())
             .map() //4
-            .observeOn(Schedulers.newThread())
+          .observeOn(Schedulers.newThread())
             .subscribe() //5
 ```
 
@@ -45,14 +45,14 @@ RxJava 对于 Android 来说，最直观地便利就在于线程切换。所以�
 
 ```java
  Observable.just() //1
-   			    .subscribeOn(Schedulers.newThread())
+   			  .subscribeOn(Schedulers.newThread())
             .map() //2
-            .subscribeOn(Schedulers.io())
+          .subscribeOn(Schedulers.io())
             .map() //3
-            .observeOn(Schedulers.computation())
+          .observeOn(Schedulers.computation())
             .map() //4
-   			    .doOnSubscribe() //6
-            .observeOn(Schedulers.newThread())
+   			  .doOnSubscribe() //6
+          .observeOn(Schedulers.newThread())
             .subscribe() //5
 ```
 
@@ -312,8 +312,8 @@ protected void schedule() {
  Observable.just() //1
             .subscribeOn(Schedulers.newThread())
             .map() //2
-            .observeOn(Schedulers.computation())
             .map() //3
+            .observeOn(Schedulers.computation())
             .map() //4
             .observeOn(Schedulers.newThread())
             .subscribe() //5
@@ -413,5 +413,3 @@ Observable.just()
 > 4 computation
 >
 > 5 newThread
-
-2. ​
