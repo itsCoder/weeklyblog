@@ -30,30 +30,30 @@ RxJava 对于 Android 来说，最直观地便利就在于线程切换。所以�
 先来一道开胃菜：
 
 ```java
- Observable.just() //1
-   			  .subscribeOn(Schedulers.newThread())
-            .map() //2
+Observable.just() //1
+          .subscribeOn(Schedulers.newThread())
+          .map() //2
           .subscribeOn(Schedulers.io())
-            .map() //3
+          .map() //3
           .observeOn(Schedulers.computation())
-            .map() //4
+          .map() //4
           .observeOn(Schedulers.newThread())
-            .subscribe() //5
+          .subscribe() //5
 ```
 
 我们再改动下：
 
 ```java
- Observable.just() //1
-   			  .subscribeOn(Schedulers.newThread())
-            .map() //2
+Observable.just() //1
+          .subscribeOn(Schedulers.newThread())
+          .map() //2
           .subscribeOn(Schedulers.io())
-            .map() //3
+          .map() //3
           .observeOn(Schedulers.computation())
-            .map() //4
-   			  .doOnSubscribe() //6
+          .map() //4
+          .doOnSubscribe() //6
           .observeOn(Schedulers.newThread())
-            .subscribe() //5
+          .subscribe() //5
 ```
 
 只添加了一行```.doOnSubscribe() //6``` 。
