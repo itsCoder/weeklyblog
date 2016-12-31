@@ -9,6 +9,10 @@ date: 2016-12-25 16:02:31
 
 ### 目录
 
+- [目录](#目录)
+- [前言](#前言)
+- []()
+
 ### 前言
 
 RxJava 是在今年年初的时候上的车，接触也快要满一年了。从最初只知道几个操作符，写写 Demo ，或者跟着别人的项目和经验依葫芦画瓢，到目前终于有点初窥门径的地步。
@@ -29,6 +33,8 @@ RxJava 对于 Android 来说，最直观地便利就在于线程切换。所以�
 
 先来一道开胃菜：
 
+指出下列程序操作符所运行的线程。
+
 ```java
 Observable.just() //1
           .subscribeOn(Schedulers.newThread())
@@ -40,25 +46,6 @@ Observable.just() //1
           .observeOn(Schedulers.newThread())
           .subscribe() //5
 ```
-
-我们再改动下：
-
-```java
-Observable.just() //1
-          .subscribeOn(Schedulers.newThread())
-          .map() //2
-          .subscribeOn(Schedulers.io())
-          .map() //3
-          .observeOn(Schedulers.computation())
-          .map() //4
-          .doOnSubscribe() //6
-          .observeOn(Schedulers.newThread())
-          .subscribe() //5
-```
-
-只添加了一行```.doOnSubscribe() //6``` 。
-
-
 
 ------
 
@@ -85,7 +72,7 @@ Observable.just() //1
       }
       ```
 
-      方法注释上说明，当订阅者订阅之后，该函数会返回将会执行具体功能的流。像新手向[操作符](https://mcxiaoke.gitbooks.io/rxdocs/content/Operators.html)      ```(just/map/...)``` 进入源码会发现他们最终都会调用到 ```create()``` 函数。
+      方法注释上说明，当订阅者订阅之后，该函数会返回将会执行具体功能的流。[操作符](https://mcxiaoke.gitbooks.io/rxdocs/content/Operators.html)进入源码会发现他们最终都会调用到 ```create()``` 函数。
 
 2.    OnSubscribe
 
@@ -119,7 +106,7 @@ Observable.just() //1
 
 #### SubscribeOn()
 
-这个方法最后会到这个类：
+追踪这个方法，核心是在这个类：
 
 ```java
 public final class OperatorSubscribeOn<T> implements OnSubscribe<T> {
@@ -162,11 +149,11 @@ public final class OperatorSubscribeOn<T> implements OnSubscribe<T> {
 	// 因为是 OnSubscribe 类，这里 call() 中传入的参数是 Observable.subscribe(s) 中的 s 
 	@Override
     public void call(final Subscriber<? super T> subscriber) {
-      	// 根据传入的调度器，创建一个 Worker
+      	// 根据传入的调度器，创建一个 Worker 对象 inner
         final Worker inner = scheduler.createWorker();
         subscriber.add(inner);
         
-      	// 在 Worker 内部执行
+      	// 在 Worker 对象 inner 中执行（意思就是，在我们指定的调度器创建的线程中运行）
         inner.schedule(new Action0() {
             @Override
             public void call() {
@@ -182,7 +169,7 @@ public final class OperatorSubscribeOn<T> implements OnSubscribe<T> {
                 };
                 
               	// 这一句位置很关键
-              	// 首先 source 是之前传入的当前流，在 Worker 内部进行了订阅操作，所以执行的线程就在 Worker 里
+              	// 首先 source 是之前传入的流（也就是当前流），在 Worker 内部进行了订阅操作，所以该流所有操作都执行在其中
                 source.unsafeSubscribe(s);
             }
         });
@@ -355,6 +342,24 @@ protected void schedule() {
 
 #### doOnSubscribe 的例外
 
+我们再改动下开胃菜的代码：
+
+```java
+Observable.just() //1
+          .subscribeOn(Schedulers.newThread())
+          .map() //2
+          .subscribeOn(Schedulers.io())
+          .map() //3
+          .observeOn(Schedulers.computation())
+          .map() //4
+          .doOnSubscribe() //6
+          .observeOn(Schedulers.newThread())
+          .subscribe() //5
+```
+
+只添加了一行```.doOnSubscribe() //6``` ，也是探讨这个操作符执行的线程。
+
+
 ```java
 public class OperatorDoOnSubscribe<T> implements Operator<T, T> {
     private final Action0 subscribe;
@@ -389,7 +394,7 @@ Observable.just()
 > 问题是，对于 1 和 2 的执行顺序？
 
 
-这个问题会拓展到 RxJava 流的一个执行顺序，我准备下次开篇来和大家学习探讨。
+在开发中，我们肯定不会像问题那样写代码，只是自己在看 doOnSubscribe 源码的时候，在问自己为什么它在其他操作符之前，拓展到了 RxJava 流的一个执行顺序，也是自己想要明白的地方。所以下次准备探讨学习。
 
 > 对了，老司机说 RxJava 很像洋葱，一层一层。
 
@@ -400,7 +405,6 @@ Observable.just()
 
 [SubscribeOn 和 ObserveOn |Piasy Blog](http://blog.piasy.com/AdvancedRxJava/2016/09/16/subscribeon-and-observeon/)
 
-1. ​
 
 > 答案：
 >
