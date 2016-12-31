@@ -5,7 +5,10 @@ date: 2016-12-25 16:02:31
 >- 文章来源：itsCoder 的 [WeeklyBolg](https://github.com/itsCoder/weeklyblog) 项目
 >- itsCoder主页：[http://itscoder.com/](http://itscoder.com/)
 >- 作者：[谢三弟](https://github.com/xcc3641)
->- 审阅者：[]()
+>- 审阅者：
+>-       - [用语](https://github.com/yongyu0102)
+>-       - [JasonThink](https://github.com/jasonim)
+
 
 ### 目录
 
