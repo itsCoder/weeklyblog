@@ -6,15 +6,20 @@ date: 2016-12-25 16:02:31
 >- itsCoder主页：[http://itscoder.com/](http://itscoder.com/)
 >- 作者：[谢三弟](https://github.com/xcc3641)
 >- 审阅者：
->-       - [用语](https://github.com/yongyu0102)
->-       - [JasonThink](https://github.com/jasonim)
+>      - [用语](https://github.com/yongyu0102)
+>      - [JasonThink](https://github.com/jasonim)
 
 
 ### 目录
 
 - [目录](#目录)
 - [前言](#前言)
-- []()
+- [切换](#切换)
+  + [SubscribeOn](#SubscribeOn)
+  + [ObserveOn](#ObserveOn)
+  + [共用时各自的作用域](#共用时各自的作用域)
+- [思考](#思考)
+- [参考](#参考)
 
 ### 前言
 
@@ -107,7 +112,7 @@ Observable.just() //1
 
 上面知识点是一些小铺垫，因为后面的内容的核心其实就是上面几个类的作用。
 
-#### SubscribeOn()
+#### SubscribeOn
 
 追踪这个方法，核心是在这个类：
 
@@ -295,7 +300,7 @@ protected void schedule() {
 > 2. ObserveOn 会先将之前的流的值缓存起来，然后再在指定的线程上，将缓存推送给后面的 ```Subscriber```
 
 
-#### 共用的作用域
+#### 共用时各自的作用域
 
 
 ```java
