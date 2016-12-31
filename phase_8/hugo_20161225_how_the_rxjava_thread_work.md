@@ -313,7 +313,7 @@ protected void schedule() {
             .observeOn(Schedulers.newThread())
             .subscribe() //5
 ```
-如果分析这个流各个操作符的执行线程，我们先把第一个 ```subscribeOn()``` 之前和第一个 ```observeOn()``` 之前的 Todo Items 然后求并集：
+如果分析这个流各个操作符的执行线程，我们先把第一个 ```subscribeOn()``` 之前和第一个 ```observeOn()``` 之前的 Todo Items 找出来然后求并集：
 
 得到的结果就是 ```subscribeOn()``` 的作用域。
 
