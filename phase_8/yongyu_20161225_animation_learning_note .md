@@ -74,7 +74,7 @@ android:shareInterpolator="true" >
     </set>
 ```
 
-从上面代码可以看出 View 动画既可以是单个动画，也可以是一些列动画组成。**<set>** 标签表示动画集合，对应 Animationset 类，它可以表示若干个动画，并且它的内部也可以嵌套其他动画集合，它的两个属性含义如下：
+从上面代码可以看出 View 动画既可以是单个动画，也可以是一些列动画组成。`<set>` 标签表示动画集合，对应 Animationset 类，它可以表示若干个动画，并且它的内部也可以嵌套其他动画集合，它的两个属性含义如下：
 
 **android ：interpopator**
 
@@ -86,7 +86,7 @@ android:shareInterpolator="true" >
 **android:fillAfter**
 
 表示动画结束以后， View 是否停留在结束动画的位置，如果为 false ， View 会回到动画开始的位置。
-fillAfter是指动画结束时画面停留在最后一帧，这个参数不能在 </alpha>,</scale>,</translate>,</rotate> 中设置，这是没有作用的，必须通过以下方式设置：在动画 XML 文件的 </set> 节点中设置：在程序 Java 代码中进行设置：`setFillAfter(true) `。
+fillAfter是指动画结束时画面停留在最后一帧，这个参数不能在 `</alpha>,</scale>,</translate>,</rotate>` 中设置，这是没有作用的，必须通过以下方式设置：在动画 XML 文件的 `</set>` 节点中设置：在程序 Java 代码中进行设置：`setFillAfter(true) `。
 
 以上为 View 动画的 XML  格式，下面介绍在 Java 代码中去如何使用：
 
@@ -131,7 +131,7 @@ public static interface AnimationListener {
 }
 ```
 
-以后 Demo 代码托管在 gitHub 上，文章结尾会给出地址 。
+本文中所使用 Demo 代码托管在 GitHub 上，地址为  [AnimationDemo](https://github.com/yongyu0102/AnimationDemo) 。
 
 ## 2.2 自定义 View 动画
 
@@ -139,7 +139,7 @@ public static interface AnimationListener {
 
 ## 2.3 帧动画
 
-帧动画是顺序播发一组预先定义好的图片，类似于电影播放。不同于 View 动画，系统提供了另一个类 AnimationDrawble 来使用帧动画，使用的时候，需要通过 XML 定义一个 AnimationDrawble ，如下：
+帧动画是顺序播放一组预先定义好的图片，类似于电影播放。不同于 View 动画，系统提供了另一个类 AnimationDrawble 来使用帧动画，使用的时候，需要通过 XML 定义一个 AnimationDrawble ，如下：
 
 ```xml
 //\res\drawable\frame_animation_list.xml
@@ -182,7 +182,7 @@ public static interface AnimationListener {
                 frameAnimation.start();
 ```
 
-帧动画使用比较简单，但是容易引起 OOM ，所以尽量使用过多过大的图片。
+帧动画使用比较简单，但是容易引起 OOM ，所以尽量避免使用过多过大的图片。
 
 # 三、 View 动画的特殊使用场景
 
@@ -205,9 +205,9 @@ LayoutAnimation 作用于 ViewGroup ，为 ViewGroup 指定一个动画，这样
 ```
 其中几个属性解释如下：
 
-**android:dela**y 表示子元素开始动画的延时时间，比如子元素入场动画时间周期为 300ms ，那么 0.5 表示每个子元素都需要延迟 150ms 才能播放入场动画，即第一个子元素延迟 150ms 开始播放入场动画，第二个子元素延迟 300ms 开始播放入场动画，依次类推进行。
+**android:dela**y 表示子元素开始动画的延时时间，取值为子元素入场动画时间 duration 的倍数，比如子元素入场动画时间周期为 300ms ，那么 0.5 表示每个子元素都需要延迟 150ms 才能播放入场动画，即第一个子元素延迟 150ms 开始播放入场动画，第二个子元素延迟 300ms 开始播放入场动画，依次类推进行。
 
-**android:animationOrder**  表示子元素动画的开场顺序。
+**android:animationOrder**  表示子元素动画的开场顺序，normal(正序)、reverse(倒序)、random(随机)。
 
 **android:animation**  表示为子元素指定具体的动画效果，例如上面代码中 "@anim/zoom_in" 是我们自己定义的一个 XML 动画。
 
@@ -257,9 +257,9 @@ listView.startLayoutAnimation();
 
 Activity 有默认的切换效果，但是这个效果也可以我们自己定义，主要用到的方法是 `overridePenddingTransation（int enterAnim，int exitAnim）`，该方法必须要在 `startActivity(intent)` 和 `finish()`  方法之后调用才会有效，参数含义：
 
-enterAnim: Activity 被打开时所需动画的资源 id 。
+enterAnim: Activity 打开时所需动画的资源 id 。
 
-exitAnim: Acitivty  被暂停时所需动画的资源 id 。
+exitAnim: Acitivty  退出时所需动画的资源 id 。
 
 当启动一个 Activity 的时候，可以按照如下方式添加自定义的切换效果：
 
@@ -348,7 +348,7 @@ private void startAnimationSet(View targetView){
             ObjectAnimator.ofFloat(targetView,"scaleY",1,1.5f),
              //透明度
             ObjectAnimator.ofFloat(targetView,"alpha",1,0.25f,1));
-    animatorSet.setDuration(3000).start();
+    	    animatorSet.setDuration(3000).start();
 }
 ```
 
@@ -397,7 +397,7 @@ private void startAnimationSet(View targetView){
 
 ## 4.2 理解插值器和估值器
 
-**Timeinterpolator** ：时间插值器，是一个接口类，它的作用是根据时间流逝的百分比来计算当前属性属性改变的百分比，系统自带有 LinearInterpolator (线性时间插值器，匀速动画)、AccelerateDecelerateInterpolater(加速减速插值器，动画两头慢，中间快)和DecelerateInterpolater (减速插值器，动画越来越慢)等，均实现了该接口。
+**Timeinterpolator** ：时间插值器，是一个接口类，它的作用是根据时间流逝的百分比来计算当前属性改变的百分比，系统自带有 LinearInterpolator (线性时间插值器，匀速动画)、AccelerateDecelerateInterpolater(加速减速插值器，动画两头慢，中间快)和DecelerateInterpolater (减速插值器，动画越来越慢)等，均实现了该接口。
 
 **TypeEvaluator**: 类型估值算法，也叫估值器，是一个接口类，它的作用是根据当前属性改变的百分比来计算改变后的属性值，系统自带有 IntEvaluator(针对整型属性)、FloatAvaluator(浮点型属性)和 ArgbEvaluator(针对 Color 属性)等，均实现了该接口。
 
@@ -592,7 +592,7 @@ private void performAnimatorByValue(final View targetView, final int start, fina
 
 ## 4.5 属性动画的工作原理
 
-属性动画要求作用的对象提供该属性的 set 方法，属性动画根据你传递的该属性的初始值和最终值以动画的效果去多次调用 set 方法。每次传递给 set  方法的值都不一样，确切的说是随着时间的推移，所传递的值越来越接近最终值。如果动画的时候没有传递初始值，那么还要提供 get  方法，因为系统要去获取该属性的初始值。对于属性动画来说，其动画过程中所做的就这么多，下面分析一下源码，首先找一个合适的入口，就从我们使用动画的过程作为切入点，`ObjectAnimator.ofInt(viewWrapper, "width", 800).setDuration(5000).start();`
+属性动画要求作用的对象提供该属性的 set 方法，属性动画根据你传递的该属性的初始值和最终值以动画的效果去多次调用 set 方法。每次传递给 set  方法的值都不一样，确切的说是随着时间的推移，所传递的值越来越接近最终值。如果动画的时候没有传递初始值，那么还要提供 get  方法，因为系统要去获取该属性的初始值。对于属性动画来说，其动画过程中所做的就这么多，下面分析一下源码，首先找一个合适的入口，就从我们使用动画的过程作为切入点， `ObjectAnimator.ofInt(viewWrapper, "width", 800).setDuration(5000).start();`
 
 ```java
 public void start() {
