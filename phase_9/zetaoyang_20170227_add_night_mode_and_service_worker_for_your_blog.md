@@ -94,6 +94,31 @@ if ('serviceWorker' in navigator) {
 `serviceworker.js ` 文件的内容(我的博客直接将 `serviceworker.js` 放得到了根目录，作用全局)，链接在此： https://zetaoyang.github.io/serviceworker.js 。
 
 ![serviceworker](https://cdn.rawgit.com/qanno/qanno.github.io/master/images/blog-serviceworker.png)  
+注：serviceworker 生产环境只能是`https`,本地测试环境可以是`http://localhost`。
+
+### CDN 加速网页
+
+利用 CDN 服务 来加速你的网络。
+#### 国内：
+
+[BootCDN](http://www.bootcdn.cn/)
+[又拍云 JS 库加速服务](http://jscdn.upai.com/)
+[开放静态文件 CDN](https://staticfile.org/)
+[百度静态资源公共库](http://cdn.code.baidu.com/)
+
+#### 国外：
+
+[Google Hosted Libraries](https://developers.google.com/speed/libraries/)
+[cdnjs](https://cdnjs.com/) 
+[jsDelivr](https://www.jsdelivr.com/) (有[国内节点](https://www.jsdelivr.com/features/cdn-in-asia-and-china))
+
+注：
+万一 CDN 服务挂了，还可以从自己的服务器上读取：
+```
+<script src="//cdn.bootcss.com/jquery/3.1.1/jquery.min.js"></script>
+<script>window.jQuery || document.write('<script src="/jquery.min.js"><\/script>')</script>
+```
+可参考 [Stack Overflow](http://stackoverflow.com/questions/5257923/how-to-load-local-script-files-as-fallback-in-cases-where-cdn-are-blocked-unavai) 。
 
 ### 相关资料
 
