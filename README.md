@@ -10,6 +10,16 @@
 
 | 标题 | 类别 | 作者 | 期数 |
 | :---- | :-----: | :--: | :-----: |
+| [RxJava 线程切换源码的一些体会和思考](http://imxie.cc/2016/12/25/how_the_rxjava_thread_work/) | Android | [谢三弟](https://github.com/xcc3641) |8|
+| [GearMachine Canvas 绘制漂亮的齿轮装置](http://refactor.cn/2016/12/26/GearMachine-Canvas%E7%BB%98%E5%88%B6%E6%BC%82%E4%BA%AE%E7%9A%84%E9%BD%BF%E8%BD%AE%E8%A3%85%E7%BD%AE/) | Android | [andyxialm](https://github.com/andyxialm) |8|
+| [Android View 动画和属性动画学习笔记](http://yongyu.itscoder.com/2016/12/25/animation_learning_note/) | Android | [yongyu](https://github.com/yongyu0102) |8|
+| [仿 google 相机点击聚焦效果](http://hymane.itscoder.com/2016/12/24/hymane_20161224_custom_camera_foucs_view/) | Android | [hymane](https://github.com/hymanme) |8|
+| [Android 6.0 运行时权限简洁封装](https://itsmelo.github.io/2017/01/04/Android%206.0%E8%BF%90%E8%A1%8C%E6%97%B6%E6%9D%83%E9%99%90%E7%AE%80%E6%B4%81%E5%B0%81%E8%A3%85/) | Android | [Melo](https://itsmelo.github.io/) |8|
+| [RecyclerViewDivider: RecyclerView 分割线](https://github.com/laobie/RecyclerViewDivider) | Android | [写代码的猴子](https://github.com/laobie) |8|
+| [利用 Gradle 进行应用程序的编译打包](http://allenwu.itscoder.com/learn-gradle-in-android) | Gradle | [allenwu](https://github.com/wuchangfeng) |8|
+| [设计模式--单例模式](http://hujiandong.com/2016/12/21/design_pattern_singleton/) | 设计模式 | [jasonim](https://github.com/jasonim) |8|
+| [[译] 给予设计师灵感的 11 个顶尖网站](https://zetaoyang.github.io/post/2016/12/24/t-top-inspiration-websites-for-designers.html) | 设计 | [zetaoyang](https://github.com/zetaoyang) |8|
+| [MySQL 基础之组提交](https://win-man.github.io/2016/12/07/win_man_20161224_mysql_binary_log_group_commit/) | 数据库 | [Win_Man](https://github.com/Win-Man) |8|
 | [React Native 从零到一个小项目](http://janggwa.cn/2016/12/13/React%20Native%20%E4%BB%8E%E9%9B%B6%E5%88%B0%E4%B8%80%E4%B8%AA%E5%B0%8F%E9%A1%B9%E7%9B%AE/) | React Native | [JangGwa](https://github.com/JangGwa) |7|
 | [学习给 AS 和 IDEA 开发一个翻译插件](http://allenwu.itscoder.com/write-a-plugin-for-idea-and-as) | 插件 | [allenwu](https://github.com/wuchangfeng) |7|
 | [Android 项目框架--MVP 基础](http://hujiandong.com/2016/12/13/android-mvp-basic/) | Android | [Jasonim](https://github.com/Jasonim) |7|
