@@ -1,3 +1,4 @@
+---
 title: 你了解泛型通配符与上下界吗？
 date: 2017-03-11 10:30:16
 categories: Java
