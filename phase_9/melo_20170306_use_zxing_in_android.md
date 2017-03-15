@@ -71,7 +71,7 @@ protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 ```
 一步步跟进 `IntentIntegrator(this).initiateScan()` 方法可以发现，当我不设置 CaptureActivity 时，调用默认的 Activity 就是 `CaptureActivity`
 
-所以对于吊起的扫码 Activity 来说，他的方向可以在 manifest 文件中的 `android:screenOrientation` 属性直接指定：
+所以对于调起的扫码 Activity 来说，他的方向可以在 manifest 文件中的 `android:screenOrientation` 属性直接指定：
 
 ```
         <activity
