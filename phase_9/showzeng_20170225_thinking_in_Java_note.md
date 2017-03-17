@@ -28,16 +28,16 @@ excerpt: 组合与继承是 Java 中重要的两种代码重用机制，与之�
 // Test.java
 
 class Person {
-  public string toString() {
-    return "I am a good guy!"
-  }
+    public string toString() {
+        return "I am a good guy!";
+    }
 }
 
 public class Test {
-  public static void main(String[] args) {
-    Person p = new Person();
-    System.out.println(p);
-  }
+    public static void main(String[] args) {
+        Person p = new Person();
+        System.out.println(p);
+    }
 }
 
 //~ output: I am a good guy!
@@ -61,19 +61,19 @@ public class Test {
 // ShowZeng.java
 
 class People {
-  public void kiss() {
-    System.out.println("Give you a kiss!")
-  }
-  static void act(People p) {
-    p.kiss();
-  }
+    public void kiss() {
+        System.out.println("Give you a kiss!");
+    }
+    static void act(People p) {
+        p.kiss();
+    }
 }
 
 public class ShowZeng extends People {
-  public static void main(String[] args) {
-    ShowZeng zeng = new ShowZeng();
-    People.act(zeng);
-  }
+    public static void main(String[] args) {
+        ShowZeng zeng = new ShowZeng();
+        People.act(zeng);
+    }
 }
 
 //~ output:Give you a kiss!
@@ -101,29 +101,29 @@ public class ShowZeng extends People {
 
 ```java
 人 {
-  打(手) {}
+    打(手) {}
 }
 
 小王 继承 人 {
-  打(手) {
-    return “小王动手打人了！”；
-  }
+    打(手) {
+        return "小王动手打人了！";
+    }
 }
 
 小李 继承 人 {
-  打(手) {
-    return “小李动手打人了！”；
-  }
+    打(手) {
+        return "小李动手打人了！";
+    }
 }
 
 主类 {
-  main方法() {
-    人 someone = new random(小王(), 小李());
+    main方法() {
+        人 someone = new random(小王(), 小李());
 
-    打人了(someone) {
-      someone.打(手);
+        打人了(someone) {
+            someone.打(手);
+        }
     }
-  }
 }
 ```
 
@@ -159,47 +159,47 @@ public class ShowZeng extends People {
 
 ```java
 class Meal {
-  Meal() { System.out.println("Meal()"); }
+    Meal() { System.out.println("Meal()"); }
 }
 
 class Bread {
-  Bread() { System.out.println("Bread()"); }
+    Bread() { System.out.println("Bread()"); }
 }
 
 class Cheese {
-  Cheese() { System.out.println("Cheese()"); }
+    Cheese() { System.out.println("Cheese()"); }
 }
 
 class Lettuce {
-  Lettuce() { System.out.println("Lettuce()"); }
+    Lettuce() { System.out.println("Lettuce()"); }
 }
 
 class Lunch extends Meal {
-  private Bread b = new Bread();
+    private Bread b = new Bread();
 
-  private void myMethod() {
-    Meal m = new Meal();
-  }
+    private void myMethod() {
+        Meal m = new Meal();
+    }
 
-  Lunch() { System.out.println("Lunch()"); }
+    Lunch() { System.out.println("Lunch()"); }
 }
 
 class PortableLunch extends Lunch {
-  PortableLunch() { System.out.println("PortableLunch()"); }
+    PortableLunch() { System.out.println("PortableLunch()"); }
 }
 
 public class Sandwich extends PortableLunch {
-  private Bread b = new Bread();
-  public Cheese c = new Cheese();
+    private Bread b = new Bread();
+    public Cheese c = new Cheese();
 
 
-  public Sandwich() { System.out.println("Sandwich()"); }
+    public Sandwich() { System.out.println("Sandwich()"); }
 
-  private Lettuce l = new Lettuce();
+    private Lettuce l = new Lettuce();
 
-  public static void main(String[] args) {
-    new Sandwich();
-  }
+    public static void main(String[] args) {
+        new Sandwich();
+    }
 }
 ```
 
@@ -223,34 +223,34 @@ public class Sandwich extends PortableLunch {
 
 ```java
 class Glyph {
-  void draw() { System.out.println("Glyph.draw()"); }
+    void draw() { System.out.println("Glyph.draw()"); }
 
-  Glyph() {
-    System.out.println("Glyph() before draw()");
+    Glyph() {
+        System.out.println("Glyph() before draw()");
 
-    draw();
+        draw();
 
-    System.out.println("Glyph() after draw()");
-  }
+        System.out.println("Glyph() after draw()");
+    }
 }
 
 class RoundGlyph extends Glyph {
-  private int radius = 1;
+    private int radius = 1;
 
-  RoundGlyph(int r) {
-    radius = r;
-    System.out.println("RoundGlyph.RoundGlyph(), radius = " + radius);
-  }
+    RoundGlyph(int r) {
+        radius = r;
+        System.out.println("RoundGlyph.RoundGlyph(), radius = " + radius);
+    }
 
-  void draw() {
-    System.out.println("RoundGlyph.draw(), radius = " + radius);
-  }
+    void draw() {
+        System.out.println("RoundGlyph.draw(), radius = " + radius);
+    }
 }
 
 public class PolyConstructors {
-  public static void main(String[] args) {
-    new RoundGlyph(5);
-  }
+    public static void main(String[] args) {
+        new RoundGlyph(5);
+    }
 }
 ```
 
