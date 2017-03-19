@@ -39,7 +39,7 @@
 
 HTML5 提供了两种在客户端存储数据的方法：
 localStorage —— 没有时间限制的数据存储，需手动清除
-sessionStorage—— 针对session 的数据存储，标签页关闭或者浏览器关闭后自动清除  
+sessionStorage—— 针对 session 的数据存储，标签页关闭或者浏览器关闭后自动清除  
 (以上两种方法最大能存储 5MB 数据)
 其他具体相关细节可查阅 [MDN](https://developer.mozilla.org/)。
 
