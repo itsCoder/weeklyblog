@@ -17,12 +17,12 @@
 | [Android 6.0 运行时权限简洁封装](https://itsmelo.github.io/2017/01/04/Android%206.0%E8%BF%90%E8%A1%8C%E6%97%B6%E6%9D%83%E9%99%90%E7%AE%80%E6%B4%81%E5%B0%81%E8%A3%85/) | Android | [Melo](https://itsmelo.github.io/) |8|
 | [RecyclerViewDivider: RecyclerView 分割线](https://github.com/laobie/RecyclerViewDivider) | Android | [写代码的猴子](https://github.com/laobie) |8|
 | [利用 Gradle 进行应用程序的编译打包](http://allenwu.itscoder.com/learn-gradle-in-android) | Gradle | [allenwu](https://github.com/wuchangfeng) |8|
-| [设计模式--单例模式](http://hujiandong.com/2016/12/21/design_pattern_singleton/) | 设计模式 | [jasonim](https://github.com/jasonim) |8|
+| [设计模式--单例模式](https://github.com/itsCoder/weeklyblog/blob/master/phase_8/jasonthink_20161225_design_pattern_singleton.md) | 设计模式 | [jasonim](https://github.com/jasonim) |8|
 | [[译] 给予设计师灵感的 11 个顶尖网站](https://zetaoyang.github.io/post/2016/12/24/t-top-inspiration-websites-for-designers.html) | 设计 | [zetaoyang](https://github.com/zetaoyang) |8|
 | [MySQL 基础之组提交](https://win-man.github.io/2016/12/07/win_man_20161224_mysql_binary_log_group_commit/) | 数据库 | [Win_Man](https://github.com/Win-Man) |8|
 | [React Native 从零到一个小项目](http://janggwa.cn/2016/12/13/React%20Native%20%E4%BB%8E%E9%9B%B6%E5%88%B0%E4%B8%80%E4%B8%AA%E5%B0%8F%E9%A1%B9%E7%9B%AE/) | React Native | [JangGwa](https://github.com/JangGwa) |7|
 | [学习给 AS 和 IDEA 开发一个翻译插件](http://allenwu.itscoder.com/write-a-plugin-for-idea-and-as) | 插件 | [allenwu](https://github.com/wuchangfeng) |7|
-| [Android 项目框架--MVP 基础](http://hujiandong.com/2016/12/13/android-mvp-basic/) | Android | [Jasonim](https://github.com/Jasonim) |7|
+| [Android 项目框架--MVP 基础](https://github.com/itsCoder/weeklyblog/blob/master/phase_7/jasonthink_20161202_android_mvp_basic.md) | Android | [Jasonim](https://github.com/Jasonim) |7|
 | [死磕 Fragment 的生命周期](https://itsmelo.github.io/2016/12/12/%E6%AD%BB%E7%A3%95%20Fragment%20%E7%9A%84%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F/) | Android | [melo](https://github.com/itsMelo) |7|
 | [Activity 共享元素转场动画实践](http://extremej.itscoder.com/zoom-up-animation/) | Android | [Joe](http://extremej.itscoder.com/) |7|
 | [RecyclerView 入门其实很简单](http://hymane.itscoder.com/2016/12/03/hymane_20161204_how_to_controll_recyclerview/) | Android | [hymane](https://github.com/hymanme) |7|
@@ -36,7 +36,7 @@
 | [Atom\-Helper 小脚本](http://brucezz.itscoder.com/atom-helper-script) | Python | [brucezz](https://github.com/brucezz) |6|
 | [面向对象六大原则和设计模式](https://itsmelo.github.io/2016/11/20/%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1%E5%85%AD%E5%A4%A7%E5%8E%9F%E5%88%99%E5%92%8C%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/) | 面向对象 | [Melo](https://github.com/itsMelo) |6|
 | [沉浸式适配个人总结 ](http://imxie.itscoder.com/2016/11/08/jike_Immersive_project/) | Android  | [谢三弟](https://github.com/xcc3641) |6|
-| [Android 单元测试-Mock及Mockito](http://hujiandong.com/2016/11/07/android-unit-test-mock/) | Android  | [JasonThink](https://github.com/jasonim) |6|
+| [Android 单元测试-Mock及Mockito](https://github.com/itsCoder/weeklyblog/blob/master/phase_6/jasonthink_2016110_android_unit-test-mock.md) | Android  | [JasonThink](https://github.com/jasonim) |6|
 | [自定义选择复制功能的实现](http://jaeger.itscoder.com/android/2016/11/21/selectable-text-helper.html) | Android  | [写代码的猴子](https://github.com/laobie) |6|
 | [RxJava 学习笔记（部分示例代码及源码）](http://yongyu.itscoder.com/2016/11/15/rxjava_learning_note/) | Android  | [yongyu](https://github.com/yongyu0102) |6|
 | [使用贝塞尔曲线实现仿 QQ "一键下班"功能](http://hymane.itscoder.com/2016/11/13/hymane_20161113_qq_bubble_with_bezier/) | Android  | [hymane](https://github.com/hymanme) |6|
