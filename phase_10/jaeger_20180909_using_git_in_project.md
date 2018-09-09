@@ -57,7 +57,7 @@ category: Dev
 
 以下就是 Git-Flow 的经典流程图：
 
-![](/img/postimg/git-flow.png)
+![](https://lc-QYgvX1CC.cn-n1.lcfile.com/256d12c7256eb437.png)
 
 如果你熟悉 Git-Flow，那么你对上图中的各种分支和线应该都能够理解，如果你之前没了解过相关的知识，那你可能会有点懵，不过在读完本文之后再看这张图，应该就能够理解了。
 
@@ -111,14 +111,14 @@ category: Dev
   
     首先看一张图：
 
-    ![](/img/postimg/git_pull_no_rebase.jpg)
+    ![](https://lc-QYgvX1CC.cn-n1.lcfile.com/7f961b656eb11f31.jpg)
 
     看到这样的提交线图，想从中看出一条清晰的提交线几乎是不可能的，充满了 `Merge remote-tracking branch 'origin/xxx' into xxx` 这样的提交记录，同时也将提交线弄成了交错纵横的图，没有了可读性。
     
     这里最大的原因就是因为默认的 `git pull` 使用的是 merge 行为，当你更新代码时，如果本地存在未推送到远程的提交，就会产生一个这样的 merge 提交记录。因此在同一个分支上更新代码时推荐使用 `git pull --rebase`。
 
     下面这张图展示了默认的 `git pull` 和 `git pull --rebase` 的结果差异，使用 `git pull --rebase` 目的是修整提交线图，使其形成一条直线。
-    ![](/img/postimg/git_pull_rebase_diff.jpg)
+    ![](https://lc-QYgvX1CC.cn-n1.lcfile.com/a5a2327a44abc285.jpg)
 
     默认的 `git pull` 行为是 merge，可以进行如下设置修改默认的 `git pull` 行为：
 
@@ -144,7 +144,7 @@ category: Dev
 
     fast-forward 合并的结果如下图所示，这种 merge 的结果就是一条直线了，无法明确看到切出一个新的 feature 分支，并完成了一个新的功能开发，因此此时比较推荐使用 `git merge --no-ff`，得到的结果就很明确知道，新的一系列提交是完成了一个新的功能，如果需要对这个功能进行 code review，那么只需要检视叉的那条线上的提交即可。
 
-    ![](/img/postimg/git_merge_diff.svg)
+    ![](https://lc-QYgvX1CC.cn-n1.lcfile.com/1611016c81fe4852.svg)
 
     关于以上两个分支间的操作建议，如果需要了解更多，可以阅读[洁癖者用 Git：pull \-\-rebase 和 merge \-\-no\-ff](http://hungyuhei.github.io/2012/08/07/better-git-commit-graph-using-pull---rebase-and-merge---no-ff.html) 这篇文章。
 
