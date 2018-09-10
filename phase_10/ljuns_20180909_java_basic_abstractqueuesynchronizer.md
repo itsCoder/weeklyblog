@@ -228,7 +228,7 @@ Mutex 是一个独占锁，在同一个时刻只允许一个线程占有锁，Sy
 
 ##### 独占式获取同步状态
 
-调用同步器的 `acquire(int arg)` 方法可以获取同步状态，该方法不响应中断操作。也就是说当线程获取获取同步状态失败后会加入到同步队列中，如果此时对线程进行中断操作，线程不会从同步队列中移出。
+调用同步器的 `acquire(int arg)` 方法可以获取同步状态，该方法不响应中断操作。也就是说当线程获取同步状态失败后会加入到同步队列中，如果此时对线程进行中断操作，线程不会从同步队列中移出。
 下面看看 `acquire(int arg)` 方法的实现：
 
 ```java
@@ -337,7 +337,7 @@ private final boolean parkAndCheckInterrupt() {
 
 独占式的获取同步状态经过前面四步就完成了，画个流程图加深下印象：
 
-<img src="https://ws1.sinaimg.cn/large/929c4bfbgy1fuszouv6gvj217s0owjus.jpg" width="80%" height="80%" div align=center/>
+<img src="https://ws1.sinaimg.cn/large/929c4bfbgy1fv4ewpsgt4j216y0piwi8.jpg" width="80%" height="80%" div align=center/>
 
 在获取同步状态时，同步器维护了一个同步队列，获取状态失败的线程都会被构建成节点加入到队列中并进行自旋；移出队列的条件是前驱节点为头节点且成功获取了同步状态。
 
@@ -498,4 +498,12 @@ private void doReleaseShared() {
 
 在 `releaseShared()` 方法中尝试调用 `tryReleaseShared()` 方法释放同步状态，当 `tryReleaseShared()` 返回 true 表示同步状态已经修改成功。`doReleaseShared()` 方法主要是修改头节点的等待状态以及唤醒后继节点的线程。
 
-了解了同步状态和同步队列后，那么同步器的整体工作流程就差不多了，往后再去看那些 Lock 的实现类就会轻松很多。
+#### 小结
+
+获取同步状态失败后会把当前线程以及其他一些状态信息构建成节点添加到同步队列中（如果此时同步队列是空的，那么会先添加一个空节点，然后再添加这个节点），如果是独占式获取，新构建的节点是 `Node.EXCLUSIVE`，否则是 `Node.SHARED` ，加入到同步队列后节点会自旋（死循环获取同步状态）。
+
+释放同步状态成功后，将会唤醒后继节点的线程，后继节点会在自旋状态中获取到同步状态，然后从同步队列中移除。
+
+#### 参考
+
+《Java 并发编程的艺术--方腾飞、魏鹏、程晓明》
