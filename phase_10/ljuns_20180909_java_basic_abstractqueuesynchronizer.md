@@ -3,6 +3,8 @@ title: Java 基础--队列同步器(AQS)
 date: 2018-09-04 13:12:46
 categories: Java 基础
 tags: 队列同步器，AQS
+
+
 ---
 
 在 Java 5 之前，Java 程序是靠 synchronized 关键字实现锁的功能的，在 Java 5 之后并发包中提供了 Lock 接口及相关实现类（ReentrantLock、CountDownLatch ...）来实现锁的功能，而这些实现类内部正是用到了 AbstractQueuedSynchronizer 来实现对应的功能。
@@ -147,15 +149,15 @@ static final class Node {
 节点（Node）是构成同步队列的基础，同步器拥有头节点和尾节点的引用。获取同步状态失败的线程会构建成节点被添加到同步队列的尾部。
 同步队列示意图：
 
-<img src="https://ws1.sinaimg.cn/large/929c4bfbgy1fusv1r6i2ej20pi06wt92.jpg" width="80%" height="80%" div align=center/>
+<center><img src="https://ws1.sinaimg.cn/large/929c4bfbgy1fusv1r6i2ej20pi06wt92.jpg" width="80%" height="80%" /></center>
 
 当一个线程获取同步状态成功后，其他线程则无法获取同步状态，转而被构造成节点添加到同步队列的尾部。这个添加过程必须是线程安全的，所以同步器提供了一个基于 CAS 的方法 `compareAndSetTail(Node expect, Node update)` 来完成添加。
 
-<img src="https://s1.ax2x.com/2018/08/31/5BPXNi.gif" width="80%" height="80%" div align=center/>
+<center><img src="https://s1.ax2x.com/2018/08/31/5BPXNi.gif" width="80%" height="80%" /></center>
 
 头节点在释放同步状态后会通知后继节点，当后继节点获取同步状态成功后将自己设置为头节点。同步器同样提供了一个基于 CAS 的方法 `compareAndSetHead(Node update)`。
 
-<img src="https://i.niupic.com/images/2018/08/31/5z32.gif" width="80%" height="80%" div align=center/>
+<center><img src="https://i.niupic.com/images/2018/08/31/5z32.gif" width="80%" height="80%" /></center>
 
 ### 实现分析
 
@@ -337,7 +339,7 @@ private final boolean parkAndCheckInterrupt() {
 
 独占式的获取同步状态经过前面四步就完成了，画个流程图加深下印象：
 
-<img src="https://ws1.sinaimg.cn/large/929c4bfbgy1fv4ewpsgt4j216y0piwi8.jpg" width="80%" height="80%" div align=center/>
+<center><img src="https://ws1.sinaimg.cn/large/929c4bfbgy1fv4ewpsgt4j216y0piwi8.jpg" width="80%" height="80%" /></center>
 
 在获取同步状态时，同步器维护了一个同步队列，获取状态失败的线程都会被构建成节点加入到队列中并进行自旋；移出队列的条件是前驱节点为头节点且成功获取了同步状态。
 
