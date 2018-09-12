@@ -3,12 +3,12 @@ title: 项目中的 Git 使用规范
 category: Dev
 ---
 
-祖师爷 Linus 在创造了伟大的 Linux 之后，又创造应用最广泛的代码管理工具 —— Git，极大地提高了程序员的生产力。
+祖师爷 Linus 在创造了伟大的 Linux 之后，又创造了应用最广泛的代码管理工具 —— Git，极大地提高了程序员的生产力。
 现如今大部分项目都在使用 Git 作为代码管理工具，不论是在代码管理、版本控制以及团队协作上，Git 相比其他版本控制软件都有着无可比拟的优势。
 
 虽然 Git 是个优秀的工具，但是在项目中是否能够正确合理地使用，是否能够发挥其最大的优势，就我自己这几年的工作经历来看，对于大部分团队这个问题的答案是否定的。
 
-大部分程序员对 Git 的使用基本上都停留在 `git add`、`git commit`、`git push`、`git pull` 这几个指令上，而且大部分团队也没有 Git 规范，提交信息充斥着大量的 “fix”、“update”，分支管理也很混乱，代码提交哪个分支上也没具体的规定，导致在团队协作过程中也会经常出现代码合并后谁的代码不见了，修过的 bug 在新版本又出现了……
+大部分程序员对 Git 的使用基本上都停留在 `git add`、`git commit`、`git push`、`git pull` 这几个指令上，而且大部分团队也没有 Git 规范，提交信息充斥着大量的 “fix”、“update”，分支管理也很混乱，代码提交哪个分支上也没具体的规定，导致在团队协作过程中经常出现代码合并后谁的代码不见了，修过的 bug 在新版本又出现了……
 
 ### 0. 我们可能面临的问题
 
@@ -21,7 +21,7 @@ category: Dev
 - 某个功能本来准备发布的，现在突然决定这个版本不上了，现在要一处处找到之前的代码，然后再改回去？
 - ……
 
-以上这些问题在我们的项目中都是会或多或少出现过的，部分问题可能涉及到的是对 Git 的功能是否熟悉的问题，大部分问题则是涉及到一个项目的 Git 使用规范问题，如果有一个很好的规范，在项目中合理地使用 Git，很多问题压根就不是问题。
+以上这些问题在我们的项目中都是会或多或少出现的，部分问题可能涉及到的是对 Git 的功能是否熟悉的问题，大部分问题则是涉及到一个项目的 Git 使用规范问题，如果有一个很好的规范，在项目中合理地使用 Git，很多问题压根就不是问题。
 
 ### 1. Git 规范的必要性
 
@@ -48,12 +48,12 @@ category: Dev
 
 以上就是一份 Git 规范的作用和使命。
 
-接下来结合 Git-Flow 和个人实际的项目经验，总结了一份项目中使用 Git 的规范，其中大部分内容都是对 Git-Flow 进行一个解读和扩展，告诉大家为什么这么做已经怎么做。
+接下来结合 Git-Flow 和个人实际的项目经验，总结了一份项目中使用 Git 的规范，其中大部分内容都是对 Git-Flow 进行一个解读和扩展，告诉大家为什么这么做以及怎么做。
 这里也推荐一下 Git-Flow 相关的内容：
 
 > [A successful Git branching model » nvie\.com](https://nvie.com/posts/a-successful-git-branching-model/)
 
-这是一份 2010 年提出来的分支管理规范，距今已过去 8 年了，但是其工作流程至今还是试用的，也衍生出很多优秀的开发流程。 
+这是一份 2010 年提出来的分支管理规范，距今已过去 8 年了，但是其工作流程至今还是适用的，也衍生出很多优秀的开发流程。 
 
 以下就是 Git-Flow 的经典流程图：
 
@@ -63,32 +63,35 @@ category: Dev
 
 ### 2. 分支管理规范
 
-#### 1.1 分支说明和操作
+#### 2.1 分支说明和操作
 
--   **master 分支**
+- **master 分支**
 
     - 主分支，永远处于稳定状态，对应当前线上版本
     - 以 tag 标记一个版本，因此在 master 分支上看到的每一个 tag 都应该对应一个线上版本
     - 不允许在该分支直接提交代码
 
--   **develop 分支**
+- **develop 分支**
 
     - 开发分支，包含了项目最新的功能和代码，所有开发都依赖 develop 分支进行
+
     - 小的改动可以直接在 develop 分支进行，改动较多时切出新的 feature 分支进行
 
--   **feature 分支**
+      **注：** 更好的做法是 develop 分支作为开发的主分支，也不允许直接提交代码。小改动也应该以 feature 分支提 merge request 合并，目的是保证每个改动都经过了强制代码 review，降低代码风险
+
+- **feature 分支**
 
     - 功能分支，开发新功能的分支
     - 开发新的功能或者改动较大的调整，从 develop 分支切换出 feature 分支，分支名称为 `feature/xxx`
     - 开发完成后合并回 develop 分支并且删除该 feature/xxx 分支
 
--   **release 分支**
+- **release 分支**
 
     - 发布分支，新功能合并到 develop 分支，准备发布新版本时使用的分支
     - 当 develop 分支完成功能合并和部分 bug fix，准备发布新版本时，切出一个 release 分支，来做发布前的准备，分支名约定为`release/xxx`
     - 发布之前发现的 bug 就直接在这个分支上修复，确定准备发版本就合并到 master 分支，完成发布，同时合并到 develop 分支
 
--   **hotfix 分支**
+- **hotfix 分支**
 
     - 紧急修复线上 bug 分支
     - 当线上版本出现 bug 时，从 master 分支切出一个 `hotfix/xxx` 分支，完成 bug 修复，然后将 `hotfix/xxx` 合并到 master 和 develop 分支(如果此时存在 release 分支，则应该合并到 release 分支)，合并完成后删除该 `hotfix/xxx` 分支
@@ -102,7 +105,7 @@ category: Dev
 - feature 分支: 功能分支，完成特定功能开发的分支，存在多个，功能合并之后删除
 - hotfix 分支: 紧急热修复分支，存在多个，紧急版本发布之后删除
 
-#### 1.2 分支间操作注意事项
+#### 2.2 分支间操作注意事项
 
 在团队开发过程中，避免不了和其他人一起协作，同时也会遇到合并分支等一些操作，这里提交 2 个个人觉得比较好的分支操作规范。
 
@@ -132,8 +135,9 @@ category: Dev
 
     这里需要说明一下，在我看来使用 `git pull --rebase` 操作是比较好的，能够得到一条很清晰的提交直线图，方便查看提交记录和 code review，但是由于 rebase 会改变提交历史，也存在一些不好的影响。这里就不做过多的讨论了，有兴趣的话可以移步知乎上的讨论：[在开发过程中使用 git rebase 还是 git merge，优缺点分别是什么？](https://www.zhihu.com/question/36509119)
 
--   **分支合并使用 `--no-ff`**
-      
+- **分支合并使用 `--no-ff`**
+        
+
     ```bash
     # 例如当前在 develop 分支，需要合并 feature/xxx 分支
     git merge --no-ff feature/xxx
@@ -148,18 +152,18 @@ category: Dev
 
     关于以上两个分支间的操作建议，如果需要了解更多，可以阅读[洁癖者用 Git：pull \-\-rebase 和 merge \-\-no\-ff](http://hungyuhei.github.io/2012/08/07/better-git-commit-graph-using-pull---rebase-and-merge---no-ff.html) 这篇文章。
 
-#### 1.3 项目分支操作流程示例
+#### 2.3 项目分支操作流程示例
 
 这部分内容结合日常项目的开发流程，涉及到开发新功能、分支合并、发布新版本以及发布紧急修复版本等操作，展示常用的命令和操作。
 
-1.  切到 develop 分支，更新 develop 最新代码
+1. 切到 develop 分支，更新 develop 最新代码
 
     ```bash
     git checkout develop
     git pull --rebase
     ```
 
-2.  新建 feature 分支，开发新功能
+2. 新建 feature 分支，开发新功能
 
     ```bash
     git checkout -b feature/xxx
@@ -188,7 +192,7 @@ category: Dev
 
     上述场景也可以通过 `git cherry-pick` 来实现，有兴趣的可以去了解一下这个指令。
 
-3.  完成 feature 分支，合并到 develop 分支
+3. 完成 feature 分支，合并到 develop 分支
 
     ```bash
     # 切到 develop 分支，更新下代码
@@ -205,7 +209,7 @@ category: Dev
     git push origin develop
     ```
 
-4.  当某个版本所有的 feature 分支均合并到 develop 分支，就可以切出 release 分支，准备发布新版本，提交测试并进行 bug fix
+4. 当某个版本所有的 feature 分支均合并到 develop 分支，就可以切出 release 分支，准备发布新版本，提交测试并进行 bug fix
 
     ```bash
     # 当前在 develop 分支
@@ -216,14 +220,14 @@ category: Dev
     ...
     ```
 
-5.  所有 bug 修复完成，准备发布新版本
+5. 所有 bug 修复完成，准备发布新版本
 
     ```bash
     # master 分支合并 release 分支并添加 tag
     git checkout master
     git merge --no-ff release/xxx --no-ff
     # 添加版本标记，这里可以使用版本发布日期或者具体的版本号
-    git tag 1.0.1
+    git tag 1.0.0
     
     # develop 分支合并 release 分支
     git checkout develop
@@ -235,8 +239,35 @@ category: Dev
 
     至此，一个新版本发布完成。
 
+6.  线上出现 bug，需要紧急发布修复版本
 
-### 2. 提交信息规范
+    ```bash
+    # 当前在 master 分支
+    git checkout master 
+    
+    # 切出 hotfix 分支
+    git checkout -b hotfix/xxx
+    
+    ... 进行 bug fix 提交
+    
+    # master 分支合并 hotfix 分支并添加 tag(紧急版本)
+    git checkout master
+    git merge --no-ff hotfix/xxx --no-ff
+    # 添加版本标记，这里可以使用版本发布日期或者具体的版本号
+    git tag 1.0.1
+    
+    # develop 分支合并 hotfix 分支(如果此时存在 release 分支的话，应当合并到 release 分支)
+    git checkout develop
+    git merge --no-ff hotfix/xxx
+    
+    # 删除 hotfix 分支
+    git branch -d hotfix/xxx
+    ```
+
+    至此，紧急版本发布完成。
+
+
+### 3. 提交信息规范
 
 提交信息规范部分参考 [Angular.js commit messgae](https://github.com/angular/angular.js/blob/master/DEVELOPERS.md#commits)。
 
