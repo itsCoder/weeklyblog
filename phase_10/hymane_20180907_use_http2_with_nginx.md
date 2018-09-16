@@ -84,12 +84,12 @@ tags: [http2, nginx, linux]
     ssl_certificate_key /etc/nginx/certs/www.hymane.com/ssl.key;
     ```
 6. 重启 nginx 服务器
-    
+  
     ```
     # service nginx stop
     # service nginx start
     ```
-    验证码 nginx 配置项是否有误
+    验证 nginx 配置项是否有误
     
     ```
     # nginx -t
