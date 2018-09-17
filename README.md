@@ -10,6 +10,12 @@
 
 | 标题 | 类别 | 作者 | 期数 |
 | :---- | :-----: | :--: | :-----: |
+| [2018 新的税改并入一些看法](https://www.hujiandong.com/tax_reform_2018.html) | 随想 | [JasonThink](https://github.com/jasonim) | 10 |
+| [Appium 自动化测试介绍和使用说明](https://hllgithub.github.io/2018/09/09/Appium%E8%87%AA%E5%8A%A8%E5%8C%96%E6%B5%8B%E8%AF%95%E4%BB%8B%E7%BB%8D%E5%92%8C%E4%BD%BF%E7%94%A8%E8%AF%B4%E6%98%8E/) | iOS | [Jeffrey](https://github.com/hllGitHub) | 10 |
+| [CentOS 搭建 Nginx 服务器并开启 HTTP2 协议](https://hymane.itscoder.com/use-http2-with-nginx/) | Nginx | [hymane](https://github.com/hymanme) | 10 |
+| [项目中的 Git 使用规范](https://jaeger.itscoder.com/dev/2018/09/12/using-git-in-project.html) | Git | [写代码的猴子](https://jaeger.itscoder.com) | 10 |
+| [说说观察者模式和发布/订阅模式的区别](http://extremej.itscoder.com/different_between_observe_and_publish/) | Android | [阿风](http://extremej.itscoder.com/) | 10 |
+| [Java 基础--队列同步器(AQS)](https://ljuns.itscoder.com/2018/09/04/Java%20%E5%9F%BA%E7%A1%80--%E9%98%9F%E5%88%97%E5%90%8C%E6%AD%A5%E5%99%A8(AQS)/) | Java | [ljuns](https://ljuns.itscoder.com/) | 10 |
 | [使用 SurfaceView 实现一个下雨的天气效果](https://www.imhanjie.com/2017/03/07/use_surfaceview/) | Android | [melody](https://github.com/imhanjie) |9|
 | [Android 上 ZXing 库的使用解析](https://www.jianshu.com/p/f862b73d07f7) | Android | [melo](https://github.com/itsMelo) |9|
 | [给你的独立博客加上夜间模式以及 Service Worker](https://zetaoyang.github.io/post/2017/02/27/add-night-mode-and-service-worker-for-your-blog.html) | Web | [ZetaoYang](https://github.com/ZetaoYang) |9|
