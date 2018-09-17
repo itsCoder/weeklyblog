@@ -10,6 +10,10 @@
 
 | 标题 | 类别 | 作者 | 期数 |
 | :---- | :-----: | :--: | :-----: |
+| [使用 SurfaceView 实现一个下雨的天气效果](https://www.imhanjie.com/2017/03/07/use_surfaceview/) | Android | [melody](https://github.com/imhanjie) |9|
+| [Android 上 ZXing 库的使用解析](https://www.jianshu.com/p/f862b73d07f7) | Android | [melo](https://github.com/itsMelo) |9|
+| [给你的独立博客加上夜间模式以及 Service Worker](https://zetaoyang.github.io/post/2017/02/27/add-night-mode-and-service-worker-for-your-blog.html) | Web | [ZetaoYang](https://github.com/ZetaoYang) |9|
+| [Thinking in Java 学习笔记之复用类与多态](http://showzeng.itscoder.com/java/2017/02/24/thinking-in-java-note-reusable-class-and-polymorphic.html) | Java | [showzeng](https://github.com/showzeng) |9|
 | [RxJava 线程切换源码的一些体会和思考](http://imxie.itscoder.com/2016/12/25/how_the_rxjava_thread_work/) | Android | [谢三弟](https://github.com/xcc3641) |8|
 | [GearMachine Canvas 绘制漂亮的齿轮装置](http://refactor.cn/2016/12/26/GearMachine-Canvas%E7%BB%98%E5%88%B6%E6%BC%82%E4%BA%AE%E7%9A%84%E9%BD%BF%E8%BD%AE%E8%A3%85%E7%BD%AE/) | Android | [andyxialm](https://github.com/andyxialm) |8|
 | [Android View 动画和属性动画学习笔记](http://yongyu.itscoder.com/2016/12/25/animation_learning_note/) | Android | [yongyu](https://github.com/yongyu0102) |8|
@@ -94,11 +98,3 @@
 | [StaticLayout 源码分析](http://jaeger.itscoder.com/android/2016/08/05/staticlayout-source-analyse.html) | Android | [写代码的猴子](https://github.com/laobie) |1|
 | [用 Python 爬取豆瓣图书 TOP250 ](http://allenwu.itscoder.com/douban-spider) | Python | [allenwu](http://allenwu.itscoder.com/) |1|
 | [详解 Swift 类型约束系统](http://manjusaka.itscoder.com/2016/08/02/%E8%AF%A6%E8%A7%A3Swift%E7%9A%84%E7%B1%BB%E5%9E%8B%E6%A3%80%E6%9F%A5%E5%99%A8/) | Swift | [Manjusaka](https://github.com/Zheaoli) |1|
-
-
-
-
-
-
-
-
