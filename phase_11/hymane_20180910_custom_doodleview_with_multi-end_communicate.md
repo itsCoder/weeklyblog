@@ -84,8 +84,7 @@ featured-img: bottle
 
 ### 数据封装
 1. 首先将指令类型确定下来，指令类型即整个模块可以传递的操作
-  
-    
+
 ```java
  public interface ActionStep {
     byte START = 1;//画笔路径开始
@@ -102,13 +101,13 @@ featured-img: bottle
 }
 ```
 各个指令的作用注释里面已经讲的很清楚了，不再赘述。
+
 2. 封装最小数据包结构
 
 
 ```java
 public class Transaction implements Serializable, Cloneable{
-
-    private long timestamp = 0;//数据时间戳
+	private long timestamp = 0;//数据时间戳
     private byte step = ActionStep.START;
     private float x = 0.0f;
     private float y = 0.0f;
