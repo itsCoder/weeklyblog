@@ -107,7 +107,7 @@ featured-img: bottle
 
 ```java
 public class Transaction implements Serializable, Cloneable{
-	private long timestamp = 0;//数据时间戳
+    private long timestamp = 0;//数据时间戳
     private byte step = ActionStep.START;
     private float x = 0.0f;
     private float y = 0.0f;
@@ -361,10 +361,7 @@ Transaction{timestamp=11, step=1, x=3.0, y=4.0, color=0, size=5}
         private IDoodleCallback mDoodleCallback;
         private DoodleChannel mDoodleSelfChannel;//本地绘制通道
         private DoodleChannel mDoodleRemoteChannel;//远程回放通道
-    ```
-
-
-        // 数据发送管理器
+          // 数据发送管理器
         private TransactionManager mTransactionManager;
     
         //画笔
@@ -380,8 +377,6 @@ Transaction{timestamp=11, step=1, x=3.0, y=4.0, color=0, size=5}
         private GestureDetector mGestureDetector;
         private GestureDetector.OnGestureListener mGestureListener;
         private ScaleGestureDetector.OnScaleGestureListener mScaleListener;
-
-
         //是否可滑动
         private boolean mScrollEnabled = true;
         //是否支持双击操作
@@ -391,13 +386,9 @@ Transaction{timestamp=11, step=1, x=3.0, y=4.0, color=0, size=5}
         private int mDoubleTapDirection;
         private boolean onMoving;
         private boolean shouldFling;
-
-
         private boolean mIsDrawing = false;
         private byte colorIndex = 0;
-
-
-        public DoodleView(Context context) {
+         public DoodleView(Context context) {
             this(context, null);
         }
     
@@ -679,7 +670,7 @@ Transaction{timestamp=11, step=1, x=3.0, y=4.0, color=0, size=5}
         public void scrollBy(float distanceX, float distanceY, final double durationMs) {
             //...
         }
-    }
+    }       
     ```
 
 代码有点多，这里就没有全部贴出来，至贴了主要的代码。主要实现前面也已经介绍过，这里有一个`mDrawDelayTime`来控制刷新 UI 的时间间隔，可以调整绘制频率，建议 frame/30ms。
@@ -1013,7 +1004,7 @@ ActionType 是一个枚举类型，全局限定了支持的绘制类型。
 public class TransactionManager {
     private static final String TAG = "TransactionManager";
     //发送绘制消息的时间周期，每隔 {TIMER_TASK_PERIOD} 毫秒，
-    //扫描一次缓存 cache，如果有未发生绘制路径，则发送。建议周期不易设置过小
+    //扫描一次缓存 cache，如果有未发送绘制路径，则发送。建议周期不易设置过小
     private final int TIMER_TASK_PERIOD = 30;
     private int mTimeTaskPeriod = TIMER_TASK_PERIOD;
     private Transaction transaction;
@@ -1275,7 +1266,7 @@ public interface TransactionObserver {
 
 > 本例使用的是 json，前面效率与性能一节我们提到 json 效率和 protobuf 效率的对比，很明显 protobuf 比 json 效率要高不少，那么如果需要更换也很简单，修改本类中的`pack`和`unpack`方法即可，换成 protobuf 来解包与压，其他的地方几乎不需要做任何修改。
 
-PS：其中`Agora`部分就不介绍了，官网有很多案例介绍。这里贴一下`Agroa`生命周期时间顺序吧
+PS：其中`Agora`部分就不介绍了，官网有很多案例介绍。这里贴一下`Agroa`生命周期调用顺序吧
 
 ![](https://wx1.sinaimg.cn/mw690/005X6W83gy1fv5l78hvgsj30u01hcn30.jpg)
 ![](https://wx1.sinaimg.cn/mw690/005X6W83gy1fv5l7bk236j30u01hc43z.jpg)
@@ -1330,4 +1321,4 @@ PS：其中`Agora`部分就不介绍了，官网有很多案例介绍。这里�
 6. 结束白板时调用`mDoodleView.end();`
 
 ## 总结
-从本次实践中，学到了不少东西，从需求分析到确定选型，再到方案的优化，以及最后的实现。在分析问题中学到了解决问题的方法，开发中也完全不是实现就够了，更重要的如何实现达到最优。虽然现在还有一些已知的问题没有解决，比如多通道绘制覆盖路径问题，画布缩放中心问题等。嘿嘿嘿，知道问题就不是问题了。
+从本次实践中，学到了不少东西，从需求分析到确定选型，再到方案的优化，以及最后的实现。在分析问题中学到了解决问题的方法，开发中也完全不是实现就够了，更重要的如何实现达到最优。虽然现在还有一些已知的问题没有解决，比如多通道绘制覆盖路径问题，画布缩放中心问题等。
