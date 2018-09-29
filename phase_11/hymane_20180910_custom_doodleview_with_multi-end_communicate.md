@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Android 实现实时多端白板通信
+title: Android 实现实时白板绘制及多端绘制同步
 summary: 本篇主要介绍最近项目中实现的一个多端白板绘制的功能，适用于多终端实时绘制路径，并能互相同步数据，实现一个多端同步白板。主要涉及到自定义 View，数据传输的封装，异步数据处理，底层数据同步等。
 date: 2018-09-10 22:39:08
 categories: Android
@@ -84,7 +84,8 @@ featured-img: bottle
 
 ### 数据封装
 1. 首先将指令类型确定下来，指令类型即整个模块可以传递的操作
-
+  
+    
 ```java
  public interface ActionStep {
     byte START = 1;//画笔路径开始
@@ -101,12 +102,12 @@ featured-img: bottle
 }
 ```
 各个指令的作用注释里面已经讲的很清楚了，不再赘述。
-
 2. 封装最小数据包结构
 
 
 ```java
 public class Transaction implements Serializable, Cloneable{
+
     private long timestamp = 0;//数据时间戳
     private byte step = ActionStep.START;
     private float x = 0.0f;
@@ -388,7 +389,7 @@ Transaction{timestamp=11, step=1, x=3.0, y=4.0, color=0, size=5}
         private boolean shouldFling;
         private boolean mIsDrawing = false;
         private byte colorIndex = 0;
-         public DoodleView(Context context) {
+        public DoodleView(Context context) {
             this(context, null);
         }
     
@@ -567,6 +568,8 @@ Transaction{timestamp=11, step=1, x=3.0, y=4.0, color=0, size=5}
                     reDraw();
                 }
                 if (mCurrentDrawDelayTime != 0) {
+                    //本处由于方便使用的是定时(不准确的定时)刷新，可改成按需刷新，
+                    //也就是需要刷新页面的时候再刷新
                     try {
                         Thread.sleep(mCurrentDrawDelayTime);
                     } catch (InterruptedException e) {
@@ -670,7 +673,7 @@ Transaction{timestamp=11, step=1, x=3.0, y=4.0, color=0, size=5}
         public void scrollBy(float distanceX, float distanceY, final double durationMs) {
             //...
         }
-    }       
+    }
     ```
 
 代码有点多，这里就没有全部贴出来，至贴了主要的代码。主要实现前面也已经介绍过，这里有一个`mDrawDelayTime`来控制刷新 UI 的时间间隔，可以调整绘制频率，建议 frame/30ms。
@@ -685,6 +688,7 @@ setZOrderMediaOverlay(true);
 ```
 * TransactionManager 是数据包管理器，前面也有介绍过，用来处理数据包的装包解包以及发送的工作，后面会详细介绍。
 * 橡皮擦用的是白色画笔简单代替，这样在配合两个通道进行重回时会出现之前的绘制路径覆盖当前绘制路径的问题。考虑优化，嘿嘿嘿。
+* `run`方法里面使用的是`sleep`等待指定时间再次刷新，此种方式有一个弊端就是在 ui 未发生任何更改时毅然刷新，浪费性能，可改成按需更新，但是既要在各个需要更新地方埋点，执行刷新。另一点，此处的`sleep`方法延迟时间需要考虑肉眼60帧的流畅度，也就是16毫秒就需要刷新一帧，那么这里的延迟时间需要考虑到这一点。
 
 3. 绘制通道
 
@@ -1004,7 +1008,7 @@ ActionType 是一个枚举类型，全局限定了支持的绘制类型。
 public class TransactionManager {
     private static final String TAG = "TransactionManager";
     //发送绘制消息的时间周期，每隔 {TIMER_TASK_PERIOD} 毫秒，
-    //扫描一次缓存 cache，如果有未发送绘制路径，则发送。建议周期不易设置过小
+    //扫描一次缓存 cache，如果有未发生绘制路径，则发送。建议周期不易设置过小
     private final int TIMER_TASK_PERIOD = 30;
     private int mTimeTaskPeriod = TIMER_TASK_PERIOD;
     private Transaction transaction;
@@ -1266,7 +1270,7 @@ public interface TransactionObserver {
 
 > 本例使用的是 json，前面效率与性能一节我们提到 json 效率和 protobuf 效率的对比，很明显 protobuf 比 json 效率要高不少，那么如果需要更换也很简单，修改本类中的`pack`和`unpack`方法即可，换成 protobuf 来解包与压，其他的地方几乎不需要做任何修改。
 
-PS：其中`Agora`部分就不介绍了，官网有很多案例介绍。这里贴一下`Agroa`生命周期调用顺序吧
+PS：其中`Agora`部分就不介绍了，官网有很多案例介绍。这里贴一下`Agroa`生命周期时间顺序吧
 
 ![](https://wx1.sinaimg.cn/mw690/005X6W83gy1fv5l78hvgsj30u01hcn30.jpg)
 ![](https://wx1.sinaimg.cn/mw690/005X6W83gy1fv5l7bk236j30u01hc43z.jpg)
@@ -1321,4 +1325,4 @@ PS：其中`Agora`部分就不介绍了，官网有很多案例介绍。这里�
 6. 结束白板时调用`mDoodleView.end();`
 
 ## 总结
-从本次实践中，学到了不少东西，从需求分析到确定选型，再到方案的优化，以及最后的实现。在分析问题中学到了解决问题的方法，开发中也完全不是实现就够了，更重要的如何实现达到最优。虽然现在还有一些已知的问题没有解决，比如多通道绘制覆盖路径问题，画布缩放中心问题等。
+从本次实践中，学到了不少东西，从需求分析到确定选型，再到方案的优化，以及最后的实现。在分析问题中学到了解决问题的方法，开发中也完全不是实现就够了，更重要的如何实现达到最优。虽然现在还有一些已知的问题没有解决，比如多通道绘制覆盖路径问题，画布缩放中心问题等。嘿嘿嘿，知道问题就不是问题了。
